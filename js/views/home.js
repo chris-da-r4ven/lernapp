@@ -70,7 +70,8 @@ function subjectTile(s) {
     </a>`;
 }
 
-// Bild mit Glitzer. Die Sternchen sitzen fest verteilt um das Porträt,
+// Bild mit Glitzer. Fanny ist freigestellt: unten schneidet der Kreis sie ab,
+// oben ragen Ohren und Mähne heraus. Die Sternchen sitzen fest verteilt um das Porträt,
 // damit sie nicht bei jedem Öffnen der Seite woanders sind.
 function portrait(pet) {
   const g = pet.glitter;
@@ -87,7 +88,8 @@ function portrait(pet) {
     .filter(Boolean).join(' ');
   return `
     <span class="${cls}" style="--sparkle-size:${g.size}">
-      <img class="pet-img" src="${esc(pet.image)}" alt="${esc(pet.alt)}" width="132" height="132">
+      <span class="pet-disc"></span>
+      <span class="pet-pop"><img class="pet-img" src="${esc(pet.image)}" alt="${esc(pet.alt)}" width="132" height="198"></span>
       <span class="sparkles" aria-hidden="true">${sparkles.join('')}</span>
     </span>`;
 }

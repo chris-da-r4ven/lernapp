@@ -89,11 +89,7 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
 
 /* Tier */
 .pet-card { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
-.pet-img {
-  width: 132px; height: 132px; flex: none; border-radius: 50%; object-fit: cover;
-  border: 3px solid #f3c4dc; box-shadow: var(--shadow);
-}
-.pet-open { padding: 0; border: 0; background: none; cursor: zoom-in; border-radius: 50%; flex: none; }
+.pet-open { padding: 0; margin-top: 26px; border: 0; background: none; cursor: zoom-in; border-radius: 50%; flex: none; }
 
 /* Stimmung: Hintergrund der Karte */
 .pet-card { --mood-muted: #4f566e; transition: background 0.4s; }
@@ -129,15 +125,29 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
 
 /* Glitzer je Stufe */
 .pet-portrait { position: relative; display: block; width: 132px; height: 132px; }
-.pet-portrait .pet-img { position: relative; z-index: 1; display: block; }
-.pet-portrait.glow .pet-img { box-shadow: 0 0 14px 1px var(--glitter-glow); }
+.pet-disc {
+  position: absolute; inset: 0; z-index: 1; border-radius: 50%;
+  background: radial-gradient(circle at 50% 40%, #fdf0f7, #ece6fb);
+  border: 3px solid #f3c4dc; box-shadow: var(--shadow);
+}
+.pet-portrait.glow .pet-disc { box-shadow: 0 0 14px 1px var(--glitter-glow); }
+/* Unten Kreis, oben offen: Ohren und Mähne ragen über den Rand.
+   Das Bild ist 132 × 198 px, der Kreis beginnt 40 px unter der Oberkante. */
+.pet-pop {
+  position: absolute; left: 0; top: -40px; width: 132px; height: 198px; z-index: 2;
+  clip-path: path('M0 106 A66 66 0 0 0 132 106 L132 0 L0 0 Z');
+}
+.pet-pop .pet-img { display: block; width: 132px; height: 198px; transform: translateY(var(--head, -8px)); }
+/* Kopfhöhe je Stimmung: glücklich höher, traurig tiefer */
+.mood-happy .pet-pop .pet-img { --head: -18px; }
+.mood-sad .pet-pop .pet-img { --head: 0px; }
 .pet-portrait.ring::before {
   content: ''; position: absolute; inset: -4px; border-radius: 50%; z-index: 0; opacity: 0.85;
   background: conic-gradient(from 0deg, var(--glitter-a), var(--glitter-b), var(--glitter-a), var(--glitter-b), var(--glitter-a));
   animation: spin 6s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-.sparkles { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.sparkles { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
 .sparkle {
   position: absolute; transform: translate(-50%, -50%);
   font-size: calc(15px * var(--sparkle-size, 1)); line-height: 1;

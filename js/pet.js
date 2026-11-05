@@ -7,12 +7,11 @@
 export const PET = {
   name: 'Fanny',
   alt: 'Fanny, ein Apfelschimmel mit rosa Mähne, roten Schleifen und Glitzerhalfter',
-  // Bis die Gemini-Varianten da sind, zeigen alle Stimmungen dasselbe Bild.
   // Neue Bilder: hier eintragen und in sw.js in die Liste aufnehmen.
   images: {
-    happy:   { portrait: 'img/fanny.webp', full: 'img/fanny-full.webp' },
-    neutral: { portrait: 'img/fanny.webp', full: 'img/fanny-full.webp' },
-    sad:     { portrait: 'img/fanny.webp', full: 'img/fanny-full.webp' },
+    happy:   { portrait: 'img/fanny-happy.webp', full: 'img/fanny-happy-full.webp' },
+    neutral: { portrait: 'img/fanny.webp',       full: 'img/fanny-full.webp' },
+    sad:     { portrait: 'img/fanny-sad.webp',   full: 'img/fanny-sad-full.webp' },
   },
 };
 
