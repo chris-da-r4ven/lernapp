@@ -1,4 +1,4 @@
-// Lernfortschritt, nur lokal im Browser des Tablets.
+// Lernfortschritt im Browser des Tablets (optional zusätzlich gesichert, siehe sync.js).
 // items:  pro Karte und Richtung der Stand im Wiederholsystem
 // days:   pro Tag, wie viel geübt wurde (für Serie und Verlauf)
 // points: Punkte für Sterne/Tier
@@ -16,8 +16,22 @@ function load() {
   try { return { ...empty(), ...JSON.parse(localStorage.getItem(KEY)) }; } catch { return empty(); }
 }
 
-export function save() {
+const listeners = [];
+export const onSave = (fn) => listeners.push(fn);
+
+function persist() {
   try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { /* Speicher voll/gesperrt */ }
+}
+
+export function save() {
+  persist();
+  listeners.forEach((fn) => fn());
+}
+
+// Spielstand von außen übernehmen (Sicherung) – meldet sich nicht als Änderung zurück.
+export function replaceState(next) {
+  state = { ...empty(), ...next };
+  persist();
 }
 
 export const getState = () => state;

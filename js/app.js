@@ -1,4 +1,5 @@
 import { checkUpdates } from './content.js';
+import { startSync } from './sync.js';
 import { toast } from './util.js';
 import { homeView } from './views/home.js';
 import { subjectView } from './views/subject.js';
@@ -45,6 +46,9 @@ export async function updateContent({ quiet = false } = {}) {
 window.addEventListener('hashchange', render);
 render();
 updateContent({ quiet: true });
+// Sicherung: wurde sie von außen geändert (z. B. zurückgesetzt), Seite neu zeichnen –
+// außer mitten in einer Übungsrunde.
+startSync({ onRemoteChange: () => { if (!location.hash.startsWith('#/ueben')) render(); } });
 
 // Browser bitten, den Spielstand nicht bei Speichermangel selbst zu löschen.
 navigator.storage?.persist?.().catch(() => {});
