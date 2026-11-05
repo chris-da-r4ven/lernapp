@@ -1,0 +1,19 @@
+{
+  "id": "to-be",
+  "title": "to be (sein)",
+  "type": "pairs",
+  "sides": { "a": "Deutsch", "b": "Englisch" },
+  "exercises": ["write"],
+  "items": [
+    { "id": "i", "a": "ich bin", "b": "I am" },
+    { "id": "you-sg", "a": "du bist", "b": "you are", "aAlt": ["ihr seid", "Sie sind"] },
+    { "id": "he", "a": "er ist", "b": "he is" },
+    { "id": "she", "a": "sie ist (eine Person)", "b": "she is", "aAlt": ["sie ist"] },
+    { "id": "it", "a": "es ist", "b": "it is" },
+    { "id": "we", "a": "wir sind", "b": "we are" },
+    { "id": "you-pl", "a": "ihr seid", "b": "you are", "aAlt": ["du bist", "Sie sind"] },
+    { "id": "they", "a": "sie sind (mehrere)", "b": "they are", "aAlt": ["sie sind"] },
+    { "id": "mum-and-i", "a": "Mama und ich sind glücklich.", "b": "Mum and I are happy.", "aAlt": ["Mama und ich sind froh."] },
+    { "id": "everybody", "a": "Alle sind glücklich.", "b": "Everybody is happy.", "aAlt": ["Jeder ist glücklich.", "Alle sind froh."] }
+  ]
+}

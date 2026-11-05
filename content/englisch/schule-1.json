@@ -1,0 +1,165 @@
+{
+  "id": "schule-1",
+  "title": "In der Schule",
+  "type": "pairs",
+  "sides": {
+    "a": "Deutsch",
+    "b": "Englisch"
+  },
+  "exercises": [
+    "write"
+  ],
+  "items": [
+    {
+      "a": "Hausmeister / Hausmeisterin",
+      "b": "caretaker"
+    },
+    {
+      "a": "Naturwissenschaft(en)",
+      "b": "science",
+      "aAlt": [
+        "Naturwissenschaft",
+        "Naturwissenschaften"
+      ]
+    },
+    {
+      "a": "immer",
+      "b": "always",
+      "hard": true
+    },
+    {
+      "a": "Heft / Schulheft",
+      "b": "exercise book"
+    },
+    {
+      "a": "Wasserflasche / Trinkflasche",
+      "b": "water bottle"
+    },
+    {
+      "a": "Buntstifte",
+      "b": "coloured pencils",
+      "hard": true
+    },
+    {
+      "a": "Anspitzer / Spitzer",
+      "b": "sharpener"
+    },
+    {
+      "a": "Guten Morgen",
+      "b": "good morning",
+      "aAlt": [
+        "guten Morgen"
+      ],
+      "bAlt": [
+        "Good morning"
+      ]
+    },
+    {
+      "a": "Tafel",
+      "b": "board"
+    },
+    {
+      "a": "Kannst du mir helfen?",
+      "b": "Can you help me?",
+      "aAlt": [
+        "Können Sie mir helfen?",
+        "Könnt ihr mir helfen?"
+      ]
+    },
+    {
+      "a": "Setz dich. / Setzt euch.",
+      "b": "sit down",
+      "aAlt": [
+        "sich hinsetzen",
+        "hinsetzen",
+        "Setzen Sie sich."
+      ],
+      "bAlt": [
+        "Sit down"
+      ]
+    },
+    {
+      "a": "Entschuldigung",
+      "b": "Excuse me",
+      "aAlt": [
+        "Entschuldigung!",
+        "Entschuldigen Sie"
+      ],
+      "bAlt": [
+        "excuse me"
+      ]
+    },
+    {
+      "a": "leise / ruhig",
+      "b": "quiet"
+    },
+    {
+      "a": "Schulhof / Spielplatz",
+      "b": "playground"
+    },
+    {
+      "a": "Bibliothek / Bücherei",
+      "b": "library"
+    },
+    {
+      "a": "Mathe / Mathematik",
+      "b": "maths"
+    },
+    {
+      "a": "Erdkunde / Geografie",
+      "b": "geography",
+      "aAlt": [
+        "Geographie"
+      ]
+    },
+    {
+      "a": "Technik",
+      "b": "technology"
+    },
+    {
+      "a": "zuhören",
+      "b": "to listen",
+      "aAlt": [
+        "hören"
+      ],
+      "bAlt": [
+        "listen"
+      ],
+      "hard": true
+    },
+    {
+      "a": "Schere",
+      "b": "scissors"
+    },
+    {
+      "a": "schreiben",
+      "b": "to write",
+      "bAlt": [
+        "write"
+      ]
+    },
+    {
+      "a": "herausnehmen / herausholen",
+      "b": "to take out",
+      "aAlt": [
+        "rausnehmen",
+        "rausholen"
+      ],
+      "bAlt": [
+        "take out"
+      ]
+    },
+    {
+      "a": "Regel",
+      "b": "rule"
+    },
+    {
+      "a": "lesen",
+      "b": "to read",
+      "bAlt": [
+        "read"
+      ],
+      "hard": true
+    }
+  ]
+}

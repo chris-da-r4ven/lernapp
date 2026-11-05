@@ -1,0 +1,22 @@
+{
+  "version": 3,
+  "subjects": [
+    {
+      "id": "englisch",
+      "name": "Englisch",
+      "icon": "🇬🇧",
+      "lessons": [
+        {
+          "id": "schule-1",
+          "title": "In der Schule",
+          "file": "englisch/schule-1.json"
+        },
+        {
+          "id": "to-be",
+          "title": "to be (sein)",
+          "file": "englisch/to-be.json"
+        }
+      ]
+    }
+  ]
+}

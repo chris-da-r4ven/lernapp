@@ -1,0 +1,53 @@
+// Lernfortschritt, nur lokal im Browser des Tablets.
+// items:  pro Karte und Richtung der Stand im Wiederholsystem
+// days:   pro Tag, wie viel geübt wurde (für Serie und Verlauf)
+// points: Punkte für Sterne/Tier
+
+import { dayKey } from './util.js';
+
+const KEY = 'lernapp.progress';
+
+const empty = () => ({ items: {}, days: {}, points: 0, pet: null });
+
+let state = load();
+
+function load() {
+  try { return { ...empty(), ...JSON.parse(localStorage.getItem(KEY)) }; } catch { return empty(); }
+}
+
+export function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { /* Speicher voll/gesperrt */ }
+}
+
+export const getState = () => state;
+
+export function itemState(key) {
+  return state.items[key] ?? { box: 0, due: 0, right: 0, wrong: 0, wrongs: [], last: 0 };
+}
+
+export function setItemState(key, s) {
+  state.items[key] = s;
+}
+
+export function addDayStat(correct) {
+  const k = dayKey();
+  const d = state.days[k] ?? { right: 0, wrong: 0 };
+  if (correct) d.right++; else d.wrong++;
+  state.days[k] = d;
+}
+
+export function addPoints(n) {
+  state.points += n;
+}
+
+// Tage am Stück geübt, bis heute (oder bis gestern, wenn heute noch nicht).
+export function streak() {
+  let n = 0;
+  const d = new Date();
+  if (!state.days[dayKey(d)]) d.setDate(d.getDate() - 1);
+  while (state.days[dayKey(d)]) {
+    n++;
+    d.setDate(d.getDate() - 1);
+  }
+  return n;
+}
