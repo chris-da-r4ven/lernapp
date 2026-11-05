@@ -3,7 +3,7 @@
 // bei fehlendem Netz der Cache. Lerninhalte (content/) lädt die App selbst
 // und speichert sie lokal – die laufen hier nicht durch.
 
-const CACHE = 'lernapp-shell-v2';
+const CACHE = 'lernapp-shell-v3';
 const SHELL = [
   './',
   'index.html',
@@ -12,6 +12,7 @@ const SHELL = [
   'icons/icon.svg',
   'icons/icon-192.png',
   'icons/icon-512.png',
+  'img/fanny.svg',
   'js/app.js',
   'js/util.js',
   'js/store.js',
@@ -52,7 +53,8 @@ self.addEventListener('fetch', (event) => {
 async function networkFirst(request) {
   const cache = await caches.open(CACHE);
   try {
-    const response = await withTimeout(fetch(request), NETWORK_TIMEOUT_MS);
+    // no-cache: beim Server nachfragen, ob sich die Datei geändert hat (sonst kommen Updates verspätet an).
+    const response = await withTimeout(fetch(request, { cache: 'no-cache' }), NETWORK_TIMEOUT_MS);
     if (response.ok) cache.put(request, response.clone());
     return response;
   } catch {

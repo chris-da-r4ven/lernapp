@@ -89,9 +89,9 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
 
 /* Tier */
 .pet-card { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
-.pet-slot {
-  width: 84px; height: 84px; border-radius: 50%; border: 3px dashed var(--neu);
-  display: grid; place-items: center; font-size: 2rem; color: var(--muted); flex: none;
+.pet-img {
+  width: 132px; height: 132px; flex: none; border-radius: 50%;
+  background: radial-gradient(circle at 50% 40%, #fde7f2, #e9e4fb);
 }
 .pet-info { flex: 1 1 200px; }
 .pet-info h2 { margin-bottom: 2px; }

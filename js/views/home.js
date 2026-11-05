@@ -6,14 +6,14 @@ import { updateContent } from '../app.js';
 
 export function homeView(el) {
   const st = getState();
-  const pet = petStatus(st.points, st.pet);
+  const pet = petStatus(st.points);
   const days = streak();
 
   el.innerHTML = `
     <section class="card pet-card">
-      <div class="pet-slot" aria-hidden="true">?</div>
+      <img class="pet-img" src="${esc(pet.image)}" alt="${esc(pet.alt)}" width="132" height="132">
       <div class="pet-info">
-        <h2>${pet.name ? esc(pet.name) : 'Hier zieht bald dein Tier ein'}</h2>
+        <h2>${esc(pet.name)}</h2>
         <p class="muted">Stufe ${pet.level} · noch ${pet.toNext} Punkte bis zur nächsten</p>
         <div class="meter"><div style="width:${pet.progress * 100}%"></div></div>
       </div>
