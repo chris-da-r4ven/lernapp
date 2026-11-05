@@ -1,6 +1,6 @@
 // Lerninhalte: werden von content/ geladen und lokal gespeichert,
 // damit die App offline weiterläuft. Neue Inhalte erkennt sie an
-// "version" in content/index.json.
+// "version" in content/index.json. "updated" (JJJJ-MM-TT) ist nur zur Anzeige.
 
 const KEY = 'lernapp.content';
 
@@ -14,7 +14,7 @@ function save() {
   try { localStorage.setItem(KEY, JSON.stringify(data)); } catch { /* Speicher voll/gesperrt */ }
 }
 
-export const contentVersion = () => data.version;
+export const contentUpdated = () => data.updated ?? null;
 export const hasContent = () => data.subjects.length > 0;
 export const getSubjects = () => data.subjects;
 export const getSubject = (sid) => data.subjects.find((s) => s.id === sid);
@@ -31,7 +31,7 @@ export async function checkUpdates() {
         lessons[s.id + '/' + l.id] = await fetchJson('content/' + l.file);
       }
     }
-    data = { version: idx.version, subjects: idx.subjects, lessons };
+    data = { version: idx.version, updated: idx.updated ?? null, subjects: idx.subjects, lessons };
     save();
     return 'updated';
   } catch (e) {

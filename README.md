@@ -8,7 +8,7 @@ Beim Start und per Knopf „Neue Inhalte suchen“ holt sie neue Lektionen.
 
 1. Datei `content/<fach>/<lektion>.json` anlegen (Format unten).
 2. In `content/index.json` beim Fach eintragen.
-3. **`version` in `content/index.json` erhöhen** – sonst lädt das Tablet die neuen Inhalte nicht.
+3. **`version` in `content/index.json` erhöhen** – sonst lädt das Tablet die neuen Inhalte nicht. Dabei `updated` auf das heutige Datum setzen (wird auf der Fortschrittsseite angezeigt).
 4. Committen und pushen.
 
 ### Format einer Lektion (`type: "pairs"`)

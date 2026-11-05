@@ -1,4 +1,4 @@
-import { getSubjects, hasContent, contentVersion } from '../content.js';
+import { getSubjects, hasContent } from '../content.js';
 import { getState, streak } from '../store.js';
 import { mood, DAY_GOAL } from '../streak.js';
 import { petStatus, PET } from '../pet.js';
@@ -38,7 +38,6 @@ export function homeView(el) {
 
     <div class="footer-actions">
       <button class="btn" data-act="update">Neue Inhalte suchen</button>
-      <span class="muted small">${contentVersion() ? 'Inhalte Version ' + esc(contentVersion()) : ''}</span>
     </div>
 
     <dialog class="pet-dialog">

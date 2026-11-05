@@ -1,6 +1,6 @@
 // Fortschritt – dieselbe Seite für Kind und Eltern.
 
-import { getSubjects, getLesson } from '../content.js';
+import { getSubjects, getLesson, contentUpdated } from '../content.js';
 import { getState, itemState, streak } from '../store.js';
 import { itemKey, status } from '../srs.js';
 import { esc, dayKey, addDays } from '../util.js';
@@ -58,7 +58,9 @@ export function statsView(el) {
             </tr>`).join('')}
           </tbody>
         </table>` : '<p class="muted">Noch keine Fehler gesammelt.</p>'}
-    </section>`;
+    </section>
+
+    ${contentUpdated() ? `<p class="muted small">Lerninhalte vom ${esc(formatDate(contentUpdated()))}</p>` : ''}`;
 }
 
 function collectItems() {
@@ -132,6 +134,11 @@ function historyChart(days, rescued) {
     </div>
     <div class="legend small"><span class="dot right"></span>richtig <span class="dot wrong"></span>falsch</div>
     <p class="muted small">Ein Tag zählt für die Serie ab ${DAY_GOAL} Wörtern. 🛟 = verpasst, aber am Tag danach gerettet.</p>`;
+}
+
+function formatDate(iso) {
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString('de-DE');
 }
 
 function pct(a, n) {
