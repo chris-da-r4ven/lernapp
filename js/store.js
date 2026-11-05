@@ -4,6 +4,7 @@
 // points: Punkte für Sterne/Tier
 
 import { dayKey } from './util.js';
+import { streakInfo } from './streak.js';
 
 const KEY = 'lernapp.progress';
 
@@ -40,14 +41,7 @@ export function addPoints(n) {
   state.points += n;
 }
 
-// Tage am Stück geübt, bis heute (oder bis gestern, wenn heute noch nicht).
+// Serie mit Tagesziel und Rettungstag – siehe streak.js.
 export function streak() {
-  let n = 0;
-  const d = new Date();
-  if (!state.days[dayKey(d)]) d.setDate(d.getDate() - 1);
-  while (state.days[dayKey(d)]) {
-    n++;
-    d.setDate(d.getDate() - 1);
-  }
-  return n;
+  return streakInfo(state.days);
 }

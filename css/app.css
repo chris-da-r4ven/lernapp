@@ -94,6 +94,70 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
   border: 3px solid #f3c4dc; box-shadow: var(--shadow);
 }
 .pet-open { padding: 0; border: 0; background: none; cursor: zoom-in; border-radius: 50%; flex: none; }
+
+/* Stimmung: Hintergrund der Karte */
+.pet-card { --mood-muted: #4f566e; transition: background 0.4s; }
+.pet-card .muted, .pet-card .pet-stats span { color: var(--mood-muted); }
+.pet-card.mood-happy {
+  background:
+    radial-gradient(circle at 92% 10%, rgba(255, 214, 90, 0.7), rgba(255, 214, 90, 0) 32%),
+    linear-gradient(165deg, #9fd4ff 0%, #d4ecff 60%, #fff4cf 100%);
+}
+.pet-card.mood-neutral { background: linear-gradient(165deg, #dbe5f0 0%, #eef3f8 100%); }
+.pet-card.mood-sad { background: linear-gradient(165deg, #c4c7cf 0%, #dcdee3 100%); }
+.pet-mood { margin: 2px 0 6px; font-weight: 600; }
+@media (prefers-color-scheme: dark) {
+  .pet-card { --mood-muted: #b5bbd3; }
+  .pet-card.mood-happy {
+    background:
+      radial-gradient(circle at 92% 10%, rgba(255, 200, 80, 0.35), rgba(255, 200, 80, 0) 32%),
+      linear-gradient(165deg, #1f4a78 0%, #233a5c 100%);
+  }
+  .pet-card.mood-neutral { background: linear-gradient(165deg, #283244 0%, #252b3a 100%); }
+  .pet-card.mood-sad { background: linear-gradient(165deg, #2a2b30 0%, #24252a 100%); }
+}
+
+/* Hüpfen, wenn Fanny glücklich ist und heute geübt wurde */
+.pet-open.hop { animation: hop 2.8s ease-in-out infinite; }
+@keyframes hop {
+  0%, 55%, 100% { transform: translateY(0); }
+  65% { transform: translateY(-14px); }
+  75% { transform: translateY(0); }
+  82% { transform: translateY(-6px); }
+  89% { transform: translateY(0); }
+}
+
+/* Glitzer je Stufe */
+.pet-portrait { position: relative; display: block; width: 132px; height: 132px; }
+.pet-portrait .pet-img { position: relative; z-index: 1; display: block; }
+.pet-portrait.glow .pet-img { box-shadow: 0 0 14px 1px var(--glitter-glow); }
+.pet-portrait.ring::before {
+  content: ''; position: absolute; inset: -4px; border-radius: 50%; z-index: 0; opacity: 0.85;
+  background: conic-gradient(from 0deg, var(--glitter-a), var(--glitter-b), var(--glitter-a), var(--glitter-b), var(--glitter-a));
+  animation: spin 6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.sparkles { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.sparkle {
+  position: absolute; transform: translate(-50%, -50%);
+  font-size: calc(15px * var(--sparkle-size, 1)); line-height: 1;
+  color: var(--glitter-a); text-shadow: 0 0 6px var(--glitter-glow);
+  animation: twinkle 2.4s ease-in-out infinite; animation-delay: var(--d, 0s);
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.25; transform: translate(-50%, -50%) scale(0.6); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+}
+.glitter-silver { --glitter-a: #ffffff; --glitter-b: #d9dcf0; --glitter-glow: rgba(255, 255, 255, 0.9); }
+.glitter-gold { --glitter-a: #ffd54a; --glitter-b: #fff3b8; --glitter-glow: rgba(255, 200, 60, 0.85); }
+.glitter-rainbow { --glitter-a: #ff8fd0; --glitter-b: #8fd6ff; --glitter-glow: rgba(255, 170, 230, 0.85); }
+.glitter-rainbow .sparkle { color: hsl(var(--h, 0) 95% 70%); }
+.glitter-silver .sparkle { -webkit-text-stroke: 0.8px #8d95bd; text-shadow: 0 0 4px rgba(120, 130, 190, 0.6), 0 0 8px #ffffff; }
+
+@media (prefers-reduced-motion: reduce) {
+  .pet-open.hop, .pet-portrait.ring::before, .sparkle { animation: none; }
+  .sparkle { opacity: 0.9; }
+}
 .pet-dialog {
   border: 0; border-radius: var(--radius); padding: 12px; background: var(--card);
   width: min(92vw, 640px); text-align: center;

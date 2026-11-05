@@ -3,7 +3,7 @@
 // bei fehlendem Netz der Cache. Lerninhalte (content/) lädt die App selbst
 // und speichert sie lokal – die laufen hier nicht durch.
 
-const CACHE = 'lernapp-shell-v4';
+const CACHE = 'lernapp-shell-v5';
 const SHELL = [
   './',
   'index.html',
@@ -21,6 +21,7 @@ const SHELL = [
   'js/srs.js',
   'js/diff.js',
   'js/pet.js',
+  'js/streak.js',
   'js/exercises/registry.js',
   'js/exercises/write.js',
   'js/views/home.js',
