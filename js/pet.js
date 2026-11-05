@@ -3,7 +3,8 @@
 
 export const PET = {
   name: 'Fanny',
-  image: 'img/fanny.svg',
+  image: 'img/fanny.webp',
+  imageFull: 'img/fanny-full.webp',
   alt: 'Fanny, ein Apfelschimmel mit rosa Mähne, roten Schleifen und Glitzerhalfter',
 };
 
