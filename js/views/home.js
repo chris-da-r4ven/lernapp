@@ -11,7 +11,9 @@ export function homeView(el) {
 
   el.innerHTML = `
     <section class="card pet-card">
-      <img class="pet-img" src="${esc(pet.image)}" alt="${esc(pet.alt)}" width="132" height="132">
+      <button class="pet-open" data-act="pet" aria-label="${esc(pet.name)} groß anzeigen">
+        <img class="pet-img" src="${esc(pet.image)}" alt="${esc(pet.alt)}" width="132" height="132">
+      </button>
       <div class="pet-info">
         <h2>${esc(pet.name)}</h2>
         <p class="muted">Stufe ${pet.level} · noch ${pet.toNext} Punkte bis zur nächsten</p>
@@ -32,7 +34,18 @@ export function homeView(el) {
     <div class="footer-actions">
       <button class="btn" data-act="update">Neue Inhalte suchen</button>
       <span class="muted small">${contentVersion() ? 'Inhalte Version ' + esc(contentVersion()) : ''}</span>
-    </div>`;
+    </div>
+
+    <dialog class="pet-dialog">
+      <img src="${esc(pet.imageFull)}" alt="${esc(pet.alt)}" width="1024" height="1024">
+      <button class="btn" data-act="pet-close">Schließen</button>
+    </dialog>`;
+
+  const dialog = el.querySelector('.pet-dialog');
+  el.querySelector('[data-act=pet]').addEventListener('click', () => dialog.showModal());
+  el.querySelector('[data-act=pet-close]').addEventListener('click', () => dialog.close());
+  // Antippen neben das Bild schließt ebenfalls.
+  dialog.addEventListener('click', (ev) => { if (ev.target === dialog) dialog.close(); });
 
   el.querySelector('[data-act=update]').addEventListener('click', async (ev) => {
     ev.target.disabled = true;
