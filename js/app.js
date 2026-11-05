@@ -5,6 +5,7 @@ import { subjectView } from './views/subject.js';
 import { lessonView } from './views/lesson.js';
 import { practiceView } from './views/practice.js';
 import { statsView } from './views/stats.js';
+import { handwritingTestView } from './views/handwriting-test.js';
 
 const routes = [
   [/^#?\/?$/, homeView, 'home'],
@@ -12,6 +13,7 @@ const routes = [
   [/^#\/lektion\/([^/]+)\/([^/]+)$/, lessonView, 'home'],
   [/^#\/ueben\/([^/]+)\/([^/]+)\/([^/]+)\/(ab|ba)(\/alle)?$/, practiceView, 'home'],
   [/^#\/statistik$/, statsView, 'statistik'],
+  [/^#\/handschrift-test$/, handwritingTestView, 'home'],
 ];
 
 const app = document.getElementById('app');

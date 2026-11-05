@@ -3,7 +3,7 @@
 // bei fehlendem Netz der Cache. Lerninhalte (content/) lädt die App selbst
 // und speichert sie lokal – die laufen hier nicht durch.
 
-const CACHE = 'lernapp-shell-v1';
+const CACHE = 'lernapp-shell-v2';
 const SHELL = [
   './',
   'index.html',
@@ -26,6 +26,7 @@ const SHELL = [
   'js/views/lesson.js',
   'js/views/practice.js',
   'js/views/stats.js',
+  'js/views/handwriting-test.js',
 ];
 const NETWORK_TIMEOUT_MS = 3000;
 

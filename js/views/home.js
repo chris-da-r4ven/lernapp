@@ -31,6 +31,7 @@ export function homeView(el) {
 
     <div class="footer-actions">
       <button class="btn" data-act="update">Neue Inhalte suchen</button>
+      <a class="small" href="#/handschrift-test">Handschrift-Test</a>
       <span class="muted small">${contentVersion() ? 'Inhalte Version ' + esc(contentVersion()) : ''}</span>
     </div>`;
 
