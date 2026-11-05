@@ -110,27 +110,37 @@ export const write = {
       record(cur.key, { correct: false, typed: typed.trim() });
       cur.attempts++;
       mistakes.set(cur.key, cur.item);
-      const d = renderDiff(normalize(typed), res.closest);
       const fb = el.querySelector('.feedback');
       fb.innerHTML = `
-        <p class="result bad">${res.caseOnly ? 'Fast! Achte auf Groß- und Kleinschreibung.' : 'Noch nicht ganz.'}</p>
-        <div class="diff">
-          <div><span class="muted small">Du:</span> <span class="word">${d.yours}</span></div>
-          <div><span class="muted small">Richtig:</span> <span class="word">${d.right}</span></div>
-        </div>
+        <p class="result bad"></p>
+        <div class="diff"></div>
         <form class="answer-form copy-form" autocomplete="off">
           <input class="answer" name="copy" type="text" autocomplete="off" autocorrect="off"
                  autocapitalize="off" spellcheck="false" placeholder="Schreib es richtig ab …" aria-label="Richtig abschreiben">
           <button class="btn primary" type="submit">OK</button>
         </form>`;
+      // Vergleich anzeigen – erst für die Antwort, nach falschem Abschreiben für die Abschrift.
+      const showDiff = (text, r, message) => {
+        const d = renderDiff(normalize(text), r.closest);
+        fb.querySelector('.result').textContent = r.caseOnly ? 'Fast! Achte auf Groß- und Kleinschreibung.' : message;
+        fb.querySelector('.diff').innerHTML = `
+          <div><span class="muted small">Du:</span> <span class="word">${d.yours}</span></div>
+          <div><span class="muted small">Richtig:</span> <span class="word">${d.right}</span></div>`;
+      };
+      showDiff(typed, res, 'Noch nicht ganz.');
       const form = fb.querySelector('form');
       form.copy.focus();
       form.addEventListener('submit', (ev) => {
         ev.preventDefault();
-        if (check(form.copy.value, cur.item[to], cur.item[to + 'Alt']).ok) {
+        if (!form.copy.value.trim()) { form.copy.focus(); return; }
+        const copyRes = check(form.copy.value, cur.item[to], cur.item[to + 'Alt']);
+        if (copyRes.ok) {
           requeue(cur);
           next();
         } else {
+          // Abschreiben zählt nicht als neuer Fehler – nur zeigen, wo es noch hakt.
+          showDiff(form.copy.value, copyRes, 'Beim Abschreiben hat sich noch ein Fehler eingeschlichen. Schau genau hin:');
+          form.copy.focus();
           form.copy.classList.remove('shake');
           void form.copy.offsetWidth;
           form.copy.classList.add('shake');
