@@ -79,6 +79,7 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
   font: inherit; font-weight: 600; cursor: pointer; text-decoration: none;
 }
 .btn.primary { background: var(--primary); border-color: var(--primary); color: var(--primary-text); }
+.btn.danger { background: var(--bad); border-color: var(--bad); color: #fff; }
 .btn.ghost { background: transparent; border-color: transparent; color: var(--muted); }
 .btn.small { min-height: 40px; font-size: 0.85rem; font-weight: 500; }
 .btn:disabled { opacity: 0.6; }

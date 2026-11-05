@@ -46,6 +46,9 @@ window.addEventListener('hashchange', render);
 render();
 updateContent({ quiet: true });
 
+// Browser bitten, den Spielstand nicht bei Speichermangel selbst zu löschen.
+navigator.storage?.persist?.().catch(() => {});
+
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch((e) => console.warn('Service Worker:', e));
 }

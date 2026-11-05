@@ -1,9 +1,9 @@
 // Fortschritt – dieselbe Seite für Kind und Eltern.
 
 import { getSubjects, getLesson, contentUpdated } from '../content.js';
-import { getState, itemState, streak } from '../store.js';
+import { getState, itemState, streak, resetProgress } from '../store.js';
 import { itemKey, status } from '../srs.js';
-import { esc, dayKey, addDays } from '../util.js';
+import { esc, dayKey, addDays, toast } from '../util.js';
 import { DAY_GOAL } from '../streak.js';
 
 const HISTORY_DAYS = 14;
@@ -60,7 +60,32 @@ export function statsView(el) {
         </table>` : '<p class="muted">Noch keine Fehler gesammelt.</p>'}
     </section>
 
+    <section class="card reset-card">
+      <h2>Für Eltern</h2>
+      <p class="muted small">Setzt Punkte, Serie und den ganzen Lernstand auf null. Die Lektionen bleiben da. Zum Bestätigen <strong>LÖSCHEN</strong> eintippen.</p>
+      <form class="answer-form reset-form" autocomplete="off">
+        <input class="answer" name="confirm" type="text" autocomplete="off" autocapitalize="characters"
+               spellcheck="false" placeholder="LÖSCHEN" aria-label="Zum Bestätigen LÖSCHEN eintippen">
+        <button class="btn danger" type="submit">Statistik zurücksetzen</button>
+      </form>
+    </section>
+
     ${contentUpdated() ? `<p class="muted small">Lerninhalte vom ${esc(formatDate(contentUpdated()))}</p>` : ''}`;
+
+  const form = el.querySelector('.reset-form');
+  form.addEventListener('submit', (ev) => {
+    ev.preventDefault();
+    if (form.confirm.value.trim().toUpperCase() !== 'LÖSCHEN') {
+      form.confirm.classList.remove('shake');
+      void form.confirm.offsetWidth;
+      form.confirm.classList.add('shake');
+      form.confirm.focus();
+      return;
+    }
+    resetProgress();
+    toast('Statistik zurückgesetzt.');
+    statsView(el);
+  });
 }
 
 function collectItems() {

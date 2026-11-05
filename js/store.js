@@ -22,6 +22,12 @@ export function save() {
 
 export const getState = () => state;
 
+// Alles zurück auf null: Punkte, Serie, Lernstand. Lektionen bleiben erhalten.
+export function resetProgress() {
+  state = empty();
+  save();
+}
+
 export function itemState(key) {
   return state.items[key] ?? { box: 0, due: 0, right: 0, wrong: 0, wrongs: [], last: 0 };
 }
