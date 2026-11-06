@@ -1,5 +1,5 @@
 // Bereich „Für Eltern“ auf der Fortschrittsseite: zum Ausklappen,
-// mit Statistik zurücksetzen und der Sicherung des Spielstands.
+// mit Statistik zurücksetzen, Sicherung des Spielstands und Geräte-Tests.
 
 import { resetProgress } from '../store.js';
 import { syncStatus, connect, disconnect, syncNow, DEFAULT_REPO } from '../sync.js';
@@ -25,6 +25,12 @@ export function parentsSection(open = false) {
 
       <h3>Sicherung</h3>
       ${syncBlock()}
+
+      <h3>Geräte-Tests</h3>
+      <div class="actions">
+        <a class="btn small" href="#/vorlese-test">🔊 Vorlese-Test</a>
+        <a class="btn small" href="#/handschrift-test">✍️ Handschrift-Test</a>
+      </div>
     </details>`;
 }
 

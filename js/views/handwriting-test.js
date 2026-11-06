@@ -6,7 +6,7 @@ import { esc } from '../util.js';
 
 export async function handwritingTestView(el) {
   el.innerHTML = `
-    <a class="back" href="#/">← Start</a>
+    <a class="back" href="#/statistik">← Fortschritt</a>
     <h1>Handschrift-Test</h1>
     <section class="card"><h2>Unterstützt dieses Gerät die Erkennung?</h2><div class="hw-result muted">Prüfe …</div></section>
     <section class="card hw-pad-card" hidden>

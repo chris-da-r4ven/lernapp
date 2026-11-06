@@ -40,7 +40,7 @@ const rank = (v) => (v.lang.replace('_', '-').startsWith('en-GB') ? 0 : 1) + (v.
 
 export async function speechTestView(el) {
   el.innerHTML = `
-    <a class="back" href="#/">← Start</a>
+    <a class="back" href="#/statistik">← Fortschritt</a>
     <h1>Vorlese-Test</h1>
     <section class="card"><h2>Kann dieses Gerät Englisch vorlesen?</h2><div class="sp-result muted">Prüfe …</div></section>
     <section class="card sp-try" hidden>
