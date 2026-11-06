@@ -1,7 +1,7 @@
 // Lernfortschritt im Browser des Tablets (optional zusätzlich gesichert, siehe sync.js).
 // items:  pro Karte und Richtung der Stand im Wiederholsystem
 // days:   pro Tag, wie viel geübt wurde (für Serie und Verlauf)
-// points: Punkte für Sterne/Tier
+// points: gesammelte Sternchen ✦ (im Code „points“) – bestimmen Fannys Glitzer-Stufe
 
 import { dayKey } from './util.js';
 import { streakInfo } from './streak.js';

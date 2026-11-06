@@ -11,7 +11,7 @@ export function parentsSection(open = false) {
       <summary><h2>Für Eltern</h2></summary>
 
       <h3>Statistik zurücksetzen</h3>
-      <p class="muted small">Setzt Punkte, Serie und den ganzen Lernstand auf null. Die Lektionen bleiben da.</p>
+      <p class="muted small">Setzt Sternchen, Serie und den ganzen Lernstand auf null. Die Lektionen bleiben da.</p>
       <button class="btn danger" data-act="reset-start" type="button">Statistik zurücksetzen</button>
       <form class="reset-form" autocomplete="off" hidden>
         <p class="small">Wirklich alles löschen? Zum Bestätigen <strong>LÖSCHEN</strong> eintippen:</p>

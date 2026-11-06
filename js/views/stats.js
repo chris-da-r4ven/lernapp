@@ -32,7 +32,7 @@ export function statsView(el, openParents = false) {
       <div class="card kpi"><strong>${serie.count}</strong><span>Tage am Stück</span></div>
       <div class="card kpi"><strong>${practiceDays}</strong><span>Übungstage</span></div>
       <div class="card kpi"><strong>${pct(totalRight, totalRight + totalWrong)}</strong><span>Trefferquote</span></div>
-      <div class="card kpi"><strong>${st.points}</strong><span>Punkte</span></div>
+      <div class="card kpi"><strong>${st.points} ✦</strong><span>Sternchen</span></div>
     </section>
 
     <section class="card">

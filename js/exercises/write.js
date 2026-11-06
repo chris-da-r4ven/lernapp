@@ -154,7 +154,7 @@ export const write = {
         <div class="card summary">
           <h2>Geschafft! 🏁</h2>
           <p class="big">${firstTry} von ${total} beim ersten Versuch richtig</p>
-          <p>+${points} Punkte</p>
+          <p>+${points} ✦ Sternchen</p>
           ${list.length ? `<h3>Diese Wörter üben wir weiter:</h3>
             <ul class="word-list">${list.map((it) => `<li><span>${esc(it[from])}</span><strong>${esc(it[to])}</strong></li>`).join('')}</ul>` : '<p>Keine Fehler – super!</p>'}
           <div class="actions">

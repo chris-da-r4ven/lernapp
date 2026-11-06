@@ -21,11 +21,11 @@ export function homeView(el) {
       <div class="pet-info">
         <h2>${esc(pet.name)}</h2>
         <p class="pet-mood">${streakMessage(serie)}</p>
-        <p class="muted small">Glitzer-Stufe ${pet.level} · noch ${pet.toNext} Punkte bis zur nächsten</p>
+        <p class="muted small">Glitzer-Stufe ${pet.level} · noch ${pet.toNext} ✦ Sternchen bis zur nächsten</p>
         <div class="meter"><div style="width:${pet.progress * 100}%"></div></div>
       </div>
       <div class="pet-stats">
-        <div><strong>${st.points}</strong><span>Punkte</span></div>
+        <div><strong>${st.points} ✦</strong><span>Sternchen</span></div>
         <div><strong>${serie.count}</strong><span>${serie.count === 1 ? 'Tag' : 'Tage'} am Stück</span></div>
       </div>
     </section>
