@@ -32,13 +32,17 @@ export function check(typed, answer, alts) {
   return { ok: false, caseOnly, closest };
 }
 
+// Kurzform für Markierungen: Deutsch → DE, Englisch → EN.
+const CODES = { Deutsch: 'DE', Englisch: 'EN' };
+const code = (side) => CODES[side] ?? String(side).slice(0, 2).toUpperCase();
+
 export const write = {
   id: 'write',
   label: 'Schreiben',
   forTypes: ['pairs'],
   modes: (lesson) => [
-    { dir: 'ab', label: `Schreiben: ${lesson.sides.a} → ${lesson.sides.b}` },
-    { dir: 'ba', label: `Schreiben: ${lesson.sides.b} → ${lesson.sides.a}` },
+    { dir: 'ab', label: `Schreiben: ${lesson.sides.a} → ${lesson.sides.b}`, short: `✍️ ${code(lesson.sides.a)}→${code(lesson.sides.b)}` },
+    { dir: 'ba', label: `Schreiben: ${lesson.sides.b} → ${lesson.sides.a}`, short: `✍️ ${code(lesson.sides.b)}→${code(lesson.sides.a)}` },
   ],
   run: (el, opts) => runWrite(el, opts, write),
 };
@@ -49,7 +53,7 @@ export const dictation = {
   label: 'Hören → Englisch schreiben',
   forTypes: ['pairs'],
   auto: (lesson) => canSpeak() && Boolean(englishSide(lesson)),
-  modes: () => [{ dir: 'hoeren', label: '🔊 Hören → Englisch schreiben' }],
+  modes: () => [{ dir: 'hoeren', label: '🔊 Hören → Englisch schreiben', short: '🔊 Diktat' }],
   run: (el, opts) => runWrite(el, { ...opts, listen: true }, dictation),
 };
 

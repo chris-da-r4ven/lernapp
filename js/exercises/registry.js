@@ -13,3 +13,8 @@ export function exercisesFor(lesson) {
   const auto = Object.values(exercises).filter((ex) => ex.auto?.(lesson) && !listed.includes(ex));
   return [...listed, ...auto];
 }
+
+// Alle Übungsarten einer Lektion als flache Liste (für Markierungen und Fortschritt).
+export function modesFor(lesson) {
+  return exercisesFor(lesson).flatMap((ex) => ex.modes(lesson).map((m) => ({ ...m, exId: ex.id })));
+}

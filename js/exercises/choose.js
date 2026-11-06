@@ -18,7 +18,7 @@ export const listenChoose = {
   forTypes: ['pairs'],
   // Braucht mindestens 4 Wörter für die Auswahl.
   auto: (lesson) => canSpeak() && Boolean(englishSide(lesson)) && lesson.items.length >= OPTIONS,
-  modes: () => [{ dir: 'hoeren-wahl', label: '🔊 Hören → Bedeutung antippen' }],
+  modes: () => [{ dir: 'hoeren-wahl', label: '🔊 Hören → Bedeutung antippen', short: '🔊 Antippen' }],
 
   run(el, { sid, lesson, dir, all, onFinish }) {
     const en = englishSide(lesson);

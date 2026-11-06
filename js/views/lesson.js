@@ -1,7 +1,7 @@
 import { getSubject, getLesson } from '../content.js';
 import { itemState } from '../store.js';
 import { itemKey, status, mastery } from '../srs.js';
-import { exercisesFor } from '../exercises/registry.js';
+import { exercisesFor, modesFor } from '../exercises/registry.js';
 import { esc } from '../util.js';
 
 const STATUS_LABEL = { neu: 'neu', wackelt: 'wackelt', sicher: 'sicher' };
@@ -12,8 +12,8 @@ export function lessonView(el, sid, lid) {
   if (!subject || !lesson) { location.hash = '#/'; return; }
 
   const base = `#/ueben/${encodeURIComponent(sid)}/${encodeURIComponent(lid)}`;
-  const dirs = [['ab', `${lesson.sides.a} → ${lesson.sides.b}`], ['ba', `${lesson.sides.b} → ${lesson.sides.a}`]];
   const exList = exercisesFor(lesson);
+  const modes = modesFor(lesson);
 
   el.innerHTML = `
     <a class="back" href="#/fach/${encodeURIComponent(sid)}">← ${esc(subject.name)}</a>
@@ -36,13 +36,14 @@ export function lessonView(el, sid, lid) {
           <li>
             <span>${esc(it.a)}</span>
             <strong>${esc(it.b)}${it.hard ? ' <span class="hard" title="schwieriges Wort">✗</span>' : ''}</strong>
-            ${dirs.map(([dir]) => {
-              const s = status(itemState(itemKey(sid, lid, it, dir)));
-              return `<span class="pill ${s}" title="${dir === 'ab' ? lesson.sides.b : lesson.sides.a}">${STATUS_LABEL[s]}</span>`;
-            }).join('')}
+            <span class="pills">${modes.map((m) => {
+              const st = status(itemState(itemKey(sid, lid, it, m.dir)));
+              return `<span class="pill ${st}" title="${esc(m.label)}: ${STATUS_LABEL[st]}">${esc(m.short)}</span>`;
+            }).join('')}</span>
           </li>`).join('')}
       </ul>
-      <p class="muted small">Erste Markierung: ${esc(dirs[0][1])}, zweite: ${esc(dirs[1][1])}${lesson.items.some((it) => it.hard) ? ' · <span class="hard">✗</span> = schwieriges Wort, kommt zuerst dran' : ''}</p>
+      <div class="legend small"><span class="dot sicher"></span>sicher <span class="dot wackelt"></span>wackelt <span class="dot neu"></span>neu</div>
+      <p class="muted small">Jede Markierung steht für eine Übungsart: ${modes.map((m) => `${esc(m.short)} = ${esc(m.label.replace(/^🔊 /, ''))}`).join(' · ')}${lesson.items.some((it) => it.hard) ? ' · <span class="hard">✗</span> = schwieriges Wort, kommt zuerst dran' : ''}</p>
     </section>`;
 
   const all = el.querySelector('[data-all]');

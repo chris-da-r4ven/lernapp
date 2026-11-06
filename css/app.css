@@ -211,7 +211,8 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
 .word-list li > span:first-child { flex: 1 1 140px; }
 .word-list li > strong { flex: 1 1 140px; }
 .hard { color: var(--bad); font-weight: 700; }
-.pill { font-size: 0.75rem; padding: 2px 8px; border-radius: 999px; background: var(--neu); color: var(--text); }
+.pill { font-size: 0.75rem; padding: 2px 8px; border-radius: 999px; background: var(--neu); color: var(--text); white-space: nowrap; }
+.pills { display: flex; flex-wrap: wrap; gap: 4px; }
 .pill.sicher { background: var(--good); color: #fff; }
 .pill.wackelt { background: var(--warn); color: #1d2233; }
 
@@ -274,6 +275,8 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
 .dot.neu { background: var(--neu); }
 
 .lesson-line { padding: 8px 0; border-bottom: 1px solid var(--line); }
+.mode-line { margin: 6px 0 8px; }
+.mode-line .stack { margin: 3px 0 1px; }
 .stack { display: flex; height: 14px; border-radius: 999px; overflow: hidden; background: var(--line); margin: 6px 0 2px; }
 .stack .sicher { background: var(--good); }
 .stack .wackelt { background: var(--warn); }
@@ -325,3 +328,6 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
 .choice.wrong { background: var(--bad-bg); border-color: var(--bad); color: var(--bad); }
 .choice:disabled { opacity: 1; }
 .meaning { margin: 4px 0 8px; }
+
+.table-wrap { overflow-x: auto; }
+.table td { overflow-wrap: anywhere; }
