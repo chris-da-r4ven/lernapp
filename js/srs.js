@@ -8,8 +8,11 @@ import { shuffle } from './util.js';
 const DAY = 24 * 60 * 60 * 1000;
 const INTERVAL_DAYS = { 1: 1, 2: 2, 3: 4, 4: 7, 5: 14 };
 export const SAFE_BOX = 3;
-export const POINTS_FIRST_TRY = 10;
-export const POINTS_RETRY = 3;
+// Sternchen ✦: Durchhalten zählt am meisten, Sorgfalt merkbar, aber nicht stark.
+// Eine Runde mit 12 Wörtern bringt 96–110 ✦ (fehlerfrei 110, schwer 96).
+export const ROUND_BONUS = 50;       // für jede zu Ende gespielte Runde
+export const POINTS_FIRST_TRY = 5;   // Wort beim ersten Versuch richtig
+export const POINTS_RETRY = 3;       // Wort nach einem Fehler richtig
 
 export function itemKey(sid, lid, item, dir) {
   return `${sid}/${lid}/${item.id ?? item.b}|${dir}`;
