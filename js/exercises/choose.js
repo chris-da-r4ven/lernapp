@@ -15,6 +15,7 @@ const OPTIONS = 4;
 export const listenChoose = {
   id: 'hoeren-wahl',
   label: 'Hören → Bedeutung antippen',
+  group: 'hoeren',
   forTypes: ['pairs'],
   // Braucht mindestens 4 Wörter für die Auswahl.
   auto: (lesson) => canSpeak() && Boolean(englishSide(lesson)) && lesson.items.length >= OPTIONS,

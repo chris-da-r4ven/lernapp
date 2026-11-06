@@ -51,6 +51,7 @@ export const write = {
 export const dictation = {
   id: 'hoeren',
   label: 'Hören → Englisch schreiben',
+  group: 'hoeren',
   forTypes: ['pairs'],
   auto: (lesson) => canSpeak() && Boolean(englishSide(lesson)),
   modes: () => [{ dir: 'hoeren', label: '🔊 Hören → Englisch schreiben', short: '🔊 Diktat' }],

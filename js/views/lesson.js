@@ -23,9 +23,9 @@ export function lessonView(el, sid, lid) {
     <section class="card">
       <h2>Üben</h2>
       <label class="check"><input type="checkbox" data-all> Ganze Lektion üben (z. B. vor dem Test)</label>
-      ${exList.map((ex) => `
+      ${groups(exList).map((group) => `
         <div class="actions wrap">
-          ${ex.modes(lesson).map((m) => `<button class="btn primary" data-href="${base}/${ex.id}/${m.dir}">${esc(m.label)}</button>`).join('')}
+          ${group.flatMap((ex) => ex.modes(lesson).map((m) => `<button class="btn primary" data-href="${base}/${ex.id}/${m.dir}">${esc(m.label)}</button>`)).join('')}
         </div>`).join('')}
     </section>
 
@@ -50,4 +50,15 @@ export function lessonView(el, sid, lid) {
   el.querySelectorAll('[data-href]').forEach((a) => {
     a.addEventListener('click', () => { location.hash = a.dataset.href + (all.checked ? '/alle' : ''); });
   });
+}
+
+// Übungsarten mit gleicher "group" (z. B. die Hör-Übungen) stehen in einer Zeile.
+function groups(exList) {
+  const map = new Map();
+  for (const ex of exList) {
+    const g = ex.group ?? ex.id;
+    if (!map.has(g)) map.set(g, []);
+    map.get(g).push(ex);
+  }
+  return [...map.values()];
 }
