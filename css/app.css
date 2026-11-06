@@ -313,3 +313,15 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
 .sp-samples { display: flex; flex-wrap: wrap; gap: 8px; }
 .sp-voice { display: block; width: 100%; margin-top: 4px; min-height: 44px; font-size: 1rem; border-radius: 10px; border: 2px solid var(--line); background: var(--bg); color: var(--text); padding: 0 8px; }
 .sp-try label { display: block; margin-bottom: 8px; }
+
+/* Hör-Übungen */
+.listen { display: flex; flex-direction: column; align-items: center; gap: 10px; margin: 8px 0 16px; }
+.listen-play { width: 96px; height: 96px; border-radius: 50%; font-size: 2.6rem; padding: 0; }
+.listen-rate { display: flex; gap: 6px; }
+.listen-rate .btn.on { background: var(--primary); border-color: var(--primary); color: var(--primary-text); }
+.choices { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-top: 8px; }
+.choice { min-height: 60px; font-size: 1.1rem; }
+.choice.right { background: var(--good-bg); border-color: var(--good); color: var(--good); }
+.choice.wrong { background: var(--bad-bg); border-color: var(--bad); color: var(--bad); }
+.choice:disabled { opacity: 1; }
+.meaning { margin: 4px 0 8px; }

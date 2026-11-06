@@ -1,7 +1,7 @@
 import { getSubject, getLesson } from '../content.js';
 import { itemState } from '../store.js';
 import { itemKey, status, mastery } from '../srs.js';
-import { exercises } from '../exercises/registry.js';
+import { exercisesFor } from '../exercises/registry.js';
 import { esc } from '../util.js';
 
 const STATUS_LABEL = { neu: 'neu', wackelt: 'wackelt', sicher: 'sicher' };
@@ -13,7 +13,7 @@ export function lessonView(el, sid, lid) {
 
   const base = `#/ueben/${encodeURIComponent(sid)}/${encodeURIComponent(lid)}`;
   const dirs = [['ab', `${lesson.sides.a} → ${lesson.sides.b}`], ['ba', `${lesson.sides.b} → ${lesson.sides.a}`]];
-  const exList = (lesson.exercises ?? []).map((id) => exercises[id]).filter(Boolean);
+  const exList = exercisesFor(lesson);
 
   el.innerHTML = `
     <a class="back" href="#/fach/${encodeURIComponent(sid)}">← ${esc(subject.name)}</a>
@@ -25,7 +25,7 @@ export function lessonView(el, sid, lid) {
       <label class="check"><input type="checkbox" data-all> Ganze Lektion üben (z. B. vor dem Test)</label>
       ${exList.map((ex) => `
         <div class="actions wrap">
-          ${dirs.map(([dir, label]) => `<button class="btn primary" data-href="${base}/${ex.id}/${dir}">${esc(ex.label)}: ${esc(label)}</button>`).join('')}
+          ${ex.modes(lesson).map((m) => `<button class="btn primary" data-href="${base}/${ex.id}/${m.dir}">${esc(m.label)}</button>`).join('')}
         </div>`).join('')}
     </section>
 

@@ -13,7 +13,7 @@ const routes = [
   [/^#?\/?$/, homeView, 'home'],
   [/^#\/fach\/([^/]+)$/, subjectView, 'home'],
   [/^#\/lektion\/([^/]+)\/([^/]+)$/, lessonView, 'home'],
-  [/^#\/ueben\/([^/]+)\/([^/]+)\/([^/]+)\/(ab|ba)(\/alle)?$/, practiceView, 'home'],
+  [/^#\/ueben\/([^/]+)\/([^/]+)\/([^/]+)\/(ab|ba|hoeren|hoeren-wahl)(\/alle)?$/, practiceView, 'home'],
   [/^#\/statistik$/, statsView, 'statistik'],
   [/^#\/handschrift-test$/, handwritingTestView, 'home'],
   [/^#\/vorlese-test$/, speechTestView, 'home'],
