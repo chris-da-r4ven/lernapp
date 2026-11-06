@@ -1,7 +1,7 @@
 import { getSubject, getLesson } from '../content.js';
 import { itemState } from '../store.js';
 import { itemKey, status, mastery } from '../srs.js';
-import { exercisesFor, modesFor } from '../exercises/registry.js';
+import { exercisesFor, modesFor, usableIn } from '../exercises/registry.js';
 import { esc } from '../util.js';
 
 const STATUS_LABEL = { neu: 'neu', wackelt: 'wackelt', sicher: 'sicher' };
@@ -36,7 +36,7 @@ export function lessonView(el, sid, lid) {
           <li>
             <span>${esc(it.a)}</span>
             <strong>${esc(it.b)}${it.hard ? ' <span class="hard" title="schwieriges Wort">✗</span>' : ''}</strong>
-            <span class="pills">${modes.map((m) => {
+            <span class="pills">${modes.filter((m) => usableIn(m.exId, it)).map((m) => {
               const st = status(itemState(itemKey(sid, lid, it, m.dir)));
               return `<span class="pill ${st}" title="${esc(m.label)}: ${STATUS_LABEL[st]}">${esc(m.short)}</span>`;
             }).join('')}</span>

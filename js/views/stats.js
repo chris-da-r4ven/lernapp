@@ -3,7 +3,8 @@
 import { getSubjects, getLesson, contentUpdated } from '../content.js';
 import { getState, itemState, streak } from '../store.js';
 import { parentsSection, bindParents } from './parents.js';
-import { modesFor } from '../exercises/registry.js';
+import { modesFor, usableIn } from '../exercises/registry.js';
+import { parseGap } from '../exercises/questions.js';
 import { englishSide } from '../speech.js';
 import { itemKey, status } from '../srs.js';
 import { esc, dayKey, addDays } from '../util.js';
@@ -85,12 +86,13 @@ function collectItems() {
       const en = englishSide(lesson);
       const de = en === 'b' ? 'a' : 'b';
       for (const m of modesFor(lesson)) {
-        for (const it of lesson.items) {
+        for (const it of lesson.items.filter((x) => usableIn(m.exId, x))) {
           const st = itemState(itemKey(s.id, lesson.id, it, m.dir));
           const [prompt, answer] =
             m.dir === 'ab' ? [it.a, it.b]
             : m.dir === 'ba' ? [it.b, it.a]
             : m.dir === 'hoeren' ? [`🔊 ${it[en]}`, it[en]]
+            : m.dir === 'satz' ? [String(it.ex).replace(/\{[^}]*\}/, '___'), parseGap(it.ex)?.answer ?? '']
             : [`🔊 ${it[en]}`, it[de]];
           rows.push({ st, status: status(st), prompt, answer, mode: m });
         }
@@ -106,10 +108,11 @@ function lessonTable() {
     for (const l of s.lessons) {
       const lesson = getLesson(s.id, l.id);
       if (!lesson) continue;
-      const n = lesson.items.length || 1;
       const lines = modesFor(lesson).map((m) => {
+        const items = lesson.items.filter((x) => usableIn(m.exId, x));
+        const n = items.length || 1;
         const c = { neu: 0, wackelt: 0, sicher: 0 };
-        lesson.items.forEach((it) => c[status(itemState(itemKey(s.id, lesson.id, it, m.dir)))]++);
+        items.forEach((it) => c[status(itemState(itemKey(s.id, lesson.id, it, m.dir)))]++);
         return `
           <div class="mode-line">
             <span class="small">${esc(m.label.replace(/^Schreiben: /, '✍️ '))}</span>

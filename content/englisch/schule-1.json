@@ -12,7 +12,9 @@
   "items": [
     {
       "a": "Hausmeister / Hausmeisterin",
-      "b": "caretaker"
+      "b": "caretaker",
+      "ex": "The {caretaker} opens the school in the morning.",
+      "exDe": "Der Hausmeister schließt morgens die Schule auf."
     },
     {
       "a": "Naturwissenschaft(en)",
@@ -20,29 +22,41 @@
       "aAlt": [
         "Naturwissenschaft",
         "Naturwissenschaften"
-      ]
+      ],
+      "ex": "We have {science} on Monday.",
+      "exDe": "Wir haben am Montag Naturwissenschaften."
     },
     {
       "a": "immer",
       "b": "always",
-      "hard": true
+      "hard": true,
+      "ex": "I {always} take my water bottle to school.",
+      "exDe": "Ich nehme immer meine Trinkflasche mit in die Schule."
     },
     {
       "a": "Heft / Schulheft",
-      "b": "exercise book"
+      "b": "exercise book",
+      "ex": "Write the words in your {exercise book}.",
+      "exDe": "Schreib die Wörter in dein Heft."
     },
     {
       "a": "Wasserflasche / Trinkflasche",
-      "b": "water bottle"
+      "b": "water bottle",
+      "ex": "My {water bottle} is in my school bag.",
+      "exDe": "Meine Trinkflasche ist in meiner Schultasche."
     },
     {
       "a": "Buntstifte",
       "b": "coloured pencils",
-      "hard": true
+      "hard": true,
+      "ex": "Can I use your {coloured pencils}?",
+      "exDe": "Kann ich deine Buntstifte benutzen?"
     },
     {
       "a": "Anspitzer / Spitzer",
-      "b": "sharpener"
+      "b": "sharpener",
+      "ex": "I need a {sharpener} for my pencil.",
+      "exDe": "Ich brauche einen Spitzer für meinen Bleistift."
     },
     {
       "a": "Guten Morgen",
@@ -52,11 +66,15 @@
       ],
       "bAlt": [
         "Good morning"
-      ]
+      ],
+      "ex": "{Good morning}, Mr Brown!",
+      "exDe": "Guten Morgen, Herr Brown!"
     },
     {
       "a": "Tafel",
-      "b": "board"
+      "b": "board",
+      "ex": "Look at the {board}, please.",
+      "exDe": "Schaut bitte an die Tafel."
     },
     {
       "a": "Kannst du mir helfen?",
@@ -64,7 +82,9 @@
       "aAlt": [
         "Können Sie mir helfen?",
         "Könnt ihr mir helfen?"
-      ]
+      ],
+      "ex": "Excuse me, {can you help me}?",
+      "exDe": "Entschuldigung, kannst du mir helfen?"
     },
     {
       "a": "Setz dich. / Setzt euch.",
@@ -76,7 +96,9 @@
       ],
       "bAlt": [
         "Sit down"
-      ]
+      ],
+      "ex": "Please {sit down}, everybody.",
+      "exDe": "Setzt euch bitte alle hin."
     },
     {
       "a": "Entschuldigung",
@@ -87,34 +109,48 @@
       ],
       "bAlt": [
         "excuse me"
-      ]
+      ],
+      "ex": "{Excuse me}, where is the library?",
+      "exDe": "Entschuldigung, wo ist die Bibliothek?"
     },
     {
       "a": "leise / ruhig",
-      "b": "quiet"
+      "b": "quiet",
+      "ex": "Please be {quiet} in the library.",
+      "exDe": "Seid bitte leise in der Bibliothek."
     },
     {
       "a": "Schulhof / Spielplatz",
-      "b": "playground"
+      "b": "playground",
+      "ex": "We play football on the {playground}.",
+      "exDe": "Wir spielen Fußball auf dem Schulhof."
     },
     {
       "a": "Bibliothek / Bücherei",
-      "b": "library"
+      "b": "library",
+      "ex": "I get books from the school {library}.",
+      "exDe": "Ich hole Bücher aus der Schulbibliothek."
     },
     {
       "a": "Mathe / Mathematik",
-      "b": "maths"
+      "b": "maths",
+      "ex": "{Maths} is easy for me.",
+      "exDe": "Mathe ist leicht für mich."
     },
     {
       "a": "Erdkunde / Geografie",
       "b": "geography",
       "aAlt": [
         "Geographie"
-      ]
+      ],
+      "ex": "In {geography} we look at maps.",
+      "exDe": "In Erdkunde schauen wir uns Landkarten an."
     },
     {
       "a": "Technik",
-      "b": "technology"
+      "b": "technology",
+      "ex": "We make a box in {technology}.",
+      "exDe": "In Technik bauen wir eine Kiste."
     },
     {
       "a": "zuhören",
@@ -125,18 +161,24 @@
       "bAlt": [
         "listen"
       ],
-      "hard": true
+      "hard": true,
+      "ex": "{Listen} to your teacher, please.",
+      "exDe": "Hör bitte deiner Lehrerin zu."
     },
     {
       "a": "Schere",
-      "b": "scissors"
+      "b": "scissors",
+      "ex": "I cut the paper with my {scissors}.",
+      "exDe": "Ich schneide das Papier mit meiner Schere."
     },
     {
       "a": "schreiben",
       "b": "to write",
       "bAlt": [
         "write"
-      ]
+      ],
+      "ex": "{Write} your name on the paper.",
+      "exDe": "Schreib deinen Namen auf das Blatt."
     },
     {
       "a": "herausnehmen / herausholen",
@@ -147,11 +189,15 @@
       ],
       "bAlt": [
         "take out"
-      ]
+      ],
+      "ex": "{Take out} your exercise books, please.",
+      "exDe": "Nehmt bitte eure Hefte heraus."
     },
     {
       "a": "Regel",
-      "b": "rule"
+      "b": "rule",
+      "ex": "Don't run in the classroom. That's a {rule}.",
+      "exDe": "Renn nicht im Klassenzimmer. Das ist eine Regel."
     },
     {
       "a": "lesen",
@@ -159,7 +205,9 @@
       "bAlt": [
         "read"
       ],
-      "hard": true
+      "hard": true,
+      "ex": "I {read} a book every evening.",
+      "exDe": "Ich lese jeden Abend ein Buch."
     }
   ]
 }

@@ -1,0 +1,60 @@
+// Test-Modus: wie ein Vokabeltest in der Schule.
+// Lektionen auswählen, dann alle Wörter Deutsch → Englisch, gemischt,
+// jedes nur einmal, ohne Abschreiben und Spicken. Am Ende: Ergebnis in Prozent.
+
+import { getSubject, getLesson } from '../content.js';
+import { englishSide } from '../speech.js';
+import { tasksFor } from '../exercises/registry.js';
+import { runRound } from '../exercises/round.js';
+import { esc, shuffle } from '../util.js';
+
+export function testView(el, sid) {
+  const subject = getSubject(sid);
+  if (!subject) { location.hash = '#/'; return; }
+  const lessons = subject.lessons.map((l) => getLesson(sid, l.id)).filter((l) => l && englishSide(l));
+  const back = `#/fach/${encodeURIComponent(sid)}`;
+
+  el.innerHTML = `
+    <a class="back" href="${back}">← ${esc(subject.name)}</a>
+    <h1>📝 Test-Modus</h1>
+    <section class="card">
+      <p>Wie im Vokabeltest: Du bekommst das deutsche Wort und schreibst es auf Englisch.
+         Jedes Wort kommt nur einmal, ohne Hilfe. Am Ende siehst du, wie viel du richtig hattest.</p>
+      <h2>Welche Lektionen?</h2>
+      <form class="test-form">
+        ${lessons.map((l) => `
+          <label class="check"><input type="checkbox" name="lesson" value="${esc(l.id)}" checked>
+            ${esc(subject.lessons.find((x) => x.id === l.id)?.title ?? l.title)} <span class="muted small">(${l.items.length} Wörter)</span></label>`).join('')}
+        <p class="test-count muted small"></p>
+        <div class="actions"><button class="btn primary" type="submit">Test starten</button></div>
+      </form>
+    </section>`;
+
+  const form = el.querySelector('.test-form');
+  const chosen = () => [...form.querySelectorAll('input[name=lesson]:checked')].map((i) => lessons.find((l) => l.id === i.value));
+  const updateCount = () => {
+    const n = chosen().reduce((sum, l) => sum + l.items.length, 0);
+    form.querySelector('.test-count').textContent = n ? `${n} Wörter im Test` : 'Bitte mindestens eine Lektion auswählen.';
+    form.querySelector('button').disabled = !n;
+  };
+  form.addEventListener('change', updateCount);
+  updateCount();
+
+  form.addEventListener('submit', (ev) => {
+    ev.preventDefault();
+    start(chosen());
+  });
+
+  function start(selected) {
+    // Deutsch → Englisch: Richtung zur englischen Seite der Lektion.
+    const tasks = shuffle(selected.flatMap((l) => tasksFor(sid, l, englishSide(l) === 'b' ? 'ab' : 'ba')));
+    el.innerHTML = `<a class="back" href="${back}">← ${esc(subject.name)}</a><div class="exercise"></div>`;
+    runRound(el.querySelector('.exercise'), {
+      tasks,
+      test: true,
+      onAgain: () => start(selected),
+      onBack: () => { location.hash = back; },
+      backLabel: `Zu ${subject.name}`,
+    });
+  }
+}

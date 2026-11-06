@@ -2,18 +2,104 @@
   "id": "to-be",
   "title": "to be (sein)",
   "type": "pairs",
-  "sides": { "a": "Deutsch", "b": "Englisch" },
-  "exercises": ["write"],
+  "sides": {
+    "a": "Deutsch",
+    "b": "Englisch"
+  },
+  "exercises": [
+    "write"
+  ],
   "items": [
-    { "id": "i", "a": "ich bin", "b": "I am" },
-    { "id": "you-sg", "a": "du bist", "b": "you are", "aAlt": ["ihr seid", "Sie sind"] },
-    { "id": "he", "a": "er ist", "b": "he is" },
-    { "id": "she", "a": "sie ist (eine Person)", "b": "she is", "aAlt": ["sie ist"] },
-    { "id": "it", "a": "es ist", "b": "it is" },
-    { "id": "we", "a": "wir sind", "b": "we are" },
-    { "id": "you-pl", "a": "ihr seid", "b": "you are", "aAlt": ["du bist", "Sie sind"] },
-    { "id": "they", "a": "sie sind (mehrere)", "b": "they are", "aAlt": ["sie sind"] },
-    { "id": "mum-and-i", "a": "Mama und ich sind glücklich.", "b": "Mum and I are happy.", "aAlt": ["Mama und ich sind froh."] },
-    { "id": "everybody", "a": "Alle sind glücklich.", "b": "Everybody is happy.", "aAlt": ["Jeder ist glücklich.", "Alle sind froh."] }
+    {
+      "id": "i",
+      "a": "ich bin",
+      "b": "I am",
+      "ex": "{I am|I'm} ten years old.",
+      "exDe": "Ich bin zehn Jahre alt."
+    },
+    {
+      "id": "you-sg",
+      "a": "du bist",
+      "b": "you are",
+      "aAlt": [
+        "ihr seid",
+        "Sie sind"
+      ],
+      "ex": "{You are|You're} my best friend.",
+      "exDe": "Du bist meine beste Freundin."
+    },
+    {
+      "id": "he",
+      "a": "er ist",
+      "b": "he is",
+      "ex": "{He is|He's} my brother.",
+      "exDe": "Er ist mein Bruder."
+    },
+    {
+      "id": "she",
+      "a": "sie ist (eine Person)",
+      "b": "she is",
+      "aAlt": [
+        "sie ist"
+      ],
+      "ex": "{She is|She's} my teacher.",
+      "exDe": "Sie ist meine Lehrerin."
+    },
+    {
+      "id": "it",
+      "a": "es ist",
+      "b": "it is",
+      "ex": "{It is|It's} cold today.",
+      "exDe": "Es ist heute kalt."
+    },
+    {
+      "id": "we",
+      "a": "wir sind",
+      "b": "we are",
+      "ex": "{We are|We're} in class 5b.",
+      "exDe": "Wir sind in der Klasse 5b."
+    },
+    {
+      "id": "you-pl",
+      "a": "ihr seid",
+      "b": "you are",
+      "aAlt": [
+        "du bist",
+        "Sie sind"
+      ],
+      "ex": "{You are|You're} late, children!",
+      "exDe": "Ihr seid zu spät, Kinder!"
+    },
+    {
+      "id": "they",
+      "a": "sie sind (mehrere)",
+      "b": "they are",
+      "aAlt": [
+        "sie sind"
+      ],
+      "ex": "{They are|They're} in the garden.",
+      "exDe": "Sie sind im Garten."
+    },
+    {
+      "id": "mum-and-i",
+      "a": "Mama und ich sind glücklich.",
+      "b": "Mum and I are happy.",
+      "aAlt": [
+        "Mama und ich sind froh."
+      ],
+      "ex": "Mum and I {are} happy.",
+      "exDe": "Mama und ich sind glücklich."
+    },
+    {
+      "id": "everybody",
+      "a": "Alle sind glücklich.",
+      "b": "Everybody is happy.",
+      "aAlt": [
+        "Jeder ist glücklich.",
+        "Alle sind froh."
+      ],
+      "ex": "Everybody {is} happy.",
+      "exDe": "Alle sind glücklich."
+    }
   ]
 }

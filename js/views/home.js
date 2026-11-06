@@ -5,6 +5,7 @@ import { petStatus, PET } from '../pet.js';
 import { esc } from '../util.js';
 import { updateContent } from '../app.js';
 import { portrait } from './portrait.js';
+import { dueSummary } from '../practice-now.js';
 
 const PET_NAME = PET.name;
 
@@ -30,6 +31,8 @@ export function homeView(el) {
         <div><strong>${serie.count}</strong><span>${serie.count === 1 ? 'Tag' : 'Tage'} am Stück</span></div>
       </div>
     </section>
+
+    ${hasContent() ? nowCard() : ''}
 
     <h2 class="section-title">Fächer</h2>
     <section class="tiles">
@@ -83,4 +86,21 @@ function streakMessage(s) {
     default:
       return `Übe ${w(DAY_GOAL)}, dann startet deine Serie.`;
   }
+}
+
+// Großer Knopf „Jetzt üben“ mit dem, was gerade wartet.
+function nowCard() {
+  const { due, fresh, steps } = dueSummary();
+  const parts = [];
+  if (due) parts.push(`${due} ${due === 1 ? 'Wort' : 'Wörter'} zum Wiederholen`);
+  if (fresh) parts.push(`${fresh} neue ${fresh === 1 ? 'Wort' : 'Wörter'}`);
+  if (!due && !fresh && steps) parts.push('neue Übungen mit bekannten Wörtern');
+  return `
+    <a class="card now-card" href="#/jetzt">
+      <span class="now-play" aria-hidden="true">▶</span>
+      <span>
+        <strong>Jetzt üben</strong>
+        <span class="muted small">${parts.length ? parts.join(' · ') : 'Alles erledigt – du kannst trotzdem üben'}</span>
+      </span>
+    </a>`;
 }

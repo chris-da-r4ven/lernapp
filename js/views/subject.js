@@ -22,5 +22,8 @@ export function subjectView(el, sid) {
             ${stars(starsFor(m))}
           </a>`;
       }).join('')}
-    </section>`;
+    </section>
+    <div class="actions">
+      <a class="btn" href="#/test/${encodeURIComponent(sid)}">📝 Test-Modus – wie im Vokabeltest</a>
+    </div>`;
 }
