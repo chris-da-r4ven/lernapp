@@ -308,3 +308,8 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
 .parents label { display: block; margin-bottom: 8px; }
 .parents label .answer { display: block; width: 100%; margin-top: 4px; }
 .parents .answer { font-size: 1rem; min-height: 48px; }
+
+/* Vorlese-Test */
+.sp-samples { display: flex; flex-wrap: wrap; gap: 8px; }
+.sp-voice { display: block; width: 100%; margin-top: 4px; min-height: 44px; font-size: 1rem; border-radius: 10px; border: 2px solid var(--line); background: var(--bg); color: var(--text); padding: 0 8px; }
+.sp-try label { display: block; margin-bottom: 8px; }
