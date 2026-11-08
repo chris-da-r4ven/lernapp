@@ -4,17 +4,19 @@
 // Test-Runde: Jedes Wort nur einmal, keine Hilfe, am Ende das Ergebnis in Prozent.
 
 import { esc } from '../util.js';
-import { record, weightFor, roundBonus } from '../srs.js';
-import { getState, addTestResult, medalStatus, save } from '../store.js';
+import { record, weightFor, roundBonus, MASTERED_FACTOR, MEDAL_BONUS } from '../srs.js';
+import { getState, addTestResult, addPoints, save } from '../store.js';
 import { levelFor } from '../pet.js';
 import { roundSummary } from './summary.js';
 import { questionFor } from './questions.js';
-import { testReady } from '../medal.js';
+import { testReady, lessonMedal } from '../medal.js';
 
 const RETRY_GAP = 3;
 
 // tasks: [{ sid, lesson, item, dir, key }]
-export function runRound(el, { tasks, test = false, onAgain, onBack, backLabel }) {
+// chosen: Lektion selbst ausgewählt (Lektion oder Test) – dann bringen Lektionen
+// mit Medaille weniger Sternchen. Bei „Jetzt üben“ wählt die App, dort gibt es volle Sternchen.
+export function runRound(el, { tasks, test = false, chosen = true, onAgain, onBack, backLabel }) {
   const queue = tasks.map((t) => ({ ...t, attempts: 0 }));
   const total = queue.length;
   let done = 0;
@@ -22,6 +24,14 @@ export function runRound(el, { tasks, test = false, onAgain, onBack, backLabel }
   let points = 0;
   const startLevel = levelFor(getState().points);
   const mistakes = new Map(); // key → { task, typed }
+
+  // Medaillen vor der Runde – für Bonus bei neuen Medaillen und den Faktor bei alten.
+  const lessons = new Map();
+  for (const t of tasks) {
+    const k = `${t.sid}/${t.lesson.id}`;
+    if (!lessons.has(k)) lessons.set(k, { sid: t.sid, lesson: t.lesson, hadMedal: lessonMedal(t.sid, t.lesson).medal });
+  }
+  const weight = (t) => weightFor(t.dir) * (chosen && lessons.get(`${t.sid}/${t.lesson.id}`).hadMedal ? MASTERED_FACTOR : 1);
 
   if (!total) {
     el.innerHTML = '<div class="card"><p>Hier gibt es gerade keine Wörter zu üben.</p></div>';
@@ -37,7 +47,7 @@ export function runRound(el, { tasks, test = false, onAgain, onBack, backLabel }
     right() {
       const task = queue[0];
       const isFirst = task.attempts === 0;
-      points += record(task.key, { correct: true, firstTry: isFirst, weight: weightFor(task.dir) });
+      points += record(task.key, { correct: true, firstTry: isFirst, weight: weight(task) });
       if (isFirst) firstTry++;
       queue.shift();
       done++;
@@ -83,14 +93,8 @@ export function runRound(el, { tasks, test = false, onAgain, onBack, backLabel }
       if (!mistakes.has(t.key)) r.right++;
       byLesson.set(k, r);
     }
-    const newMedals = [];
-    for (const [k, r] of byLesson) {
-      const had = medalStatus(k).medal;
-      addTestResult(k, Math.round((r.right / r.total) * 100));
-      if (!had && medalStatus(k).medal) newMedals.push(r.title);
-    }
+    for (const [k, r] of byLesson) addTestResult(k, Math.round((r.right / r.total) * 100));
     save();
-    return newMedals;
   }
 
   // Nach einer normalen Runde: Lektionen vorschlagen, die bereit für den Test sind.
@@ -109,15 +113,23 @@ export function runRound(el, { tasks, test = false, onAgain, onBack, backLabel }
   function summary() {
     const list = [...mistakes.values()];
     const pct = Math.round((firstTry / total) * 100);
-    const newMedals = test ? saveTestResults() : [];
-    const medalHtml = newMedals.map((t) => `
+    if (test) saveTestResults();
+    // Neue Medaillen (Test oder Grammatik-Runde): Bonus-Sternchen.
+    const newMedals = [...lessons.values()].filter((x) => !x.hadMedal && lessonMedal(x.sid, x.lesson).medal);
+    if (newMedals.length) { addPoints(MEDAL_BONUS * newMedals.length); save(); }
+    const medalHtml = newMedals.map((x) => `
       <div class="medal-new"><span class="medal" aria-hidden="true">🏅</span>
-        <span><strong>Medaille!</strong> „${esc(t)}“ kannst du jetzt richtig gut.</span></div>`).join('');
+        <span><strong>Medaille!</strong> „${esc(x.lesson.title)}“ kannst du jetzt richtig gut.<br>
+        <span class="small">✦ +${MEDAL_BONUS} Medaillen-Bonus</span></span></div>`).join('');
+    const mastered = chosen && [...lessons.values()].some((x) => x.hadMedal);
+    const masteredHtml = mastered ? `
+      <p class="muted small mastered-note">🏅 Diese Lektion kannst du schon – dafür gibt es weniger Sternchen. Probier doch eine andere!</p>` : '';
     roundSummary(el, {
       total, firstTry, points, startLevel,
-      bonus: roundBonus(tasks.map((t) => t.dir)),
-      intro: test ? `<p class="big">${firstTry} von ${total} richtig (${pct} %)</p>${medalHtml}` : null,
-      notice: test ? '' : readyNotice(),
+      bonus: roundBonus(tasks.map(weight)),
+      extraPoints: MEDAL_BONUS * newMedals.length,
+      intro: test ? `<p class="big">${firstTry} von ${total} richtig (${pct} %)</p>` : null,
+      notice: medalHtml + masteredHtml + (test ? '' : readyNotice()),
       mistakesTitle: test ? 'Diese Wörter waren noch nicht richtig:' : null,
       mistakes: list.map(({ task, typed }) => {
         const [q, a] = questionFor(task.dir).pair(task);

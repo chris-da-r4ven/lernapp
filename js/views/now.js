@@ -24,6 +24,7 @@ export function nowView(el, anyway = false) {
   }
   runRound(box, {
     tasks,
+    chosen: false,
     onAgain: () => nowView(el, anyway),
     onBack: () => { location.hash = '#/'; },
     backLabel: 'Zur Startseite',

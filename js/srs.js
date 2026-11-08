@@ -24,9 +24,14 @@ export const WEIGHTS = {
 export const weightFor = (dir) => WEIGHTS[dir] ?? 1;
 const pointsFor = (firstTry, weight) =>
   Math.max(1, Math.round((firstTry ? POINTS_FIRST_TRY : POINTS_RETRY) * weight));
-// Rundenbonus nach der durchschnittlichen Schwierigkeit der Runde.
-export const roundBonus = (dirs) =>
-  Math.round(ROUND_BONUS * (dirs.length ? dirs.reduce((n, d) => n + weightFor(d), 0) / dirs.length : 1));
+// Rundenbonus nach dem durchschnittlichen Gewicht der Aufgaben in der Runde.
+export const roundBonus = (weights) =>
+  Math.round(ROUND_BONUS * (weights.length ? weights.reduce((n, w) => n + w, 0) / weights.length : 1));
+
+// Lektionen mit Medaille, selbst ausgewählt: weniger Sternchen (kein Grinden leichter Lektionen).
+export const MASTERED_FACTOR = 0.3;
+// Für jede neue Medaille.
+export const MEDAL_BONUS = 200;
 
 export function itemKey(sid, lid, item, dir) {
   return `${sid}/${lid}/${item.id ?? item.b}|${dir}`;

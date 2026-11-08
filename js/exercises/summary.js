@@ -10,7 +10,7 @@ import { portrait } from '../views/portrait.js';
 // mistakes: Liste von [gefragt, Antwort]
 // intro: eigene Zeile statt „X Wörter geübt …“ (z. B. Testergebnis)
 // notice: zusätzlicher Hinweis unter den Sternchen (z. B. „Teste dich doch mal!“)
-export function roundSummary(el, { total, firstTry, points, bonus, startLevel, mistakes, intro, mistakesTitle, notice = '', onAgain, onBack, backLabel = 'Zur Lektion' }) {
+export function roundSummary(el, { total, firstTry, points, bonus, extraPoints = 0, startLevel, mistakes, intro, mistakesTitle, notice = '', onAgain, onBack, backLabel = 'Zur Lektion' }) {
   addPoints(bonus);
   save();
   const pet = petStatus(getState().points, mood(streak()));
@@ -23,7 +23,8 @@ export function roundSummary(el, { total, firstTry, points, bonus, startLevel, m
       <div class="earned">
         <div>✦ +${bonus} fürs Durchhalten</div>
         <div>✦ +${points} für die Wörter</div>
-        <p class="big">= +${bonus + points} ✦ Sternchen · jetzt ${getState().points} ✦</p>
+        ${extraPoints ? `<div>🏅 +${extraPoints} Medaillen-Bonus</div>` : ''}
+        <p class="big">= +${bonus + points + extraPoints} ✦ Sternchen · jetzt ${getState().points} ✦</p>
       </div>
       ${levelUp ? `
         <div class="level-up mood-${pet.mood}">
