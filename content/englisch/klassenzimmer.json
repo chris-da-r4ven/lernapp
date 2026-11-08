@@ -1,6 +1,8 @@
 {
   "id": "klassenzimmer",
   "title": "Im Klassenzimmer",
+  "group": "Schule & ich",
+  "order": 50,
   "type": "pairs",
   "sides": {
     "a": "Deutsch",

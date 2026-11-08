@@ -1,6 +1,8 @@
 {
   "id": "be-formen",
   "title": "am, is oder are?",
+  "group": "Grammatik",
+  "order": 80,
   "type": "pairs",
   "grammar": true,
   "sides": {

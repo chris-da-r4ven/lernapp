@@ -4,12 +4,10 @@ Lern-App fürs Tablet (Android), zuerst für Englisch-Vokabeln, erweiterbar auf 
 Läuft als PWA: einmal im Browser öffnen, „Zum Startbildschirm hinzufügen“, danach offline nutzbar.
 Beim Start und per Knopf „Neue Inhalte suchen“ holt sie neue Lektionen.
 
-## Neue Lektion hinzufügen
+## Neue Inhalte
 
-1. Datei `content/<fach>/<lektion>.json` anlegen (Format unten).
-2. In `content/index.json` beim Fach eintragen.
-3. **`version` in `content/index.json` erhöhen** – sonst lädt das Tablet die neuen Inhalte nicht. Dabei `updated` auf das heutige Datum setzen (wird auf der Fortschrittsseite angezeigt).
-4. Committen und pushen.
+Siehe **[INHALTE.md](INHALTE.md)** – Vorlage, Tabellen-Entwurf, `tools/inhalte.py neu|pruefen|bauen`.
+`content/index.json` wird von `python3 tools/inhalte.py bauen` erzeugt, nicht von Hand ändern.
 
 ### Format einer Lektion (`type: "pairs"`)
 
@@ -17,12 +15,14 @@ Beim Start und per Knopf „Neue Inhalte suchen“ holt sie neue Lektionen.
 {
   "id": "unit1",
   "title": "Unit 1",
+  "group": "Schule & ich",
+  "order": 10,
   "type": "pairs",
   "sides": { "a": "Deutsch", "b": "Englisch" },
   "exercises": ["write"],
   "items": [
-    { "a": "Freund / Freundin", "b": "friend" },
-    { "a": "gehen", "b": "to go", "bAlt": ["go"] }
+    { "id": "friend", "a": "der Freund / die Freundin", "b": "friend" },
+    { "id": "to go", "a": "gehen", "b": "to go", "bAlt": ["go"] }
   ]
 }
 ```

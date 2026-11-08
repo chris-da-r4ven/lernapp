@@ -1,6 +1,8 @@
 {
   "id": "schulsachen",
   "title": "Schulsachen",
+  "group": "Schule & ich",
+  "order": 40,
   "type": "pairs",
   "sides": {
     "a": "Deutsch",

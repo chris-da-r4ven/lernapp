@@ -1,0 +1,14 @@
+{
+  "id": "englisch",
+  "name": "Englisch",
+  "icon": "🇬🇧",
+  "order": 10,
+  "moved": {
+    "zahlen": "zahlen-farben",
+    "farben": "zahlen-farben",
+    "leute": "meine-schule",
+    "orte": "meine-schule",
+    "faecher": "stundenplan",
+    "wochentage": "stundenplan"
+  }
+}

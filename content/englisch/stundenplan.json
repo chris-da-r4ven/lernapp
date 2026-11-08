@@ -1,6 +1,8 @@
 {
   "id": "stundenplan",
   "title": "Stundenplan",
+  "group": "Schule & ich",
+  "order": 60,
   "type": "pairs",
   "sides": {
     "a": "Deutsch",

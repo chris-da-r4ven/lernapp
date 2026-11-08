@@ -1,6 +1,8 @@
 {
   "id": "meine-schule",
   "title": "Meine Schule",
+  "group": "Schule & ich",
+  "order": 30,
   "type": "pairs",
   "sides": {
     "a": "Deutsch",

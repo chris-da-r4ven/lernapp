@@ -1,6 +1,8 @@
 {
   "id": "zahlen-farben",
   "title": "Zahlen & Farben",
+  "group": "Schule & ich",
+  "order": 20,
   "type": "pairs",
   "sides": {
     "a": "Deutsch",

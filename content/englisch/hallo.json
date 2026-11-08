@@ -1,6 +1,8 @@
 {
   "id": "hallo",
   "title": "Hallo & Kennenlernen",
+  "group": "Schule & ich",
+  "order": 10,
   "type": "pairs",
   "sides": {
     "a": "Deutsch",

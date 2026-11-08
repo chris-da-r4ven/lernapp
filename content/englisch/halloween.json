@@ -1,6 +1,8 @@
 {
   "id": "halloween",
   "title": "Halloween",
+  "group": "Feiertage",
+  "order": 70,
   "type": "pairs",
   "sides": {
     "a": "Deutsch",

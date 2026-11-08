@@ -1,61 +1,12 @@
 {
-  "version": 8,
+  "version": 9,
   "updated": "2026-11-08",
+  "hash": "525b7e3f26723274",
   "subjects": [
     {
       "id": "englisch",
       "name": "Englisch",
       "icon": "🇬🇧",
-      "lessons": [
-        {
-          "id": "hallo",
-          "title": "Hallo & Kennenlernen",
-          "group": "Schule & ich",
-          "file": "englisch/hallo.json"
-        },
-        {
-          "id": "zahlen-farben",
-          "title": "Zahlen & Farben",
-          "group": "Schule & ich",
-          "file": "englisch/zahlen-farben.json"
-        },
-        {
-          "id": "meine-schule",
-          "title": "Meine Schule",
-          "group": "Schule & ich",
-          "file": "englisch/meine-schule.json"
-        },
-        {
-          "id": "schulsachen",
-          "title": "Schulsachen",
-          "group": "Schule & ich",
-          "file": "englisch/schulsachen.json"
-        },
-        {
-          "id": "klassenzimmer",
-          "title": "Im Klassenzimmer",
-          "group": "Schule & ich",
-          "file": "englisch/klassenzimmer.json"
-        },
-        {
-          "id": "stundenplan",
-          "title": "Stundenplan",
-          "group": "Schule & ich",
-          "file": "englisch/stundenplan.json"
-        },
-        {
-          "id": "halloween",
-          "title": "Halloween",
-          "group": "Feiertage",
-          "file": "englisch/halloween.json"
-        },
-        {
-          "id": "be-formen",
-          "title": "am, is oder are?",
-          "group": "Grammatik",
-          "file": "englisch/be-formen.json"
-        }
-      ],
       "moved": {
         "zahlen": "zahlen-farben",
         "farben": "zahlen-farben",
@@ -63,7 +14,57 @@
         "orte": "meine-schule",
         "faecher": "stundenplan",
         "wochentage": "stundenplan"
-      }
+      },
+      "lessons": [
+        {
+          "id": "hallo",
+          "title": "Hallo & Kennenlernen",
+          "file": "englisch/hallo.json",
+          "group": "Schule & ich"
+        },
+        {
+          "id": "zahlen-farben",
+          "title": "Zahlen & Farben",
+          "file": "englisch/zahlen-farben.json",
+          "group": "Schule & ich"
+        },
+        {
+          "id": "meine-schule",
+          "title": "Meine Schule",
+          "file": "englisch/meine-schule.json",
+          "group": "Schule & ich"
+        },
+        {
+          "id": "schulsachen",
+          "title": "Schulsachen",
+          "file": "englisch/schulsachen.json",
+          "group": "Schule & ich"
+        },
+        {
+          "id": "klassenzimmer",
+          "title": "Im Klassenzimmer",
+          "file": "englisch/klassenzimmer.json",
+          "group": "Schule & ich"
+        },
+        {
+          "id": "stundenplan",
+          "title": "Stundenplan",
+          "file": "englisch/stundenplan.json",
+          "group": "Schule & ich"
+        },
+        {
+          "id": "halloween",
+          "title": "Halloween",
+          "file": "englisch/halloween.json",
+          "group": "Feiertage"
+        },
+        {
+          "id": "be-formen",
+          "title": "am, is oder are?",
+          "file": "englisch/be-formen.json",
+          "group": "Grammatik"
+        }
+      ]
     }
   ]
 }
