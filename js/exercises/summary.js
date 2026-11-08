@@ -2,7 +2,6 @@
 // Den Grundbetrag gibt es nur für eine zu Ende gespielte Runde.
 
 import { esc } from '../util.js';
-import { ROUND_BONUS } from '../srs.js';
 import { getState, addPoints, save, streak } from '../store.js';
 import { petStatus, MAX_GLITTER_LEVEL } from '../pet.js';
 import { mood } from '../streak.js';
@@ -10,8 +9,8 @@ import { portrait } from '../views/portrait.js';
 
 // mistakes: Liste von [gefragt, Antwort]
 // intro: eigene Zeile statt „X Wörter geübt …“ (z. B. Testergebnis)
-export function roundSummary(el, { total, firstTry, points, startLevel, mistakes, intro, mistakesTitle, onAgain, onBack, backLabel = 'Zur Lektion' }) {
-  addPoints(ROUND_BONUS);
+export function roundSummary(el, { total, firstTry, points, bonus, startLevel, mistakes, intro, mistakesTitle, onAgain, onBack, backLabel = 'Zur Lektion' }) {
+  addPoints(bonus);
   save();
   const pet = petStatus(getState().points, mood(streak()));
   const levelUp = pet.level > startLevel;
@@ -21,9 +20,9 @@ export function roundSummary(el, { total, firstTry, points, startLevel, mistakes
       <h2>Geschafft! 🏁</h2>
       ${intro ?? `<p class="big">${w(total)} geübt – ${firstTry === total ? 'alle' : firstTry + ' davon'} sofort richtig</p>`}
       <div class="earned">
-        <div>✦ +${ROUND_BONUS} fürs Durchhalten</div>
+        <div>✦ +${bonus} fürs Durchhalten</div>
         <div>✦ +${points} für die Wörter</div>
-        <p class="big">= +${ROUND_BONUS + points} ✦ Sternchen · jetzt ${getState().points} ✦</p>
+        <p class="big">= +${bonus + points} ✦ Sternchen · jetzt ${getState().points} ✦</p>
       </div>
       ${levelUp ? `
         <div class="level-up mood-${pet.mood}">

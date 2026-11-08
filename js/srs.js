@@ -9,10 +9,24 @@ const DAY = 24 * 60 * 60 * 1000;
 const INTERVAL_DAYS = { 1: 1, 2: 2, 3: 4, 4: 7, 5: 14 };
 export const SAFE_BOX = 3;
 // Sternchen ✦: Durchhalten zählt am meisten, Sorgfalt merkbar, aber nicht stark.
-// Eine Runde mit 12 Wörtern bringt 96–110 ✦ (fehlerfrei 110, schwer 96).
+// Werte gelten fürs Schreiben; andere Übungsarten werden nach Schwierigkeit gewichtet.
+// Eine Schreib-Runde mit 12 Wörtern bringt 96–110 ✦, eine Antipp-Runde etwa 22 ✦.
 export const ROUND_BONUS = 50;       // für jede zu Ende gespielte Runde
 export const POINTS_FIRST_TRY = 5;   // Wort beim ersten Versuch richtig
 export const POINTS_RETRY = 3;       // Wort nach einem Fehler richtig
+export const WEIGHTS = {
+  'hoeren-wahl': 0.2,  // hören und Bedeutung antippen
+  form: 0.3,           // am / is / are antippen
+  satz: 0.8,           // Lückensatz
+  ab: 1, ba: 1,        // schreiben
+  hoeren: 1.2,         // Diktat
+};
+export const weightFor = (dir) => WEIGHTS[dir] ?? 1;
+const pointsFor = (firstTry, weight) =>
+  Math.max(1, Math.round((firstTry ? POINTS_FIRST_TRY : POINTS_RETRY) * weight));
+// Rundenbonus nach der durchschnittlichen Schwierigkeit der Runde.
+export const roundBonus = (dirs) =>
+  Math.round(ROUND_BONUS * (dirs.length ? dirs.reduce((n, d) => n + weightFor(d), 0) / dirs.length : 1));
 
 export function itemKey(sid, lid, item, dir) {
   return `${sid}/${lid}/${item.id ?? item.b}|${dir}`;
@@ -25,14 +39,14 @@ export function status(st) {
 
 // Ein Ergebnis eintragen. firstTry: ohne vorherigen Fehler in dieser Runde.
 // typed: die falsche Schreibweise (wird für "schwere Wörter" gemerkt).
-export function record(key, { correct, firstTry, typed }) {
+export function record(key, { correct, firstTry, typed, weight = 1 }) {
   const st = { ...itemState(key) };
   const now = Date.now();
   if (correct) {
     st.right++;
     st.box = firstTry ? Math.min(st.box + 1, 5) : 1;
     st.due = now + INTERVAL_DAYS[st.box] * DAY;
-    addPoints(firstTry ? POINTS_FIRST_TRY : POINTS_RETRY);
+    addPoints(pointsFor(firstTry, weight));
   } else {
     st.wrong++;
     st.box = 1;
@@ -43,7 +57,7 @@ export function record(key, { correct, firstTry, typed }) {
   setItemState(key, st);
   addDayStat(correct);
   save();
-  return correct ? (firstTry ? POINTS_FIRST_TRY : POINTS_RETRY) : 0;
+  return correct ? pointsFor(firstTry, weight) : 0;
 }
 
 // Reihenfolge für eine Übungsrunde.

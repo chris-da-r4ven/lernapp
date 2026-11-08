@@ -4,7 +4,7 @@
 // Test-Runde: Jedes Wort nur einmal, keine Hilfe, am Ende das Ergebnis in Prozent.
 
 import { esc } from '../util.js';
-import { record } from '../srs.js';
+import { record, weightFor, roundBonus } from '../srs.js';
 import { getState } from '../store.js';
 import { levelFor } from '../pet.js';
 import { roundSummary } from './summary.js';
@@ -36,7 +36,7 @@ export function runRound(el, { tasks, test = false, onAgain, onBack, backLabel }
     right() {
       const task = queue[0];
       const isFirst = task.attempts === 0;
-      points += record(task.key, { correct: true, firstTry: isFirst });
+      points += record(task.key, { correct: true, firstTry: isFirst, weight: weightFor(task.dir) });
       if (isFirst) firstTry++;
       queue.shift();
       done++;
@@ -77,6 +77,7 @@ export function runRound(el, { tasks, test = false, onAgain, onBack, backLabel }
     const pct = Math.round((firstTry / total) * 100);
     roundSummary(el, {
       total, firstTry, points, startLevel,
+      bonus: roundBonus(tasks.map((t) => t.dir)),
       intro: test ? `<p class="big">${firstTry} von ${total} richtig (${pct} %)</p>` : null,
       mistakesTitle: test ? 'Diese Wörter waren noch nicht richtig:' : null,
       mistakes: list.map(({ task, typed }) => {
