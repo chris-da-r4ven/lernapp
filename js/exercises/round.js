@@ -4,11 +4,11 @@
 // Test-Runde: Jedes Wort nur einmal, keine Hilfe, am Ende das Ergebnis in Prozent.
 
 import { esc } from '../util.js';
-import { record, weightFor, roundBonus, MASTERED_FACTOR, MEDAL_BONUS } from '../srs.js';
+import { record, roundBonus, MASTERED_FACTOR, MEDAL_BONUS } from '../srs.js';
+import { weightFor, questionFor } from './registry.js';
 import { getState, addTestResult, addPoints, save, medalStatus, testedToday, MEDAL_PCT, MEDAL_DAYS } from '../store.js';
 import { levelFor } from '../pet.js';
 import { roundSummary } from './summary.js';
-import { questionFor } from './questions.js';
 import { testReady, lessonMedal } from '../medal.js';
 
 const RETRY_GAP = 3;

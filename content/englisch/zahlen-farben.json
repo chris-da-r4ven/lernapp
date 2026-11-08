@@ -3,14 +3,12 @@
   "title": "Zahlen & Farben",
   "group": "Schule & ich",
   "order": 20,
+  "kind": "vokabeln",
   "type": "pairs",
   "sides": {
     "a": "Deutsch",
     "b": "Englisch"
   },
-  "exercises": [
-    "write"
-  ],
   "items": [
     {
       "id": "zero",

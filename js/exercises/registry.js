@@ -1,100 +1,48 @@
-// Übungsarten. Eine Lektion nennt in "exercises", welche davon passen.
-// Übungen mit auto(lesson) werden zusätzlich angeboten, wenn sie passen
-// (z. B. Hör-Übungen bei englischen Lektionen, wenn das Gerät vorlesen kann).
-// Die eigentlichen Fragen stehen in questions.js, der Ablauf einer Runde in round.js.
-// Neue Übungsarten (Mini-Spiele, Grammatik …) werden hier eingetragen.
+// Welche Übungsarten passen zu einer Lektion – und alles, was sich daraus ableitet.
+// Die Übungsarten selbst stehen in modes.js.
+//
+// Eine Lektion bekommt alle Übungsarten ihrer Lektionsart (lessons.js KINDS), die auf dem
+// Gerät möglich sind und für die es passende Einträge gibt. Mit "modes": [...] in der
+// Lektionsdatei lässt sich das auf bestimmte Übungsarten beschränken.
 
-import { itemKey, buildRound } from '../srs.js';
-import { canSpeak, englishSide } from '../speech.js';
-import { runRound } from './round.js';
-import { parseGap } from './questions.js';
+import { itemKey } from '../srs.js';
+import { canSpeak } from '../speech.js';
+import { kindOf } from '../lessons.js';
+import { MODES } from './modes.js';
 
-// Kurzform für Markierungen: Deutsch → DE, Englisch → EN.
-const CODES = { Deutsch: 'DE', Englisch: 'EN' };
-const code = (side) => CODES[side] ?? String(side).slice(0, 2).toUpperCase();
+const byId = new Map(MODES.map((m) => [m.id, m]));
+export const modeById = (id) => byId.get(id);
 
-// Aufgaben einer Lektion für eine Übungsart (dir). usable: welche Wörter sich eignen.
-export function tasksFor(sid, lesson, dir, usable = () => true) {
-  return lesson.items.filter(usable).map((item) => ({ sid, lesson, item, dir, key: itemKey(sid, lesson.id, item, dir) }));
-}
+export const usableFor = (mode, item) => mode.usable?.(item) ?? true;
 
-function exercise(def) {
-  return {
-    ...def,
-    run(el, { sid, lesson, dir, all, onFinish }) {
-      const self = this;
-      const round = buildRound(tasksFor(sid, lesson, dir, def.usable), all);
-      runRound(el, {
-        tasks: round,
-        onAgain: () => self.run(el, { sid, lesson, dir, all, onFinish }),
-        onBack: () => onFinish?.(),
-      });
-    },
-  };
-}
-
-const hasEnglish = (lesson) => Boolean(englishSide(lesson));
-
-export const write = exercise({
-  id: 'write',
-  label: 'Schreiben',
-  modes: (lesson) => [
-    { dir: 'ab', label: `Schreiben: ${lesson.sides.a} → ${lesson.sides.b}`, short: `✍️ ${code(lesson.sides.a)}→${code(lesson.sides.b)}` },
-    { dir: 'ba', label: `Schreiben: ${lesson.sides.b} → ${lesson.sides.a}`, short: `✍️ ${code(lesson.sides.b)}→${code(lesson.sides.a)}` },
-  ],
-});
-
-export const dictation = exercise({
-  id: 'hoeren',
-  label: 'Hören → Englisch schreiben',
-  group: 'hoeren',
-  auto: (lesson) => canSpeak() && hasEnglish(lesson),
-  modes: () => [{ dir: 'hoeren', label: '🔊 Hören → Englisch schreiben', short: '🔊 Diktat' }],
-});
-
-export const listenChoose = exercise({
-  id: 'hoeren-wahl',
-  label: 'Hören → Bedeutung antippen',
-  group: 'hoeren',
-  // Braucht mindestens 4 Wörter für die Auswahl.
-  auto: (lesson) => canSpeak() && hasEnglish(lesson) && lesson.items.length >= 4,
-  modes: () => [{ dir: 'hoeren-wahl', label: '🔊 Hören → Bedeutung antippen', short: '🔊 Antippen' }],
-});
-
-// Lückensätze: nur für Wörter mit Beispielsatz ("ex").
-export const gap = exercise({
-  id: 'satz',
-  label: 'Lückensätze',
-  auto: (lesson) => hasEnglish(lesson) && lesson.items.some((it) => parseGap(it.ex)),
-  // Nur Sätze mit gültiger {Lücke} – ein Tippfehler im Inhalt soll keine Runde abstürzen lassen.
-  usable: (item) => Boolean(parseGap(item.ex)),
-  modes: () => [{ dir: 'satz', label: '📝 Lückensätze', short: '📝 Satz' }],
-});
-
-// Grammatik: richtige Form antippen (Lektionen mit "grammar": true).
-export const form = exercise({
-  id: 'form',
-  label: 'Richtige Form',
-  usable: (item) => Boolean(parseGap(item.ex) && item.choices?.length),
-  modes: () => [{ dir: 'form', label: '✏️ Richtige Form antippen', short: '✏️ Form' }],
-});
-
-export const exercises = Object.fromEntries([write, dictation, listenChoose, gap, form].map((ex) => [ex.id, ex]));
-
-export function exercisesFor(lesson) {
-  const listed = (lesson.exercises ?? []).map((id) => exercises[id]).filter(Boolean);
-  // Grammatik-Lektionen bekommen nur ihre eigenen Übungen.
-  if (lesson.grammar) return listed;
-  const auto = Object.values(exercises).filter((ex) => ex.auto?.(lesson) && !listed.includes(ex));
-  return [...listed, ...auto];
-}
-
-// Alle Übungsarten einer Lektion als flache Liste (für Markierungen und Fortschritt).
+// Übungsarten einer Lektion, in der Reihenfolge von MODES.
 export function modesFor(lesson) {
-  return exercisesFor(lesson).flatMap((ex) => ex.modes(lesson).map((m) => ({ ...m, exId: ex.id })));
+  const kind = kindOf(lesson);
+  return MODES.filter((m) =>
+    (lesson.modes ? lesson.modes.includes(m.id) : m.kinds.includes(kind))
+    && (!m.speech || canSpeak())
+    && (!m.minItems || lesson.items.length >= m.minItems)
+    && lesson.items.some((it) => usableFor(m, it)));
 }
 
-// Wörter, die in einer Übungsart vorkommen können.
-export function usableIn(exId, item) {
-  return exercises[exId]?.usable?.(item) ?? true;
+// Übungsarten mit gleicher group (z. B. die Hör-Übungen) gehören in eine Zeile.
+export function modeGroups(lesson) {
+  const groups = new Map();
+  for (const m of modesFor(lesson)) {
+    if (!groups.has(m.group)) groups.set(m.group, []);
+    groups.get(m.group).push(m);
+  }
+  return [...groups.values()];
 }
+
+// Aufgaben einer Lektion für eine Übungsart (nur passende Einträge).
+export function tasksFor(sid, lesson, modeId) {
+  const mode = modeById(modeId);
+  return lesson.items
+    .filter((item) => !mode || usableFor(mode, item))
+    .map((item) => ({ sid, lesson, item, dir: modeId, key: itemKey(sid, lesson.id, item, modeId) }));
+}
+
+export const weightFor = (modeId) => modeById(modeId)?.weight ?? 1;
+export const learnOrderOf = (modeId) => modeById(modeId)?.learnOrder ?? 99;
+export const questionFor = (modeId) => modeById(modeId)?.question;

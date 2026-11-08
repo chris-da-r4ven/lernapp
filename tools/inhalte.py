@@ -30,9 +30,17 @@ ROOT = Path(__file__).resolve().parent.parent
 CONTENT = ROOT / 'content'
 INDEX = CONTENT / 'index.json'
 
-# Muss zu js/exercises/registry.js passen.
-KNOWN_EXERCISES = {'write', 'hoeren', 'hoeren-wahl', 'satz', 'form'}
 LESSON_TYPES = {'pairs'}
+
+
+def _from_app(path, pattern):
+    """Gültige Namen direkt aus dem App-Code lesen – so laufen App und Werkzeug nie auseinander."""
+    text = (ROOT / path).read_text(encoding='utf-8')
+    return set(re.findall(pattern, text, re.M))
+
+
+KNOWN_MODES = _from_app('js/exercises/modes.js', r"^\s+id: '([a-z-]+)',")
+KNOWN_KINDS = _from_app('js/lessons.js', r"^\s+([a-z]+): \{ unit:")
 DE_ARTICLE = re.compile(r'^(der|die|das|ein|eine) ', re.I)
 GAP = re.compile(r'^(.*?)\{([^}]+)\}(.*)$')
 
@@ -118,15 +126,18 @@ def check(subjects):
             sides = l.get('sides') or {}
             if not sides.get('a') or not sides.get('b'):
                 errors.append(f'{where}: "sides" braucht a und b')
-            for ex in l.get('exercises', []):
-                if ex not in KNOWN_EXERCISES:
-                    errors.append(f'{where}: unbekannte Übung "{ex}"')
+            for old in ('exercises', 'grammar'):
+                if old in l:
+                    errors.append(f'{where}: "{old}" gibt es nicht mehr – stattdessen "kind" (und ggf. "modes")')
+            if l.get('kind') not in KNOWN_KINDS:
+                errors.append(f'{where}: "kind" muss eins von {sorted(KNOWN_KINDS)} sein')
+            for mode in l.get('modes', []):
+                if mode not in KNOWN_MODES:
+                    errors.append(f'{where}: unbekannte Übungsart "{mode}" (bekannt: {sorted(KNOWN_MODES)})')
             items = l.get('items') or []
             if not items:
                 errors.append(f'{where}: keine Wörter ("items")')
-            grammar = bool(l.get('grammar'))
-            if grammar and 'form' not in l.get('exercises', []):
-                errors.append(f'{where}: Grammatik-Lektion braucht "exercises": ["form"]')
+            grammar = l.get('kind') == 'grammatik'
             ids, prompts = set(), {}
             for n, it in enumerate(items, 1):
                 at = f'{where} Wort {n}' + (f' ({it.get("b")})' if it.get('b') else '')
@@ -159,6 +170,14 @@ def check(subjects):
                     prompts.setdefault(it['a'].strip().lower(), []).append(it.get('b'))
                 if it.get('b') and not grammar:
                     english_seen.setdefault(it['b'].strip().lower(), []).append(lid)
+            frames = {}
+            for it in items:
+                g = GAP.match(it.get('ex') or '')
+                if g:
+                    frames.setdefault((g.group(1) + '…' + g.group(3)).lower(), []).append(it.get('b'))
+            for f, bs in frames.items():
+                if len(bs) > 1:
+                    warnings.append(f'{where}: gleicher Lückensatz „{f}“ für {", ".join(map(str, bs))} – Satz abwandeln')
             for p, bs in prompts.items():
                 if len(bs) > 1:
                     warnings.append(f'{where}: gleiches deutsches Wort "{p}" für {", ".join(map(str, bs))} – beim Abfragen mehrdeutig')
@@ -224,7 +243,7 @@ def fill(lesson):
         it = dict(it)
         if 'id' not in it:
             it = {'id': it['b'], **it}
-        if not lesson.get('grammar'):
+        if lesson.get('kind') != 'grammatik':
             for side, alt in (('a', 'aAlt'), ('b', 'bAlt')):
                 extra = article_free(it[side], side) - set(it.get(alt, [])) - {it[side]}
                 if extra:
@@ -321,10 +340,8 @@ def new_lesson(args):
     if args.gruppe:
         lesson['group'] = args.gruppe
     lesson['order'] = (max(orders) if orders else 0) + 10
+    lesson['kind'] = 'grammatik' if args.grammatik else 'vokabeln'
     lesson.update({'type': 'pairs', 'sides': {'a': 'Deutsch', 'b': 'Englisch'}})
-    if args.grammatik:
-        lesson['grammar'] = True
-    lesson['exercises'] = ['form'] if args.grammatik else ['write']
     lesson['items'] = items
     write_json(path, fill(lesson))
     print(f'{rel(path)} angelegt: {len(items)} Einträge. Jetzt "bauen" ausführen.')

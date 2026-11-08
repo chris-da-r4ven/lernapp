@@ -9,19 +9,11 @@ const DAY = 24 * 60 * 60 * 1000;
 const INTERVAL_DAYS = { 1: 1, 2: 2, 3: 4, 4: 7, 5: 14 };
 export const SAFE_BOX = 3;
 // Sternchen ✦: Durchhalten zählt am meisten, Sorgfalt merkbar, aber nicht stark.
-// Werte gelten fürs Schreiben; andere Übungsarten werden nach Schwierigkeit gewichtet.
+// Werte gelten fürs Schreiben; andere Übungsarten werden nach Schwierigkeit gewichtet (weight in modes.js).
 // Eine Schreib-Runde mit 12 Wörtern bringt 96–110 ✦, eine Antipp-Runde etwa 22 ✦.
 export const ROUND_BONUS = 50;       // für jede zu Ende gespielte Runde
 export const POINTS_FIRST_TRY = 5;   // Wort beim ersten Versuch richtig
 export const POINTS_RETRY = 3;       // Wort nach einem Fehler richtig
-export const WEIGHTS = {
-  'hoeren-wahl': 0.2,  // hören und Bedeutung antippen
-  form: 0.3,           // am / is / are antippen
-  satz: 0.8,           // Lückensatz
-  ab: 1, ba: 1,        // schreiben
-  hoeren: 1.2,         // Diktat
-};
-export const weightFor = (dir) => WEIGHTS[dir] ?? 1;
 const pointsFor = (firstTry, weight) =>
   Math.max(1, Math.round((firstTry ? POINTS_FIRST_TRY : POINTS_RETRY) * weight));
 // Rundenbonus nach dem durchschnittlichen Gewicht der Aufgaben in der Runde.
@@ -83,14 +75,6 @@ export function buildRound(entries, all = false) {
   const rest = withState.filter((e) => !due.includes(e)).sort((a, b) => byBox(a, b) || a.st.due - b.st.due);
   const round = due.concat(rest.slice(0, Math.max(0, MIN_ROUND - due.length)));
   return round.slice(0, MAX_ROUND);
-}
-
-// Anteil sicherer Karten einer Lektion in einer Richtung (0..1).
-// Grammatik-Lektionen zählen nach ihrer eigenen Übung (Form wählen).
-export function mastery(sid, lesson, dir = lesson?.grammar ? 'form' : 'ab') {
-  if (!lesson?.items?.length) return 0;
-  const safe = lesson.items.filter((it) => itemState(itemKey(sid, lesson.id, it, dir)).box >= SAFE_BOX).length;
-  return safe / lesson.items.length;
 }
 
 export function starsFor(m) {

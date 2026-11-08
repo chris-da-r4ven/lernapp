@@ -3,14 +3,12 @@
   "title": "Schulsachen",
   "group": "Schule & ich",
   "order": 40,
+  "kind": "vokabeln",
   "type": "pairs",
   "sides": {
     "a": "Deutsch",
     "b": "Englisch"
   },
-  "exercises": [
-    "write"
-  ],
   "items": [
     {
       "id": "school bag",
@@ -197,8 +195,8 @@
       "aAlt": [
         "Handy"
       ],
-      "ex": "My {phone} is in my bag.",
-      "exDe": "Mein Handy ist in meiner Tasche."
+      "ex": "My {phone} is on the table.",
+      "exDe": "Mein Handy liegt auf dem Tisch."
     }
   ]
 }

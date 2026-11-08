@@ -58,6 +58,11 @@ python3 tools/inhalte.py bauen
 - **Lektionen zusammenlegen oder umbenennen:** in `content/<fach>/_fach.json` unter `moved`
   eintragen (`"alteLektion": "neueLektion"`), dann zieht der Lernstand mit.
 - **Reihenfolge und Gruppe:** in der Lektion `order` (10, 20, 30 …) und `group`.
+- **Lektionsart:** `kind` – `vokabeln` (Wortpaare, alle Übungen, Test-Modus) oder `grammatik`
+  (Sätze mit Lücke und `choices`, Übung „Richtige Form“). Nur bestimmte Übungsarten:
+  `"modes": ["ab", "ba"]`.
+- **Andere Sprache:** Die Lernsprache ist die Seite, die nicht Deutsch ist; ihre Stimme kommt aus dem
+  Seitennamen (Englisch → en-GB, Französisch → fr-FR …) oder aus `"langs": {"b": "fr-FR"}`.
 - **Neues Fach:** Ordner `content/<fach>/` mit `_fach.json` (`id`, `name`, `icon`, `order`).
 
 ## Wo was liegt

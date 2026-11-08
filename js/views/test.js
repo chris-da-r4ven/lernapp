@@ -3,7 +3,7 @@
 // jedes nur einmal, ohne Abschreiben und Spicken. Am Ende: Ergebnis in Prozent.
 
 import { getSubject, getLesson } from '../content.js';
-import { englishSide } from '../speech.js';
+import { kindInfo, towardTarget, unitWord } from '../lessons.js';
 import { tasksFor } from '../exercises/registry.js';
 import { runRound } from '../exercises/round.js';
 import { esc, shuffle } from '../util.js';
@@ -13,7 +13,7 @@ import { lessonMedal } from '../medal.js';
 export function testView(el, sid, preselect) {
   const subject = getSubject(sid);
   if (!subject) { location.hash = '#/'; return; }
-  const lessons = subject.lessons.map((l) => getLesson(sid, l.id)).filter((l) => l && englishSide(l) && !l.grammar);
+  const lessons = subject.lessons.map((l) => getLesson(sid, l.id)).filter((l) => l && kindInfo(l).testable);
   const back = `#/fach/${encodeURIComponent(sid)}`;
 
   el.innerHTML = `
@@ -30,7 +30,7 @@ export function testView(el, sid, preselect) {
           const head = meta.group && meta.group !== prev.group ? `<h3 class="test-group">${esc(meta.group)}</h3>` : '';
           return `${head}
           <label class="check"><input type="checkbox" name="lesson" value="${esc(l.id)}"${l.id === preselect ? ' checked' : ''}>
-            ${lessonMedal(sid, l).medal ? '🏅 ' : ''}${esc(meta.title ?? l.title)} <span class="muted small">(${l.items.length} Wörter)</span></label>`;
+            ${lessonMedal(sid, l).medal ? '🏅 ' : ''}${esc(meta.title ?? l.title)} <span class="muted small">(${l.items.length} ${unitWord(l, l.items.length)})</span></label>`;
         }).join('')}
         <p class="test-count muted small"></p>
         <div class="actions"><button class="btn primary" type="submit">Test starten</button></div>
@@ -53,8 +53,8 @@ export function testView(el, sid, preselect) {
   });
 
   function start(selected) {
-    // Deutsch → Englisch: Richtung zur englischen Seite der Lektion.
-    const tasks = shuffle(selected.flatMap((l) => tasksFor(sid, l, englishSide(l) === 'b' ? 'ab' : 'ba')));
+    // Muttersprache → Lernsprache, wie im Vokabeltest.
+    const tasks = shuffle(selected.flatMap((l) => tasksFor(sid, l, towardTarget(l))));
     el.innerHTML = `<a class="back" href="${back}">← ${esc(subject.name)}</a><div class="exercise"></div>`;
     runRound(el.querySelector('.exercise'), {
       tasks,

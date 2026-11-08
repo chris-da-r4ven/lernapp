@@ -5,6 +5,7 @@
 
 import { esc } from '../util.js';
 import { getLesson, getSubjects } from '../content.js';
+import { targetSide } from '../lessons.js';
 
 const VOICE_KEY = 'lernapp.voice';
 
@@ -19,7 +20,7 @@ function lessonWords() {
   for (const s of getSubjects()) {
     for (const l of s.lessons) {
       const lesson = getLesson(s.id, l.id);
-      lesson?.items?.slice(0, 4).forEach((it) => words.push(lesson.sides.b === 'Englisch' ? it.b : it.a));
+      lesson?.items?.slice(0, 4).forEach((it) => words.push(it[targetSide(lesson)]));
     }
   }
   return words;

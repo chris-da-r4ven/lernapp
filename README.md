@@ -48,14 +48,38 @@ neuen Commit schreiben (nie force-push). Das Tablet übernimmt den Stand beim n�
 
 ## Aufbau
 
-- `js/content.js` – lädt und speichert Inhalte (offline)
-- `js/store.js` – Lernstand im Browser (localStorage)
-- `js/srs.js` – Karteikasten-Wiederholung (Fach 1–5, ab Fach 3 „sicher“)
-- `js/exercises/` – Übungsarten; neue in `registry.js` eintragen
-- `js/views/` – Seiten: Start, Fach, Lektion, Üben, Fortschritt
-- `js/pet.js` – Platzhalter fürs Tier (wird mit dem Kind gestaltet)
+```
+Inhalte            content/<fach>/<lektion>.json   →  js/content.js (lädt, offline speichern)
+Lektionsarten      js/lessons.js    kind (vokabeln, grammatik …), Lernsprache, „sicher“-Anteil
+Übungsarten        js/exercises/modes.js   ← EINE Liste, alles andere leitet sich daraus ab
+Fragetypen         js/exercises/questions.js   zeigt eine Aufgabe, meldet richtig/falsch
+Runde              js/exercises/round.js   Wiederholen, Sternchen, Test, Medaille, Bilanz
+Lernstand          js/store.js + js/srs.js (Karteikasten)  →  js/sync.js + js/merge.js (Sicherung)
+Seiten             js/views/…   Start, Fach, Lektion, Üben, Jetzt üben, Test, Fortschritt
+```
+
+- `js/practice-now.js` – „Jetzt üben“: fällige Wörter aus allen Lektionen und Übungsarten
+- `js/medal.js`, `js/streak.js`, `js/pet.js` – Medaille, Serie, Fanny
 - `sw.js` – Offline-Cache für die App-Dateien. Neue Dateien dort in `SHELL` eintragen und bei jedem
   Push `CACHE` hochzählen – eine neue Version wird nur komplett aktiv.
+
+### Neue Übungsart (Quiz, Spiel …)
+
+1. **Fragetyp** in `js/exercises/questions.js`: ein Objekt mit `describe(task)` (Zeile über der Aufgabe),
+   `pair(task)` (`[gefragt, Antwort]` für Bilanz und Fortschritt) und `render(card, task, api, { test })`.
+   Beim Antworten `api.wrong(eingabe)` melden, danach `api.right()` bzw. `api.retry()` aufrufen.
+   Wiederholen, Sternchen, Test-Modus und Bilanz übernimmt der Runden-Ablauf.
+2. **Eintrag in `js/exercises/modes.js`**: `id` (nie wieder ändern – Teil des Lernstands), `kinds`,
+   `group`, `label`, `short`, `weight` (Sternchen, Schreiben = 1), `learnOrder`, ggf. `speech`,
+   `minItems`, `usable(item)`, `question`. Knöpfe, Adressen, Sternchen, „Jetzt üben“, Markierungen
+   und Fortschritt kommen automatisch.
+3. **Braucht sie eine neue Art von Inhalt** (z. B. Lesetext mit Fragen): Lektionsart in
+   `js/lessons.js` (`KINDS`) ergänzen; die Felder der Einträge in `INHALTE.md` beschreiben und in
+   `tools/inhalte.py` prüfen. Das Werkzeug liest gültige Übungs- und Lektionsarten aus dem App-Code.
+4. Neue Dateien in `sw.js` (`SHELL`) eintragen.
+
+Eine Lektion bekommt automatisch alle Übungsarten ihrer Art, die auf dem Gerät gehen und für die es
+passende Einträge gibt. Mit `"modes": ["ab", "satz"]` in der Lektion lässt sich das einschränken.
 
 ## Lokal testen
 

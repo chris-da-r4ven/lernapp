@@ -3,14 +3,12 @@
   "title": "Halloween",
   "group": "Feiertage",
   "order": 70,
+  "kind": "vokabeln",
   "type": "pairs",
   "sides": {
     "a": "Deutsch",
     "b": "Englisch"
   },
-  "exercises": [
-    "write"
-  ],
   "items": [
     {
       "id": "black cat",

@@ -15,7 +15,7 @@ const routes = [
   [/^#?\/?$/, homeView, 'home'],
   [/^#\/fach\/([^/]+)$/, subjectView, 'home'],
   [/^#\/lektion\/([^/]+)\/([^/]+)$/, lessonView, 'home'],
-  [/^#\/ueben\/([^/]+)\/([^/]+)\/([^/]+)\/(ab|ba|hoeren|hoeren-wahl|satz|form)(\/alle)?$/, practiceView, 'home'],
+  [/^#\/ueben\/([^/]+)\/([^/]+)\/([a-z-]+)(\/alle)?$/, practiceView, 'home'],   // Übungsart wird in der Ansicht geprüft
   [/^#\/jetzt$/, nowView, 'home'],
   [/^#\/test\/([^/]+)(?:\/([^/]+))?$/, testView, 'home'],
   [/^#\/statistik$/, statsView, 'statistik'],

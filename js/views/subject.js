@@ -2,7 +2,8 @@
 // Lektionen mit Medaille 🏅 rutschen in ihrer Gruppe nach unten in „Kannst du schon gut“.
 
 import { getSubject, getLesson } from '../content.js';
-import { mastery, starsFor } from '../srs.js';
+import { starsFor } from '../srs.js';
+import { masteryOf, unitWord } from '../lessons.js';
 import { lessonMedal, MEDAL_RULE, testReady } from '../medal.js';
 import { esc, stars } from '../util.js';
 
@@ -21,12 +22,12 @@ export function subjectView(el, sid) {
   }
 
   const tile = ({ l, lesson, medal }) => {
-    const m = mastery(sid, lesson);
+    const m = masteryOf(sid, lesson);
     return `
       <a class="card row lesson-tile${medal.medal ? ' has-medal' : ''}" href="#/lektion/${encodeURIComponent(sid)}/${encodeURIComponent(l.id)}">
         ${medal.medal ? '<span class="medal" aria-label="Medaille">🏅</span>' : ''}
         <div class="grow">
-          <strong>${esc(l.title)}</strong> <span class="muted small">${lesson.items.length} ${lesson.grammar ? 'Sätze' : 'Wörter'}</span>
+          <strong>${esc(l.title)}</strong> <span class="muted small">${lesson.items.length} ${unitWord(lesson, lesson.items.length)}</span>
           <div class="meter small"><div style="width:${m * 100}%"></div></div>
           ${testReady(sid, lesson) ? '<div class="small ready-hint">📝 Bereit für den Test!</div>' : ''}
           ${!medal.medal && medal.started ? `<div class="muted small medal-hint">🏅 ${esc(medal.hint)}</div>` : ''}

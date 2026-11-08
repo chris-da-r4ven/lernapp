@@ -3,14 +3,12 @@
   "title": "Hallo & Kennenlernen",
   "group": "Schule & ich",
   "order": 10,
+  "kind": "vokabeln",
   "type": "pairs",
   "sides": {
     "a": "Deutsch",
     "b": "Englisch"
   },
-  "exercises": [
-    "write"
-  ],
   "items": [
     {
       "id": "Hello",

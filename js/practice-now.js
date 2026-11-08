@@ -3,16 +3,15 @@
 // - Zuerst fällige Wiederholungen (Wörter, die schon geübt wurden und wieder dran sind),
 //   die wackeligsten zuerst.
 // - Danach neue Aufgaben. Ein Wort lernt sie in einer festen Reihenfolge kennen:
-//   erst hören und antippen (leicht), dann schreiben, dann Diktat, dann Lückensatz.
+//   learnOrder in modes.js – erst hören und antippen (leicht), dann schreiben, Diktat, Lückensatz.
 // - Jedes Wort höchstens einmal pro Runde.
 
 import { getSubjects, getLesson } from './content.js';
 import { itemState } from './store.js';
-import { modesFor, tasksFor, usableIn } from './exercises/registry.js';
+import { modesFor, tasksFor, learnOrderOf } from './exercises/registry.js';
 import { shuffle } from './util.js';
 
 export const ROUND_SIZE = 12;
-const NEW_ORDER = ['hoeren-wahl', 'form', 'ab', 'ba', 'hoeren', 'satz'];
 
 function allTasks() {
   const tasks = [];
@@ -21,7 +20,7 @@ function allTasks() {
       const lesson = getLesson(s.id, l.id);
       if (!lesson) continue;
       for (const m of modesFor(lesson)) {
-        for (const t of tasksFor(s.id, lesson, m.dir, (it) => usableIn(m.exId, it))) {
+        for (const t of tasksFor(s.id, lesson, m.id)) {
           tasks.push({ ...t, st: itemState(t.key), word: `${s.id}/${lesson.id}/${t.item.id ?? t.item.b}` });
         }
       }
@@ -32,7 +31,7 @@ function allTasks() {
 
 const isDue = (t, now) => t.st.box > 0 && t.st.due <= now;
 const isNew = (t) => t.st.box === 0;
-const newRank = (t) => { const i = NEW_ORDER.indexOf(t.dir); return i < 0 ? NEW_ORDER.length : i; };
+const newRank = (t) => learnOrderOf(t.dir);
 
 // Wie viel wartet gerade? (für die Startseite)
 export function dueSummary() {

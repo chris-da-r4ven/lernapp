@@ -1,15 +1,15 @@
 // Medaille 🏅 „Kannst du schon gut“ für eine Lektion.
 // Vokabeln: zweimal mindestens 90 % im Test-Modus, an zwei verschiedenen Tagen.
-// Grammatik (kein Test-Modus): mindestens 90 % der Sätze sitzen sicher.
+// Ohne Test-Modus (z. B. Grammatik): mindestens 90 % der Einträge sitzen sicher.
 // Eine Medaille geht nicht wieder verloren.
 
 import { medalStatus, testedToday, itemState, MEDAL_PCT, MEDAL_DAYS } from './store.js';
-import { mastery, itemKey } from './srs.js';
-import { englishSide } from './speech.js';
+import { itemKey } from './srs.js';
+import { kindInfo, masteryOf, towardTarget } from './lessons.js';
 
 export function lessonMedal(sid, lesson) {
-  if (lesson.grammar) {
-    const m = mastery(sid, lesson);
+  if (!kindInfo(lesson).testable) {
+    const m = masteryOf(sid, lesson);
     return {
       medal: m >= MEDAL_PCT / 100,
       started: m > 0,
@@ -36,11 +36,11 @@ export const READY_SHARE = 0.8;
 export const READY_RIGHT = 2;
 
 export function testReady(sid, lesson) {
-  if (!lesson || lesson.grammar || !lesson.items?.length) return false;
+  if (!lesson || !kindInfo(lesson).testable || !lesson.items?.length) return false;
   const key = `${sid}/${lesson.id}`;
   const s = medalStatus(key);
   if (s.medal || testedToday(key)) return false;
-  const dir = englishSide(lesson) === 'a' ? 'ba' : 'ab';
+  const dir = towardTarget(lesson);
   const ok = lesson.items.filter((it) => itemState(itemKey(sid, lesson.id, it, dir)).right >= READY_RIGHT).length;
   return ok / lesson.items.length >= READY_SHARE;
 }

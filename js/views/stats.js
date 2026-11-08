@@ -3,10 +3,8 @@
 import { getSubjects, getLesson, contentUpdated } from '../content.js';
 import { getState, itemState, streak } from '../store.js';
 import { parentsSection, bindParents } from './parents.js';
-import { modesFor, usableIn } from '../exercises/registry.js';
-import { parseGap } from '../exercises/questions.js';
-import { englishSide } from '../speech.js';
-import { itemKey, status } from '../srs.js';
+import { modesFor, tasksFor } from '../exercises/registry.js';
+import { status } from '../srs.js';
 import { esc, dayKey, addDays } from '../util.js';
 import { DAY_GOAL } from '../streak.js';
 
@@ -19,7 +17,7 @@ export function statsView(el, openParents = false) {
   const rows = collectItems();
   const counts = { neu: 0, wackelt: 0, sicher: 0 };
   // „Wörter sicher“ zählt wie bisher nur das Schreiben (beide Richtungen).
-  rows.filter((r) => r.mode.exId === 'write').forEach((r) => counts[r.status]++);
+  rows.filter((r) => r.mode.group === 'schreiben').forEach((r) => counts[r.status]++);
   const practiceDays = Object.keys(st.days).length;
   const totalRight = Object.values(st.days).reduce((n, d) => n + d.right, 0);
   const totalWrong = Object.values(st.days).reduce((n, d) => n + d.wrong, 0);
@@ -83,18 +81,11 @@ function collectItems() {
     for (const l of s.lessons) {
       const lesson = getLesson(s.id, l.id);
       if (!lesson) continue;
-      const en = englishSide(lesson);
-      const de = en === 'b' ? 'a' : 'b';
       for (const m of modesFor(lesson)) {
-        for (const it of lesson.items.filter((x) => usableIn(m.exId, x))) {
-          const st = itemState(itemKey(s.id, lesson.id, it, m.dir));
-          const [prompt, answer] =
-            m.dir === 'ab' ? [it.a, it.b]
-            : m.dir === 'ba' ? [it.b, it.a]
-            : m.dir === 'hoeren' ? [`🔊 ${it[en]}`, it[en]]
-            : (m.dir === 'satz' || m.dir === 'form') ? [String(it.ex).replace(/\{[^}]*\}/, '___'), parseGap(it.ex)?.answer ?? '']
-            : [`🔊 ${it[en]}`, it[de]];
-          rows.push({ st, status: status(st), prompt, answer, mode: m });
+        for (const t of tasksFor(s.id, lesson, m.id)) {
+          const st = itemState(t.key);
+          const [prompt, answer] = m.question.pair(t);
+          rows.push({ st, status: status(st), prompt, answer, mode: { ...m, short: m.short(lesson), label: m.label(lesson) } });
         }
       }
     }
@@ -109,13 +100,13 @@ function lessonTable() {
       const lesson = getLesson(s.id, l.id);
       if (!lesson) continue;
       const lines = modesFor(lesson).map((m) => {
-        const items = lesson.items.filter((x) => usableIn(m.exId, x));
-        const n = items.length || 1;
+        const tasks = tasksFor(s.id, lesson, m.id);
+        const n = tasks.length || 1;
         const c = { neu: 0, wackelt: 0, sicher: 0 };
-        items.forEach((it) => c[status(itemState(itemKey(s.id, lesson.id, it, m.dir)))]++);
+        tasks.forEach((t) => c[status(itemState(t.key))]++);
         return `
           <div class="mode-line">
-            <span class="small">${esc(m.label.replace(/^Schreiben: /, '✍️ '))}</span>
+            <span class="small">${esc(m.label(lesson).replace(/^Schreiben: /, '✍️ '))}</span>
             <div class="stack" role="img" aria-label="${c.sicher} sicher, ${c.wackelt} wackeln, ${c.neu} neu">
               <div class="sicher" style="width:${(c.sicher / n) * 100}%"></div>
               <div class="wackelt" style="width:${(c.wackelt / n) * 100}%"></div>

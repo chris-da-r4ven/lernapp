@@ -3,15 +3,12 @@
   "title": "am, is oder are?",
   "group": "Grammatik",
   "order": 80,
+  "kind": "grammatik",
   "type": "pairs",
-  "grammar": true,
   "sides": {
     "a": "Deutsch",
     "b": "Englisch"
   },
-  "exercises": [
-    "form"
-  ],
   "items": [
     {
       "id": "s1",

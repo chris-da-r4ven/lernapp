@@ -8,7 +8,7 @@
 //   installiert die neue Version komplett, die App lädt sich dann einmal neu (app.js).
 // Lerninhalte (content/) lädt die App selbst und speichert sie lokal – die laufen hier nicht durch.
 
-const CACHE = 'lernapp-shell-v27';
+const CACHE = 'lernapp-shell-v28';
 const SHELL = [
   './',
   'index.html',
@@ -32,9 +32,11 @@ const SHELL = [
   'js/pet.js',
   'js/streak.js',
   'js/medal.js',
+  'js/lessons.js',
   'js/sync.js',
   'js/merge.js',
   'js/exercises/registry.js',
+  'js/exercises/modes.js',
   'js/exercises/round.js',
   'js/practice-now.js',
   'js/views/now.js',

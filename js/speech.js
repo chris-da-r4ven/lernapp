@@ -1,5 +1,7 @@
 // Vorlesen mit der eingebauten Sprachausgabe des Geräts.
-// Stimme: die im Vorlese-Test gewählte, sonst die erste britische (bevorzugt offline).
+// Sprache: kommt aus der Lektion (lessons.langOf), z. B. en-GB.
+// Stimme: die im Vorlese-Test gewählte (wenn sie zur Sprache passt), sonst die erste
+// passende – bei mehreren bevorzugt genau die Region (en-GB) und offline verfügbar.
 // Tempo: wählt das Kind in der Übung, wird gemerkt.
 
 import { esc } from './util.js';
@@ -22,21 +24,25 @@ if (canSpeak()) {
   speechSynthesis.addEventListener?.('voiceschanged', refreshVoices);
 }
 
-const isEn = (v) => v.lang.toLowerCase().replace('_', '-').startsWith('en');
-const isGb = (v) => v.lang.replace('_', '-').startsWith('en-GB');
+const norm = (lang) => String(lang ?? '').replace('_', '-').toLowerCase();
+const isEn = (v) => norm(v.lang).startsWith('en');
 
 export function englishVoices() {
   if (!voices.length) refreshVoices();
   return voices.filter(isEn);
 }
 
-function pickVoice() {
-  const en = englishVoices();
+function pickVoice(lang = 'en-GB') {
+  if (!voices.length) refreshVoices();
+  const want = norm(lang);
+  const base = want.split('-')[0];
+  const fitting = voices.filter((v) => norm(v.lang).split('-')[0] === base);
   const saved = read(VOICE_KEY);
-  return en.find((v) => v.voiceURI === saved)
-    ?? en.find((v) => isGb(v) && v.localService)
-    ?? en.find(isGb)
-    ?? en[0]
+  return fitting.find((v) => v.voiceURI === saved)
+    ?? fitting.find((v) => norm(v.lang) === want && v.localService)
+    ?? fitting.find((v) => norm(v.lang) === want)
+    ?? fitting.find((v) => v.localService)
+    ?? fitting[0]
     ?? null;
 }
 
@@ -49,13 +55,13 @@ export const setRate = (r) => write(RATE_KEY, String(r));
 // Klammern wie in "(to) listen" nicht mitsprechen lassen, Schrägstriche als Pause.
 const spoken = (text) => String(text).replace(/[()]/g, '').replace(/\s*\/\s*/g, ', ');
 
-export function speak(text, rate = getRate()) {
+export function speak(text, lang = 'en-GB', rate = getRate()) {
   if (!canSpeak()) return;
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(spoken(text));
-  const voice = pickVoice();
+  const voice = pickVoice(lang);
   try { u.voice = voice; } catch { /* Sprache reicht */ }
-  u.lang = voice?.lang ?? 'en-GB';
+  u.lang = voice?.lang ?? lang;
   u.rate = rate;
   speechSynthesis.speak(u);
 }
@@ -72,21 +78,14 @@ export function speechControls() {
     </div>`;
 }
 
-// text: was vorgelesen wird. Spielt sofort einmal ab.
-export function bindSpeechControls(root, text) {
-  root.querySelector('[data-act=play]').addEventListener('click', () => speak(text));
+// text: was vorgelesen wird, lang: in welcher Sprache. Spielt sofort einmal ab.
+export function bindSpeechControls(root, text, lang) {
+  root.querySelector('[data-act=play]').addEventListener('click', () => speak(text, lang));
   root.querySelectorAll('[data-rate]').forEach((b) => b.addEventListener('click', () => {
     const r = Number(b.dataset.rate);
     setRate(r);
     root.querySelectorAll('[data-rate]').forEach((x) => x.classList.toggle('on', x === b));
-    speak(text, r);
+    speak(text, lang, r);
   }));
-  speak(text);
-}
-
-// Welche Seite einer Lektion ist Englisch? ('a', 'b' oder null)
-export function englishSide(lesson) {
-  if (lesson.sides?.b === 'Englisch') return 'b';
-  if (lesson.sides?.a === 'Englisch') return 'a';
-  return null;
+  speak(text, lang);
 }

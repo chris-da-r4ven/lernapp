@@ -1,15 +1,20 @@
 // Fragetypen. Jeder Typ zeigt eine Aufgabe an und meldet dem Runden-Ablauf
 // (round.js) über api.right / api.wrong / api.retry / api.peek, wie es lief.
 //
-//   ab / ba      – Wort lesen, Übersetzung schreiben
-//   hoeren       – Wort hören, auf Englisch schreiben (Diktat)
-//   hoeren-wahl  – Wort hören, Bedeutung antippen
-//   satz         – Lückensatz: fehlendes englisches Wort einsetzen
-//   form         – Grammatik: richtige Form antippen (z. B. am / is / are)
+// Welche Übungsart welchen Fragetyp nutzt, steht in modes.js.
+//
+//   writeQuestion  – Wort lesen oder hören, Übersetzung bzw. Wort schreiben (ab, ba, hoeren)
+//   chooseQuestion – Wort hören, Bedeutung antippen (hoeren-wahl)
+//   gapQuestion    – Lückensatz: fehlendes Wort der Lernsprache einsetzen (satz)
+//   formQuestion   – Grammatik: richtige Form antippen, z. B. am / is / are (form)
+//
+// Ein Fragetyp hat: describe(task) – Zeile über der Aufgabe, pair(task) – [gefragt, Antwort]
+// für Bilanz und Fortschritt, render(card, task, api, { test }) – die Aufgabe selbst.
 
 import { esc, shuffle } from '../util.js';
 import { renderDiff, distance } from '../diff.js';
-import { englishSide, speak, speechControls, bindSpeechControls } from '../speech.js';
+import { speak, speechControls, bindSpeechControls } from '../speech.js';
+import { targetSide, otherSide, langOf } from '../lessons.js';
 
 // --- Prüfen ------------------------------------------------------------------
 
@@ -32,7 +37,7 @@ export function check(typed, answer, alts) {
   return { ok: false, caseOnly, closest };
 }
 
-const other = (side) => (side === 'b' ? 'a' : 'b');
+const other = otherSide;
 
 // --- Eintippen mit Vergleich und Abschreiben ---------------------------------
 
@@ -132,15 +137,15 @@ function askTyped(area, { placeholder, answer, alts, api, test, again = false, s
 
 function writeSides(task) {
   if (task.dir === 'hoeren') {
-    const to = englishSide(task.lesson);
+    const to = targetSide(task.lesson);
     return { from: other(to), to };
   }
   return task.dir === 'ab' ? { from: 'a', to: 'b' } : { from: 'b', to: 'a' };
 }
 
-const writeQuestion = {
+export const writeQuestion = {
   describe(task) {
-    if (task.dir === 'hoeren') return '🔊 Hören → Englisch';
+    if (task.dir === 'hoeren') return `🔊 Hören → ${task.lesson.sides[targetSide(task.lesson)]}`;
     const { from, to } = writeSides(task);
     return `${task.lesson.sides[from]} → ${task.lesson.sides[to]}`;
   },
@@ -155,9 +160,9 @@ const writeQuestion = {
     card.innerHTML = `
       ${listen ? speechControls() : `<div class="prompt">${esc(item[from])}</div>`}
       <div class="answer-area"></div>`;
-    if (listen) bindSpeechControls(card, item[to]);
+    if (listen) bindSpeechControls(card, item[to], langOf(task.lesson, to));
     askTyped(card.querySelector('.answer-area'), {
-      placeholder: listen ? 'Was hörst du? Auf Englisch …' : `${task.lesson.sides[to]} schreiben …`,
+      placeholder: listen ? `Was hörst du? Auf ${task.lesson.sides[to]} …` : `${task.lesson.sides[to]} schreiben …`,
       answer: item[to],
       alts: item[to + 'Alt'],
       api, test, again: task.attempts > 0,
@@ -170,14 +175,14 @@ const writeQuestion = {
 
 const OPTIONS = 4;
 
-const chooseQuestion = {
+export const chooseQuestion = {
   describe: () => '🔊 Hören → Bedeutung',
   pair(task) {
-    const en = englishSide(task.lesson);
+    const en = targetSide(task.lesson);
     return ['🔊', `${task.item[en]} (${task.item[other(en)]})`];
   },
   render(card, task, api, { test }) {
-    const en = englishSide(task.lesson);
+    const en = targetSide(task.lesson);
     const de = other(en);
     const item = task.item;
     // Drei falsche Bedeutungen aus derselben Lektion, keine doppelten.
@@ -197,7 +202,7 @@ const chooseQuestion = {
         ${opts.map((o, i) => `<button class="btn choice" type="button" data-i="${i}">${esc(o)}</button>`).join('')}
       </div>
       <div class="feedback"></div>`;
-    bindSpeechControls(card, item[en]);
+    bindSpeechControls(card, item[en], langOf(task.lesson, en));
 
     card.querySelector('.choices').addEventListener('click', (ev) => {
       const b = ev.target.closest('.choice');
@@ -235,7 +240,7 @@ export function parseGap(ex) {
   return { before: m[1], after: m[3], answer, alts, full: m[1] + answer + m[3] };
 }
 
-const gapQuestion = {
+export const gapQuestion = {
   describe: () => '📝 Lückensatz',
   pair(task) {
     const g = parseGap(task.item.ex);
@@ -243,15 +248,16 @@ const gapQuestion = {
   },
   render(card, task, api, { test }) {
     const g = parseGap(task.item.ex);
-    const en = englishSide(task.lesson);
+    const en = targetSide(task.lesson);
     const de = other(en);
+    const lang = langOf(task.lesson, en);
     const item = task.item;
     card.innerHTML = `
       <p class="gap-sentence">${esc(g.before)}<span class="gap">?</span>${esc(g.after)}</p>
       <p class="muted small">Gesucht: <strong>${esc(item[de])}</strong></p>
       <div class="answer-area"></div>`;
     askTyped(card.querySelector('.answer-area'), {
-      placeholder: 'Fehlendes Wort auf Englisch …',
+      placeholder: `Fehlendes Wort auf ${task.lesson.sides[en]} …`,
       answer: g.answer,
       alts: g.alts,
       api, test, again: task.attempts > 0,
@@ -264,8 +270,8 @@ const gapQuestion = {
           </div>
         </div>`,
       onAnswered: () => {
-        speak(g.full);
-        card.querySelectorAll('[data-act=say]').forEach((b) => b.addEventListener('click', () => speak(g.full)));
+        speak(g.full, lang);
+        card.querySelectorAll('[data-act=say]').forEach((b) => b.addEventListener('click', () => speak(g.full, lang)));
       },
     });
   },
@@ -277,7 +283,7 @@ const gapQuestion = {
 
 const cap = (w) => w.charAt(0).toUpperCase() + w.slice(1);
 
-const formQuestion = {
+export const formQuestion = {
   describe: () => '✏️ Richtige Form',
   pair(task) {
     const g = parseGap(task.item.ex);
@@ -313,13 +319,10 @@ const formQuestion = {
       fb.innerHTML = `
         <p class="result ${right ? 'good' : 'bad'}">${right ? (task.attempts ? 'Jetzt sitzt es! 👍' : 'Richtig! 🎉') : (test ? 'Leider falsch.' : 'Noch nicht ganz.')}</p>
         <div class="actions"><button class="btn primary" data-act="next">Weiter</button></div>`;
-      speak(g.full);
+      speak(g.full, langOf(task.lesson));
       const nextBtn = fb.querySelector('[data-act=next]');
       nextBtn.focus();
       nextBtn.addEventListener('click', () => (right ? api.right() : api.retry()));
     });
   },
 };
-
-const QUESTIONS = { ab: writeQuestion, ba: writeQuestion, hoeren: writeQuestion, 'hoeren-wahl': chooseQuestion, satz: gapQuestion, form: formQuestion };
-export const questionFor = (dir) => QUESTIONS[dir];
