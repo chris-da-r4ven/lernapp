@@ -5,6 +5,7 @@
 //   hoeren       – Wort hören, auf Englisch schreiben (Diktat)
 //   hoeren-wahl  – Wort hören, Bedeutung antippen
 //   satz         – Lückensatz: fehlendes englisches Wort einsetzen
+//   form         – Grammatik: richtige Form antippen (z. B. am / is / are)
 
 import { esc, shuffle } from '../util.js';
 import { renderDiff, distance } from '../diff.js';
@@ -269,5 +270,55 @@ const gapQuestion = {
   },
 };
 
-const QUESTIONS = { ab: writeQuestion, ba: writeQuestion, hoeren: writeQuestion, 'hoeren-wahl': chooseQuestion, satz: gapQuestion };
+
+// --- Grammatik: richtige Form antippen ----------------------------------------
+// Wort mit "ex": "Tom {is} my brother." und "choices": ["am", "is", "are"].
+
+const cap = (w) => w.charAt(0).toUpperCase() + w.slice(1);
+
+const formQuestion = {
+  describe: () => '✏️ Richtige Form',
+  pair(task) {
+    const g = parseGap(task.item.ex);
+    return [task.item.exDe ?? '', g?.full ?? ''];
+  },
+  render(card, task, api, { test }) {
+    const item = task.item;
+    const g = parseGap(item.ex);
+    const atStart = !g.before.trim();
+    const choices = (item.choices ?? ['am', 'is', 'are']).map((c) => (atStart ? cap(c) : c));
+    card.innerHTML = `
+      <p class="gap-sentence">${esc(g.before)}<span class="gap">?</span>${esc(g.after)}</p>
+      ${item.exDe ? `<p class="muted small">${esc(item.exDe)}</p>` : ''}
+      <div class="choices form-choices">
+        ${choices.map((c, i) => `<button class="btn choice" type="button" data-i="${i}">${esc(c)}</button>`).join('')}
+      </div>
+      <div class="feedback"></div>`;
+
+    card.querySelector('.choices').addEventListener('click', (ev) => {
+      const b = ev.target.closest('.choice');
+      if (!b || card.dataset.answered) return;
+      card.dataset.answered = '1';
+      const picked = choices[Number(b.dataset.i)];
+      const right = picked.toLowerCase() === g.answer.toLowerCase();
+      card.querySelectorAll('.choice').forEach((x) => {
+        x.disabled = true;
+        if (choices[Number(x.dataset.i)].toLowerCase() === g.answer.toLowerCase()) x.classList.add('right');
+      });
+      if (!right) { b.classList.add('wrong'); api.wrong(picked); }
+      card.querySelector('.gap').textContent = g.answer;
+      card.querySelector('.gap').classList.add(right ? 'gap-right' : 'gap-wrong');
+      const fb = card.querySelector('.feedback');
+      fb.innerHTML = `
+        <p class="result ${right ? 'good' : 'bad'}">${right ? (task.attempts ? 'Jetzt sitzt es! 👍' : 'Richtig! 🎉') : (test ? 'Leider falsch.' : 'Noch nicht ganz.')}</p>
+        <div class="actions"><button class="btn primary" data-act="next">Weiter</button></div>`;
+      speak(g.full);
+      const nextBtn = fb.querySelector('[data-act=next]');
+      nextBtn.focus();
+      nextBtn.addEventListener('click', () => (right ? api.right() : api.retry()));
+    });
+  },
+};
+
+const QUESTIONS = { ab: writeQuestion, ba: writeQuestion, hoeren: writeQuestion, 'hoeren-wahl': chooseQuestion, satz: gapQuestion, form: formQuestion };
 export const questionFor = (dir) => QUESTIONS[dir];

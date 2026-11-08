@@ -1,0 +1,192 @@
+{
+  "id": "leute",
+  "title": "Leute in der Schule",
+  "type": "pairs",
+  "sides": {
+    "a": "Deutsch",
+    "b": "Englisch"
+  },
+  "exercises": [
+    "write"
+  ],
+  "items": [
+    {
+      "a": "es ist / er ist / sie ist",
+      "b": "it's",
+      "bAlt": [
+        "it is"
+      ],
+      "ex": "{It's|It is} a big school.",
+      "exDe": "Es ist eine große Schule."
+    },
+    {
+      "a": "er ist",
+      "b": "he's",
+      "bAlt": [
+        "he is"
+      ],
+      "ex": "{He's|He is} my friend.",
+      "exDe": "Er ist mein Freund."
+    },
+    {
+      "a": "sie ist",
+      "b": "she's",
+      "bAlt": [
+        "she is"
+      ],
+      "ex": "{She's|She is} my teacher.",
+      "exDe": "Sie ist meine Lehrerin."
+    },
+    {
+      "a": "okay",
+      "b": "OK",
+      "bAlt": [
+        "okay"
+      ],
+      "ex": "Is that {OK}?",
+      "exDe": "Ist das okay?"
+    },
+    {
+      "a": "ein / eine",
+      "b": "a / an",
+      "ex": "This is {an} apple.",
+      "exDe": "Das ist ein Apfel."
+    },
+    {
+      "a": "der Lehrer / die Lehrerin",
+      "b": "teacher",
+      "aAlt": [
+        "Lehrer",
+        "Lehrerin"
+      ],
+      "ex": "Mr Turner is my {teacher}.",
+      "exDe": "Herr Turner ist mein Lehrer."
+    },
+    {
+      "a": "der Klassenlehrer / die Klassenlehrerin",
+      "b": "tutor",
+      "aAlt": [
+        "Klassenlehrer",
+        "Klassenlehrerin"
+      ],
+      "ex": "Mrs Brown is our {tutor}.",
+      "exDe": "Frau Brown ist unsere Klassenlehrerin."
+    },
+    {
+      "a": "Herr",
+      "b": "Mr",
+      "ex": "Good morning, {Mr} Turner.",
+      "exDe": "Guten Morgen, Herr Turner."
+    },
+    {
+      "a": "Frau",
+      "b": "Mrs",
+      "ex": "Hello, {Mrs} Brown.",
+      "exDe": "Hallo, Frau Brown."
+    },
+    {
+      "a": "der Hausmeister / die Hausmeisterin",
+      "b": "caretaker",
+      "aAlt": [
+        "Hausmeister",
+        "Hausmeisterin"
+      ],
+      "ex": "The {caretaker} opens the school in the morning.",
+      "exDe": "Der Hausmeister schließt morgens die Schule auf."
+    },
+    {
+      "a": "immer",
+      "b": "always",
+      "hard": true,
+      "ex": "I {always} take my water bottle to school.",
+      "exDe": "Ich nehme immer meine Trinkflasche mit in die Schule."
+    },
+    {
+      "a": "beschäftigt / belebt / arbeitsreich",
+      "b": "busy",
+      "ex": "The teacher is very {busy} today.",
+      "exDe": "Die Lehrerin ist heute sehr beschäftigt."
+    },
+    {
+      "a": "der Freund / die Freundin",
+      "b": "friend",
+      "aAlt": [
+        "Freund",
+        "Freundin"
+      ],
+      "ex": "Lisa is my best {friend}.",
+      "exDe": "Lisa ist meine beste Freundin."
+    },
+    {
+      "a": "neu",
+      "b": "new",
+      "ex": "This is my {new} school.",
+      "exDe": "Das ist meine neue Schule."
+    },
+    {
+      "a": "die Klasse / der Unterricht / der Kurs",
+      "b": "class",
+      "aAlt": [
+        "Klasse",
+        "Kurs",
+        "Unterricht"
+      ],
+      "ex": "There are 25 children in my {class}.",
+      "exDe": "In meiner Klasse sind 25 Kinder."
+    },
+    {
+      "a": "die Klasse / die Jahrgangsstufe / das Jahr",
+      "b": "year",
+      "aAlt": [
+        "Jahr",
+        "Jahrgangsstufe",
+        "Klasse"
+      ],
+      "bAlt": [
+        "Year"
+      ],
+      "ex": "I'm in {Year} 5.",
+      "exDe": "Ich bin in Klasse 5."
+    },
+    {
+      "a": "das Leben",
+      "b": "life",
+      "aAlt": [
+        "Leben"
+      ],
+      "ex": "School {life} is fun.",
+      "exDe": "Das Schulleben macht Spaß."
+    },
+    {
+      "a": "die Uniform / die Schuluniform",
+      "b": "uniform",
+      "aAlt": [
+        "Schuluniform",
+        "Uniform"
+      ],
+      "ex": "In England, children wear a school {uniform}.",
+      "exDe": "In England tragen Kinder eine Schuluniform."
+    },
+    {
+      "a": "gehen / fahren",
+      "b": "to go",
+      "bAlt": [
+        "go"
+      ],
+      "ex": "I {go} to school by bus.",
+      "exDe": "Ich fahre mit dem Bus zur Schule."
+    },
+    {
+      "a": "in / zu / nach / bis",
+      "b": "to",
+      "ex": "We go {to} the library.",
+      "exDe": "Wir gehen in die Bibliothek."
+    },
+    {
+      "a": "in / auf",
+      "b": "in",
+      "ex": "My pen is {in} my pencil case.",
+      "exDe": "Mein Füller ist in meinem Mäppchen."
+    }
+  ]
+}

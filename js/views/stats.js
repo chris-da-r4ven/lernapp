@@ -92,7 +92,7 @@ function collectItems() {
             m.dir === 'ab' ? [it.a, it.b]
             : m.dir === 'ba' ? [it.b, it.a]
             : m.dir === 'hoeren' ? [`🔊 ${it[en]}`, it[en]]
-            : m.dir === 'satz' ? [String(it.ex).replace(/\{[^}]*\}/, '___'), parseGap(it.ex)?.answer ?? '']
+            : (m.dir === 'satz' || m.dir === 'form') ? [String(it.ex).replace(/\{[^}]*\}/, '___'), parseGap(it.ex)?.answer ?? '']
             : [`🔊 ${it[en]}`, it[de]];
           rows.push({ st, status: status(st), prompt, answer, mode: m });
         }

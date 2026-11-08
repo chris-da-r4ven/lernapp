@@ -11,7 +11,7 @@ import { esc, shuffle } from '../util.js';
 export function testView(el, sid) {
   const subject = getSubject(sid);
   if (!subject) { location.hash = '#/'; return; }
-  const lessons = subject.lessons.map((l) => getLesson(sid, l.id)).filter((l) => l && englishSide(l));
+  const lessons = subject.lessons.map((l) => getLesson(sid, l.id)).filter((l) => l && englishSide(l) && !l.grammar);
   const back = `#/fach/${encodeURIComponent(sid)}`;
 
   el.innerHTML = `
@@ -23,7 +23,7 @@ export function testView(el, sid) {
       <h2>Welche Lektionen?</h2>
       <form class="test-form">
         ${lessons.map((l) => `
-          <label class="check"><input type="checkbox" name="lesson" value="${esc(l.id)}" checked>
+          <label class="check"><input type="checkbox" name="lesson" value="${esc(l.id)}">
             ${esc(subject.lessons.find((x) => x.id === l.id)?.title ?? l.title)} <span class="muted small">(${l.items.length} Wörter)</span></label>`).join('')}
         <p class="test-count muted small"></p>
         <div class="actions"><button class="btn primary" type="submit">Test starten</button></div>
@@ -34,7 +34,7 @@ export function testView(el, sid) {
   const chosen = () => [...form.querySelectorAll('input[name=lesson]:checked')].map((i) => lessons.find((l) => l.id === i.value));
   const updateCount = () => {
     const n = chosen().reduce((sum, l) => sum + l.items.length, 0);
-    form.querySelector('.test-count').textContent = n ? `${n} Wörter im Test` : 'Bitte mindestens eine Lektion auswählen.';
+    form.querySelector('.test-count').textContent = n ? `${n} Wörter im Test` : 'Hake die Lektionen an, die im Test drankommen.';
     form.querySelector('button').disabled = !n;
   };
   form.addEventListener('change', updateCount);

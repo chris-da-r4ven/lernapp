@@ -1,0 +1,92 @@
+{
+  "id": "farben",
+  "title": "Farben",
+  "type": "pairs",
+  "sides": {
+    "a": "Deutsch",
+    "b": "Englisch"
+  },
+  "exercises": [
+    "write"
+  ],
+  "items": [
+    {
+      "a": "die Farbe",
+      "b": "colour",
+      "aAlt": [
+        "Farbe"
+      ],
+      "ex": "What {colour} is your bag?",
+      "exDe": "Welche Farbe hat deine Tasche?"
+    },
+    {
+      "a": "Lieblings-",
+      "b": "favourite",
+      "aAlt": [
+        "Lieblings"
+      ],
+      "ex": "Pink is my {favourite} colour.",
+      "exDe": "Rosa ist meine Lieblingsfarbe."
+    },
+    {
+      "a": "schwarz",
+      "b": "black",
+      "ex": "The cat is {black}.",
+      "exDe": "Die Katze ist schwarz."
+    },
+    {
+      "a": "blau",
+      "b": "blue",
+      "ex": "My school blazer is {blue}.",
+      "exDe": "Mein Schulblazer ist blau."
+    },
+    {
+      "a": "braun",
+      "b": "brown",
+      "ex": "The dog is {brown}.",
+      "exDe": "Der Hund ist braun."
+    },
+    {
+      "a": "grün",
+      "b": "green",
+      "ex": "My school bag is {green}.",
+      "exDe": "Meine Schultasche ist grün."
+    },
+    {
+      "a": "grau",
+      "b": "grey",
+      "ex": "The raccoon is {grey}.",
+      "exDe": "Der Waschbär ist grau."
+    },
+    {
+      "a": "orange",
+      "b": "orange",
+      "ex": "The pumpkin is {orange}.",
+      "exDe": "Der Kürbis ist orange."
+    },
+    {
+      "a": "pink / rosa",
+      "b": "pink",
+      "ex": "Fanny has a {pink} mane.",
+      "exDe": "Fanny hat eine rosa Mähne."
+    },
+    {
+      "a": "rot",
+      "b": "red",
+      "ex": "My rubber is {red}.",
+      "exDe": "Mein Radiergummi ist rot."
+    },
+    {
+      "a": "weiß",
+      "b": "white",
+      "ex": "The ghost is {white}.",
+      "exDe": "Der Geist ist weiß."
+    },
+    {
+      "a": "gelb",
+      "b": "yellow",
+      "ex": "My pencil case is {yellow}.",
+      "exDe": "Mein Mäppchen ist gelb."
+    }
+  ]
+}

@@ -69,10 +69,20 @@ export const gap = exercise({
   modes: () => [{ dir: 'satz', label: '📝 Lückensätze', short: '📝 Satz' }],
 });
 
-export const exercises = Object.fromEntries([write, dictation, listenChoose, gap].map((ex) => [ex.id, ex]));
+// Grammatik: richtige Form antippen (Lektionen mit "grammar": true).
+export const form = exercise({
+  id: 'form',
+  label: 'Richtige Form',
+  usable: (item) => Boolean(item.ex && item.choices),
+  modes: () => [{ dir: 'form', label: '✏️ Richtige Form antippen', short: '✏️ Form' }],
+});
+
+export const exercises = Object.fromEntries([write, dictation, listenChoose, gap, form].map((ex) => [ex.id, ex]));
 
 export function exercisesFor(lesson) {
   const listed = (lesson.exercises ?? []).map((id) => exercises[id]).filter(Boolean);
+  // Grammatik-Lektionen bekommen nur ihre eigenen Übungen.
+  if (lesson.grammar) return listed;
   const auto = Object.values(exercises).filter((ex) => ex.auto?.(lesson) && !listed.includes(ex));
   return [...listed, ...auto];
 }

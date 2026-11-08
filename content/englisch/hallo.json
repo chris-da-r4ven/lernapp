@@ -1,0 +1,262 @@
+{
+  "id": "hallo",
+  "title": "Hallo & Kennenlernen",
+  "type": "pairs",
+  "sides": {
+    "a": "Deutsch",
+    "b": "Englisch"
+  },
+  "exercises": [
+    "write"
+  ],
+  "items": [
+    {
+      "a": "Hallo",
+      "b": "Hello",
+      "bAlt": [
+        "Hi"
+      ],
+      "ex": "{Hello|Hi}, I'm Lisa.",
+      "exDe": "Hallo, ich bin Lisa."
+    },
+    {
+      "a": "ich bin",
+      "b": "I'm",
+      "bAlt": [
+        "I am"
+      ],
+      "ex": "{I'm|I am} ten years old.",
+      "exDe": "Ich bin zehn Jahre alt."
+    },
+    {
+      "a": "der / die / das",
+      "b": "the",
+      "ex": "{The} raccoon is cool.",
+      "exDe": "Der Waschbär ist cool."
+    },
+    {
+      "a": "der Waschbär",
+      "b": "raccoon",
+      "aAlt": [
+        "Waschbär"
+      ],
+      "ex": "The {raccoon} is grey and black.",
+      "exDe": "Der Waschbär ist grau und schwarz."
+    },
+    {
+      "a": "mein / meine",
+      "b": "my",
+      "ex": "This is {my} friend Tom.",
+      "exDe": "Das ist mein Freund Tom."
+    },
+    {
+      "a": "ist",
+      "b": "is",
+      "ex": "My name {is} Emma.",
+      "exDe": "Ich heiße Emma."
+    },
+    {
+      "a": "was ist",
+      "b": "what's",
+      "bAlt": [
+        "what is"
+      ],
+      "ex": "{What's|What is} your name?",
+      "exDe": "Wie heißt du?"
+    },
+    {
+      "a": "dein / deine / euer / eure / Ihr / Ihre",
+      "b": "your",
+      "ex": "What's {your} name?",
+      "exDe": "Wie heißt du?"
+    },
+    {
+      "a": "Ich heiße …",
+      "b": "My name is …",
+      "aAlt": [
+        "Ich heiße"
+      ],
+      "bAlt": [
+        "My name is"
+      ],
+      "ex": "{My name is} Ben.",
+      "exDe": "Ich heiße Ben."
+    },
+    {
+      "a": "Wie heißt du?",
+      "b": "What's your name?",
+      "bAlt": [
+        "What is your name?"
+      ],
+      "ex": "Hi! {What's your name|What is your name}?",
+      "exDe": "Hallo! Wie heißt du?"
+    },
+    {
+      "a": "Wie heißt ihr?",
+      "b": "What are your names?",
+      "ex": "Hello, children. {What are your names}?",
+      "exDe": "Hallo, Kinder. Wie heißt ihr?"
+    },
+    {
+      "a": "Schön, dich kennenzulernen.",
+      "b": "Nice to meet you.",
+      "aAlt": [
+        "Schön dich kennenzulernen",
+        "Schön, euch kennenzulernen"
+      ],
+      "ex": "Hi, Tom. {Nice to meet you}.",
+      "exDe": "Hallo, Tom. Schön, dich kennenzulernen."
+    },
+    {
+      "a": "Wie geht es dir?",
+      "b": "How are you?",
+      "aAlt": [
+        "Wie geht es Ihnen?",
+        "Wie geht's dir?",
+        "Wie geht's?"
+      ],
+      "ex": "Hello, Mrs Brown. {How are you}?",
+      "exDe": "Hallo, Frau Brown. Wie geht es Ihnen?"
+    },
+    {
+      "a": "toll / großartig / gut",
+      "b": "great",
+      "ex": "The music is {great}!",
+      "exDe": "Die Musik ist toll!"
+    },
+    {
+      "a": "Bis später! / Bis bald!",
+      "b": "See you later.",
+      "aAlt": [
+        "Tschüss, bis bald!"
+      ],
+      "ex": "Bye, Lisa! {See you later}!",
+      "exDe": "Tschüss, Lisa! Bis später!"
+    },
+    {
+      "a": "Tschüss",
+      "b": "Bye",
+      "bAlt": [
+        "Bye!"
+      ],
+      "ex": "{Bye}, Mum!",
+      "exDe": "Tschüss, Mama!"
+    },
+    {
+      "a": "Auf Wiedersehen",
+      "b": "Goodbye",
+      "ex": "{Goodbye}, Mr Turner!",
+      "exDe": "Auf Wiedersehen, Herr Turner!"
+    },
+    {
+      "a": "sagen / sprechen",
+      "b": "to say",
+      "bAlt": [
+        "say"
+      ],
+      "ex": "Can you {say} that again, please?",
+      "exDe": "Kannst du das bitte noch einmal sagen?"
+    },
+    {
+      "a": "und",
+      "b": "and",
+      "ex": "Tom {and} Lisa are friends.",
+      "exDe": "Tom und Lisa sind Freunde."
+    },
+    {
+      "a": "das / dies",
+      "b": "this",
+      "ex": "{This} is my school.",
+      "exDe": "Das ist meine Schule."
+    },
+    {
+      "a": "auch",
+      "b": "too",
+      "ex": "I'm ten. I'm ten {too}!",
+      "exDe": "Ich bin zehn. Ich bin auch zehn!"
+    },
+    {
+      "a": "Wie bitte? / Entschuldigung?",
+      "b": "pardon",
+      "bAlt": [
+        "Pardon?"
+      ],
+      "ex": "{Pardon}? Can you say that again?",
+      "exDe": "Wie bitte? Kannst du das noch einmal sagen?"
+    },
+    {
+      "a": "Kannst du das bitte buchstabieren?",
+      "b": "Can you spell that, please?",
+      "bAlt": [
+        "Can you spell that please?"
+      ],
+      "ex": "Your name is Smith? {Can you spell that}, please?",
+      "exDe": "Du heißt Smith? Kannst du das bitte buchstabieren?"
+    },
+    {
+      "a": "bitte",
+      "b": "please",
+      "ex": "Sit down, {please}.",
+      "exDe": "Setzt euch bitte."
+    },
+    {
+      "a": "Danke.",
+      "b": "Thank you.",
+      "bAlt": [
+        "Thanks"
+      ],
+      "ex": "Here you are. – {Thank you}!",
+      "exDe": "Bitte schön. – Danke!"
+    },
+    {
+      "a": "Wie alt bist du?",
+      "b": "How old are you?",
+      "ex": "{How old are you}? – I'm ten.",
+      "exDe": "Wie alt bist du? – Ich bin zehn."
+    },
+    {
+      "a": "Woher kommst du?",
+      "b": "Where are you from?",
+      "ex": "{Where are you from}? – I'm from Stuttgart.",
+      "exDe": "Woher kommst du? – Ich komme aus Stuttgart."
+    },
+    {
+      "a": "Ich komme aus …",
+      "b": "I'm from …",
+      "aAlt": [
+        "Ich komme aus"
+      ],
+      "bAlt": [
+        "I am from",
+        "I'm from"
+      ],
+      "ex": "{I'm from|I am from} Germany.",
+      "exDe": "Ich komme aus Deutschland."
+    },
+    {
+      "a": "der Schüler / die Schülerin",
+      "b": "student",
+      "aAlt": [
+        "Schüler",
+        "Schülerin"
+      ],
+      "ex": "Lisa is a {student} at my school.",
+      "exDe": "Lisa ist Schülerin an meiner Schule."
+    },
+    {
+      "a": "die Schule",
+      "b": "school",
+      "aAlt": [
+        "Schule"
+      ],
+      "ex": "My {school} is big.",
+      "exDe": "Meine Schule ist groß."
+    },
+    {
+      "a": "cool / super",
+      "b": "cool",
+      "ex": "Your new bag is {cool}!",
+      "exDe": "Deine neue Tasche ist cool!"
+    }
+  ]
+}

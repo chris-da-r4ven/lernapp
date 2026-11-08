@@ -1,0 +1,184 @@
+{
+  "id": "schulsachen",
+  "title": "Schulsachen",
+  "type": "pairs",
+  "sides": {
+    "a": "Deutsch",
+    "b": "Englisch"
+  },
+  "exercises": [
+    "write"
+  ],
+  "items": [
+    {
+      "a": "die Schultasche / der Schulranzen",
+      "b": "school bag",
+      "aAlt": [
+        "Schulranzen",
+        "Schultasche"
+      ],
+      "ex": "My {school bag} is green.",
+      "exDe": "Meine Schultasche ist grün."
+    },
+    {
+      "a": "das Buch",
+      "b": "book",
+      "aAlt": [
+        "Buch"
+      ],
+      "ex": "This is a {book} for you.",
+      "exDe": "Das ist ein Buch für dich."
+    },
+    {
+      "a": "das Heft / das Schulheft",
+      "b": "exercise book",
+      "aAlt": [
+        "Heft",
+        "Schulheft"
+      ],
+      "ex": "Write the words in your {exercise book}.",
+      "exDe": "Schreib die Wörter in dein Heft."
+    },
+    {
+      "a": "das Tablet",
+      "b": "tablet",
+      "aAlt": [
+        "Tablet"
+      ],
+      "ex": "My new {tablet} is grey.",
+      "exDe": "Mein neues Tablet ist grau."
+    },
+    {
+      "a": "die Wasserflasche / die Trinkflasche",
+      "b": "water bottle",
+      "aAlt": [
+        "Trinkflasche",
+        "Wasserflasche"
+      ],
+      "ex": "My {water bottle} is in my school bag.",
+      "exDe": "Meine Trinkflasche ist in meiner Schultasche."
+    },
+    {
+      "a": "die Brotbox / die Brotdose",
+      "b": "lunch box",
+      "aAlt": [
+        "Brotbox",
+        "Brotdose"
+      ],
+      "ex": "My sandwich is in my {lunch box}.",
+      "exDe": "Mein Brot ist in meiner Brotbox."
+    },
+    {
+      "a": "die Schere",
+      "b": "scissors",
+      "aAlt": [
+        "Schere"
+      ],
+      "ex": "I cut the paper with my {scissors}.",
+      "exDe": "Ich schneide das Papier mit meiner Schere."
+    },
+    {
+      "a": "der Kleber",
+      "b": "glue",
+      "aAlt": [
+        "Kleber"
+      ],
+      "ex": "Can I have the {glue}, please?",
+      "exDe": "Kann ich bitte den Kleber haben?"
+    },
+    {
+      "a": "der Klebestift",
+      "b": "glue stick",
+      "aAlt": [
+        "Klebestift"
+      ],
+      "ex": "My {glue stick} is empty.",
+      "exDe": "Mein Klebestift ist leer."
+    },
+    {
+      "a": "das Mäppchen / das Federmäppchen",
+      "b": "pencil case",
+      "aAlt": [
+        "Federmäppchen",
+        "Mäppchen"
+      ],
+      "ex": "My {pencil case} is in my bag.",
+      "exDe": "Mein Mäppchen ist in meiner Tasche."
+    },
+    {
+      "a": "der Füller / der Stift",
+      "b": "pen",
+      "aAlt": [
+        "Füller",
+        "Stift"
+      ],
+      "ex": "I have a blue {pen}.",
+      "exDe": "Ich habe einen blauen Füller."
+    },
+    {
+      "a": "der Bleistift",
+      "b": "pencil",
+      "aAlt": [
+        "Bleistift"
+      ],
+      "ex": "Write with a {pencil}, please.",
+      "exDe": "Schreib bitte mit einem Bleistift."
+    },
+    {
+      "a": "die Buntstifte",
+      "b": "coloured pencils",
+      "aAlt": [
+        "Buntstifte"
+      ],
+      "hard": true,
+      "ex": "Can I use your {coloured pencils}?",
+      "exDe": "Kann ich deine Buntstifte benutzen?"
+    },
+    {
+      "a": "der Radiergummi",
+      "b": "rubber",
+      "aAlt": [
+        "Radiergummi"
+      ],
+      "ex": "My {rubber} is white.",
+      "exDe": "Mein Radiergummi ist weiß."
+    },
+    {
+      "a": "das Lineal",
+      "b": "ruler",
+      "aAlt": [
+        "Lineal"
+      ],
+      "ex": "Can I have your {ruler}, please?",
+      "exDe": "Kann ich bitte dein Lineal haben?"
+    },
+    {
+      "a": "der Spitzer / der Bleistiftspitzer",
+      "b": "sharpener",
+      "aAlt": [
+        "Bleistiftspitzer",
+        "Spitzer"
+      ],
+      "ex": "Where is my {sharpener}?",
+      "exDe": "Wo ist mein Spitzer?"
+    },
+    {
+      "a": "der Ordner",
+      "b": "folder",
+      "aAlt": [
+        "Ordner"
+      ],
+      "ex": "My {folder} is red.",
+      "exDe": "Mein Ordner ist rot."
+    },
+    {
+      "a": "das Handy",
+      "b": "phone",
+      "aAlt": [
+        "Handy"
+      ],
+      "ex": "My {phone} is in my bag.",
+      "exDe": "Mein Handy ist in meiner Tasche."
+    }
+  ]
+}

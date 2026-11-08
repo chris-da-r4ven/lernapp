@@ -1,0 +1,279 @@
+{
+  "id": "be-formen",
+  "title": "am, is oder are?",
+  "type": "pairs",
+  "grammar": true,
+  "sides": {
+    "a": "Deutsch",
+    "b": "Englisch"
+  },
+  "exercises": [
+    "form"
+  ],
+  "items": [
+    {
+      "id": "s1",
+      "a": "Ich bin zehn Jahre alt.",
+      "b": "I am ten years old.",
+      "ex": "I {am} ten years old.",
+      "exDe": "Ich bin zehn Jahre alt.",
+      "choices": [
+        "am",
+        "is",
+        "are"
+      ]
+    },
+    {
+      "id": "s2",
+      "a": "Du bist meine beste Freundin.",
+      "b": "You are my best friend.",
+      "ex": "You {are} my best friend.",
+      "exDe": "Du bist meine beste Freundin.",
+      "choices": [
+        "am",
+        "is",
+        "are"
+      ]
+    },
+    {
+      "id": "s3",
+      "a": "Tom ist mein Bruder.",
+      "b": "Tom is my brother.",
+      "ex": "Tom {is} my brother.",
+      "exDe": "Tom ist mein Bruder.",
+      "choices": [
+        "am",
+        "is",
+        "are"
+      ]
+    },
+    {
+      "id": "s4",
+      "a": "Die Katze ist im Garten.",
+      "b": "The cat is in the garden.",
+      "ex": "The cat {is} in the garden.",
+      "exDe": "Die Katze ist im Garten.",
+      "choices": [
+        "am",
+        "is",
+        "are"
+      ]
+    },
+    {
+      "id": "s5",
+      "a": "Wir sind in der Turnhalle.",
+      "b": "We are in the gym.",
+      "ex": "We {are} in the gym.",
+      "exDe": "Wir sind in der Turnhalle.",
+      "choices": [
+        "am",
+        "is",
+        "are"
+      ]
+    },
+    {
+      "id": "s6",
+      "a": "Meine Bleistifte sind in meinem Mäppchen.",
+      "b": "My pencils are in my pencil case.",
+      "ex": "My pencils {are} in my pencil case.",
+      "exDe": "Meine Bleistifte sind in meinem Mäppchen.",
+      "choices": [
+        "am",
+        "is",
+        "are"
+      ]
+    },
+    {
+      "id": "s7",
+      "a": "Frau Brown ist unsere Englischlehrerin.",
+      "b": "Mrs Brown is our English teacher.",
+      "ex": "Mrs Brown {is} our English teacher.",
+      "exDe": "Frau Brown ist unsere Englischlehrerin.",
+      "choices": [
+        "am",
+        "is",
+        "are"
+      ]
+    },
+    {
+      "id": "s8",
+      "a": "Lisa und ich sind Freundinnen.",
+      "b": "Lisa and I are friends.",
+      "ex": "Lisa and I {are} friends.",
+      "exDe": "Lisa und ich sind Freundinnen.",
+      "choices": [
+        "am",
+        "is",
+        "are"
+      ]
+    },
+    {
+      "id": "s9",
+      "a": "Kommst du aus Hamburg?",
+      "b": "Are you from Hamburg?",
+      "ex": "{Are} you from Hamburg?",
+      "exDe": "Kommst du aus Hamburg?",
+      "choices": [
+        "am",
+        "is",
+        "are"
+      ]
+    },
+    {
+      "id": "s10",
+      "a": "Ist deine Schwester in der Schule?",
+      "b": "Is your sister at school?",
+      "ex": "{Is} your sister at school?",
+      "exDe": "Ist deine Schwester in der Schule?",
+      "choices": [
+        "am",
+        "is",
+        "are"
+      ]
+    },
+    {
+      "id": "s11",
+      "a": "Die Schere liegt auf dem Tisch.",
+      "b": "The scissors are on the table.",
+      "ex": "The scissors {are} on the table.",
+      "exDe": "Die Schere liegt auf dem Tisch.",
+      "choices": [
+        "am",
+        "is",
+        "are"
+      ]
+    },
+    {
+      "id": "s12",
+      "a": "Heute ist Montag.",
+      "b": "It is Monday today.",
+      "ex": "It {is} Monday today.",
+      "exDe": "Heute ist Montag.",
+      "choices": [
+        "am",
+        "is",
+        "are"
+      ]
+    },
+    {
+      "id": "s13",
+      "a": "Meine Schultasche ist rot.",
+      "b": "My school bag is red.",
+      "ex": "My school bag {is} red.",
+      "exDe": "Meine Schultasche ist rot.",
+      "choices": [
+        "am",
+        "is",
+        "are"
+      ]
+    },
+    {
+      "id": "s14",
+      "a": "Die Kinder sind auf dem Schulhof.",
+      "b": "The children are on the playground.",
+      "ex": "The children {are} on the playground.",
+      "exDe": "Die Kinder sind auf dem Schulhof.",
+      "choices": [
+        "am",
+        "is",
+        "are"
+      ]
+    },
+    {
+      "id": "s15",
+      "a": "Wo ist die Bibliothek?",
+      "b": "Where is the library?",
+      "ex": "Where {is} the library?",
+      "exDe": "Wo ist die Bibliothek?",
+      "choices": [
+        "am",
+        "is",
+        "are"
+      ]
+    },
+    {
+      "id": "s16",
+      "a": "Wie alt bist du?",
+      "b": "How old are you?",
+      "ex": "How old {are} you?",
+      "exDe": "Wie alt bist du?",
+      "choices": [
+        "am",
+        "is",
+        "are"
+      ]
+    },
+    {
+      "id": "s17",
+      "a": "Ich bin nicht zu spät.",
+      "b": "I am not late.",
+      "ex": "I {am} not late.",
+      "exDe": "Ich bin nicht zu spät.",
+      "choices": [
+        "am",
+        "is",
+        "are"
+      ]
+    },
+    {
+      "id": "s18",
+      "a": "Alle sind glücklich.",
+      "b": "Everybody is happy.",
+      "ex": "Everybody {is} happy.",
+      "exDe": "Alle sind glücklich.",
+      "choices": [
+        "am",
+        "is",
+        "are"
+      ]
+    },
+    {
+      "id": "s19",
+      "a": "Herr und Frau Smith sind Lehrer.",
+      "b": "Mr and Mrs Smith are teachers.",
+      "ex": "Mr and Mrs Smith {are} teachers.",
+      "exDe": "Herr und Frau Smith sind Lehrer.",
+      "choices": [
+        "am",
+        "is",
+        "are"
+      ]
+    },
+    {
+      "id": "s20",
+      "a": "Meine Lieblingsfarbe ist Rosa.",
+      "b": "My favourite colour is pink.",
+      "ex": "My favourite colour {is} pink.",
+      "exDe": "Meine Lieblingsfarbe ist Rosa.",
+      "choices": [
+        "am",
+        "is",
+        "are"
+      ]
+    },
+    {
+      "id": "s21",
+      "a": "Die Geister sind im Spukhaus.",
+      "b": "The ghosts are in the haunted house.",
+      "ex": "The ghosts {are} in the haunted house.",
+      "exDe": "Die Geister sind im Spukhaus.",
+      "choices": [
+        "am",
+        "is",
+        "are"
+      ]
+    },
+    {
+      "id": "s22",
+      "a": "Ben ist heute nicht in der Schule.",
+      "b": "Ben is not at school today.",
+      "ex": "Ben {is} not at school today.",
+      "exDe": "Ben ist heute nicht in der Schule.",
+      "choices": [
+        "am",
+        "is",
+        "are"
+      ]
+    }
+  ]
+}

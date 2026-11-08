@@ -67,7 +67,8 @@ export function buildRound(entries, all = false) {
 }
 
 // Anteil sicherer Karten einer Lektion in einer Richtung (0..1).
-export function mastery(sid, lesson, dir = 'ab') {
+// Grammatik-Lektionen zählen nach ihrer eigenen Übung (Form wählen).
+export function mastery(sid, lesson, dir = lesson?.grammar ? 'form' : 'ab') {
   if (!lesson?.items?.length) return 0;
   const safe = lesson.items.filter((it) => itemState(itemKey(sid, lesson.id, it, dir)).box >= SAFE_BOX).length;
   return safe / lesson.items.length;

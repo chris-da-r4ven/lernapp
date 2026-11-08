@@ -1,6 +1,6 @@
 {
-  "version": 5,
-  "updated": "2026-11-06",
+  "version": 6,
+  "updated": "2026-11-08",
   "subjects": [
     {
       "id": "englisch",
@@ -8,14 +8,64 @@
       "icon": "🇬🇧",
       "lessons": [
         {
-          "id": "schule-1",
-          "title": "In der Schule",
-          "file": "englisch/schule-1.json"
+          "id": "hallo",
+          "title": "Hallo & Kennenlernen",
+          "file": "englisch/hallo.json"
+        },
+        {
+          "id": "zahlen",
+          "title": "Zahlen 0–12",
+          "file": "englisch/zahlen.json"
+        },
+        {
+          "id": "farben",
+          "title": "Farben",
+          "file": "englisch/farben.json"
+        },
+        {
+          "id": "leute",
+          "title": "Leute in der Schule",
+          "file": "englisch/leute.json"
+        },
+        {
+          "id": "schulsachen",
+          "title": "Schulsachen",
+          "file": "englisch/schulsachen.json"
+        },
+        {
+          "id": "klassenzimmer",
+          "title": "Im Klassenzimmer",
+          "file": "englisch/klassenzimmer.json"
+        },
+        {
+          "id": "orte",
+          "title": "Orte in der Schule",
+          "file": "englisch/orte.json"
+        },
+        {
+          "id": "faecher",
+          "title": "Schulfächer",
+          "file": "englisch/faecher.json"
+        },
+        {
+          "id": "wochentage",
+          "title": "Wochentage",
+          "file": "englisch/wochentage.json"
+        },
+        {
+          "id": "halloween",
+          "title": "Halloween",
+          "file": "englisch/halloween.json"
         },
         {
           "id": "to-be",
           "title": "to be (sein)",
           "file": "englisch/to-be.json"
+        },
+        {
+          "id": "be-formen",
+          "title": "am, is oder are?",
+          "file": "englisch/be-formen.json"
         }
       ]
     }

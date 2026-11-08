@@ -1,0 +1,251 @@
+{
+  "id": "klassenzimmer",
+  "title": "Im Klassenzimmer",
+  "type": "pairs",
+  "sides": {
+    "a": "Deutsch",
+    "b": "Englisch"
+  },
+  "exercises": [
+    "write"
+  ],
+  "items": [
+    {
+      "a": "Guten Morgen.",
+      "b": "Good morning.",
+      "bAlt": [
+        "good morning"
+      ],
+      "ex": "{Good morning}, Mr Turner!",
+      "exDe": "Guten Morgen, Herr Turner!"
+    },
+    {
+      "a": "der Junge",
+      "b": "boy",
+      "aAlt": [
+        "Junge"
+      ],
+      "ex": "Tom is a {boy}.",
+      "exDe": "Tom ist ein Junge."
+    },
+    {
+      "a": "das Mädchen",
+      "b": "girl",
+      "aAlt": [
+        "Mädchen"
+      ],
+      "ex": "Lisa is a {girl}.",
+      "exDe": "Lisa ist ein Mädchen."
+    },
+    {
+      "a": "anschauen / ansehen",
+      "b": "to look at",
+      "bAlt": [
+        "look at"
+      ],
+      "ex": "Please {look at} the board.",
+      "exDe": "Schaut bitte an die Tafel."
+    },
+    {
+      "a": "die Tafel",
+      "b": "board",
+      "aAlt": [
+        "Tafel"
+      ],
+      "ex": "My name is on the {board}.",
+      "exDe": "Mein Name steht an der Tafel."
+    },
+    {
+      "a": "Kannst du mir helfen?",
+      "b": "Can you help me?",
+      "aAlt": [
+        "Können Sie mir helfen?",
+        "Könnt ihr mir helfen?"
+      ],
+      "ex": "Excuse me, {can you help me}?",
+      "exDe": "Entschuldigung, kannst du mir helfen?"
+    },
+    {
+      "a": "ja",
+      "b": "yes",
+      "ex": "Are you ten? – {Yes}, I am.",
+      "exDe": "Bist du zehn? – Ja."
+    },
+    {
+      "a": "nein / kein / keine",
+      "b": "no",
+      "ex": "Do you have a pet? – {No}, I don't.",
+      "exDe": "Hast du ein Haustier? – Nein."
+    },
+    {
+      "a": "natürlich / selbstverständlich",
+      "b": "of course",
+      "ex": "Can I have a pen? – Yes, {of course}.",
+      "exDe": "Kann ich einen Stift haben? – Ja, natürlich."
+    },
+    {
+      "a": "sich hinsetzen / sich setzen",
+      "b": "to sit down",
+      "aAlt": [
+        "hinsetzen",
+        "setzen"
+      ],
+      "bAlt": [
+        "sit down"
+      ],
+      "ex": "Please {sit down}, everybody.",
+      "exDe": "Setzt euch bitte alle hin."
+    },
+    {
+      "a": "ruhig / leise / still",
+      "b": "quiet",
+      "ex": "Please be {quiet} in the library.",
+      "exDe": "Seid bitte leise in der Bibliothek."
+    },
+    {
+      "a": "zuhören / anhören / hören",
+      "b": "to listen (to)",
+      "bAlt": [
+        "listen",
+        "listen (to)",
+        "listen to",
+        "to listen"
+      ],
+      "hard": true,
+      "ex": "We {listen to} the teacher.",
+      "exDe": "Wir hören der Lehrerin zu."
+    },
+    {
+      "a": "Sei still! / Rede nicht!",
+      "b": "Don't talk.",
+      "aAlt": [
+        "Redet nicht!",
+        "Seid still!"
+      ],
+      "bAlt": [
+        "Don't talk!"
+      ],
+      "ex": "{Don't talk}, please!",
+      "exDe": "Bitte redet nicht!"
+    },
+    {
+      "a": "Tut mir leid. / Entschuldigung.",
+      "b": "Sorry.",
+      "bAlt": [
+        "Sorry!"
+      ],
+      "ex": "{Sorry}, I'm late.",
+      "exDe": "Tut mir leid, ich bin zu spät."
+    },
+    {
+      "a": "Entschuldigung! (wenn man jemanden anspricht)",
+      "b": "Excuse me!",
+      "aAlt": [
+        "Entschuldigung",
+        "Entschuldigung!"
+      ],
+      "bAlt": [
+        "Excuse me"
+      ],
+      "ex": "{Excuse me}, where is the library?",
+      "exDe": "Entschuldigung, wo ist die Bibliothek?"
+    },
+    {
+      "a": "hier",
+      "b": "here",
+      "ex": "I'm {here}!",
+      "exDe": "Ich bin hier!"
+    },
+    {
+      "a": "haben",
+      "b": "to have",
+      "bAlt": [
+        "have"
+      ],
+      "ex": "I {have} a brother.",
+      "exDe": "Ich habe einen Bruder."
+    },
+    {
+      "a": "Bitte schön.",
+      "b": "Here you are.",
+      "aAlt": [
+        "Bitteschön."
+      ],
+      "ex": "Can I have a pen? – {Here you are}.",
+      "exDe": "Kann ich einen Stift haben? – Bitte schön."
+    },
+    {
+      "a": "für",
+      "b": "for",
+      "ex": "This is a book {for} you.",
+      "exDe": "Das ist ein Buch für dich."
+    },
+    {
+      "a": "öffnen / aufmachen",
+      "b": "to open",
+      "bAlt": [
+        "open"
+      ],
+      "ex": "{Open} your books, please.",
+      "exDe": "Öffnet bitte eure Bücher."
+    },
+    {
+      "a": "schließen / zumachen",
+      "b": "to close",
+      "bAlt": [
+        "close"
+      ],
+      "ex": "{Close} your books, please.",
+      "exDe": "Schließt bitte eure Bücher."
+    },
+    {
+      "a": "noch einmal / wieder",
+      "b": "again",
+      "ex": "Say that {again}, please.",
+      "exDe": "Sag das bitte noch einmal."
+    },
+    {
+      "a": "schreiben",
+      "b": "to write",
+      "bAlt": [
+        "write"
+      ],
+      "ex": "{Write} your name on the paper.",
+      "exDe": "Schreib deinen Namen auf das Blatt."
+    },
+    {
+      "a": "an / auf",
+      "b": "on",
+      "ex": "The book is {on} the table.",
+      "exDe": "Das Buch liegt auf dem Tisch."
+    },
+    {
+      "a": "in / an / um / bei / auf",
+      "b": "at",
+      "ex": "School starts {at} eight.",
+      "exDe": "Die Schule fängt um acht an."
+    },
+    {
+      "a": "herausnehmen / herausholen",
+      "b": "to take out",
+      "aAlt": [
+        "rausholen",
+        "rausnehmen"
+      ],
+      "bAlt": [
+        "take out"
+      ],
+      "ex": "{Take out} your exercise books, please.",
+      "exDe": "Nehmt bitte eure Hefte heraus."
+    },
+    {
+      "a": "sein",
+      "b": "to be",
+      "bAlt": [
+        "be"
+      ],
+      "ex": "Can you {be} quiet, please?",
+      "exDe": "Kannst du bitte leise sein?"
+    }
+  ]
+}

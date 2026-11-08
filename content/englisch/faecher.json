@@ -1,0 +1,160 @@
+{
+  "id": "faecher",
+  "title": "Schulfächer",
+  "type": "pairs",
+  "sides": {
+    "a": "Deutsch",
+    "b": "Englisch"
+  },
+  "exercises": [
+    "write"
+  ],
+  "items": [
+    {
+      "a": "das Schulfach",
+      "b": "subject",
+      "aAlt": [
+        "Schulfach"
+      ],
+      "ex": "My favourite {subject} is English.",
+      "exDe": "Mein Lieblingsfach ist Englisch."
+    },
+    {
+      "a": "die Schulstunde / die Unterrichtsstunde / der Unterricht",
+      "b": "lesson",
+      "aAlt": [
+        "Schulstunde",
+        "Unterricht",
+        "Unterrichtsstunde"
+      ],
+      "ex": "The English {lesson} is fun.",
+      "exDe": "Die Englischstunde macht Spaß."
+    },
+    {
+      "a": "die Naturwissenschaft",
+      "b": "science",
+      "aAlt": [
+        "Naturwissenschaft",
+        "Naturwissenschaften",
+        "die Naturwissenschaften"
+      ],
+      "ex": "We have {science} on Monday.",
+      "exDe": "Wir haben am Montag Naturwissenschaften."
+    },
+    {
+      "a": "Englisch",
+      "b": "English",
+      "ex": "{English} is my favourite subject.",
+      "exDe": "Englisch ist mein Lieblingsfach."
+    },
+    {
+      "a": "Deutsch",
+      "b": "German",
+      "ex": "We read a book in {German}.",
+      "exDe": "Wir lesen in Deutsch ein Buch."
+    },
+    {
+      "a": "Mathematik / Mathe",
+      "b": "maths",
+      "ex": "{Maths} is easy for me.",
+      "exDe": "Mathe ist leicht für mich."
+    },
+    {
+      "a": "Geschichte",
+      "b": "history",
+      "ex": "We have {history} on Thursday.",
+      "exDe": "Am Donnerstag haben wir Geschichte."
+    },
+    {
+      "a": "Erdkunde / Geografie",
+      "b": "geography",
+      "aAlt": [
+        "Geographie"
+      ],
+      "ex": "In {geography} we look at maps.",
+      "exDe": "In Erdkunde schauen wir uns Landkarten an."
+    },
+    {
+      "a": "Musik",
+      "b": "music",
+      "ex": "We sing in {music}.",
+      "exDe": "In Musik singen wir."
+    },
+    {
+      "a": "Technik",
+      "b": "technology",
+      "ex": "We make a box in {technology}.",
+      "exDe": "In Technik bauen wir eine Kiste."
+    },
+    {
+      "a": "Theater",
+      "b": "drama",
+      "ex": "In {drama} we play a story.",
+      "exDe": "In Theater spielen wir eine Geschichte."
+    },
+    {
+      "a": "die Klassenstunde / SoLe",
+      "b": "tutor time",
+      "aAlt": [
+        "Klassenstunde"
+      ],
+      "ex": "We talk about our class in {tutor time}.",
+      "exDe": "In der Klassenstunde sprechen wir über unsere Klasse."
+    },
+    {
+      "a": "Biologie",
+      "b": "biology",
+      "ex": "In {biology} we learn about animals.",
+      "exDe": "In Biologie lernen wir etwas über Tiere."
+    },
+    {
+      "a": "Informatik / Medienbildung",
+      "b": "IT",
+      "ex": "We use tablets in {IT}.",
+      "exDe": "In Informatik benutzen wir Tablets."
+    },
+    {
+      "a": "Kunst / BK",
+      "b": "art",
+      "ex": "I paint a picture in {art}.",
+      "exDe": "In Kunst male ich ein Bild."
+    },
+    {
+      "a": "Sport",
+      "b": "PE",
+      "ex": "We have {PE} in the gym.",
+      "exDe": "Wir haben Sport in der Turnhalle."
+    },
+    {
+      "a": "Religion",
+      "b": "RE",
+      "ex": "We have {RE} on Friday.",
+      "exDe": "Wir haben am Freitag Religion."
+    },
+    {
+      "a": "die Mittagspause / das Mittagessen",
+      "b": "lunch",
+      "aAlt": [
+        "Mittagessen",
+        "Mittagspause"
+      ],
+      "ex": "We have {lunch} in the cafeteria.",
+      "exDe": "Wir essen in der Mensa zu Mittag."
+    },
+    {
+      "a": "die Pause",
+      "b": "break",
+      "aAlt": [
+        "Pause"
+      ],
+      "ex": "We play on the playground in the {break}.",
+      "exDe": "In der Pause spielen wir auf dem Schulhof."
+    },
+    {
+      "a": "schwierig",
+      "b": "difficult",
+      "ex": "Maths is {difficult} for me.",
+      "exDe": "Mathe ist schwierig für mich."
+    }
+  ]
+}

@@ -12,7 +12,7 @@ import { modesFor, tasksFor, usableIn } from './exercises/registry.js';
 import { shuffle } from './util.js';
 
 export const ROUND_SIZE = 12;
-const NEW_ORDER = ['hoeren-wahl', 'ab', 'ba', 'hoeren', 'satz'];
+const NEW_ORDER = ['hoeren-wahl', 'form', 'ab', 'ba', 'hoeren', 'satz'];
 
 function allTasks() {
   const tasks = [];

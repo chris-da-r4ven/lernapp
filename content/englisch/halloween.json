@@ -1,0 +1,104 @@
+{
+  "id": "halloween",
+  "title": "Halloween",
+  "type": "pairs",
+  "sides": {
+    "a": "Deutsch",
+    "b": "Englisch"
+  },
+  "exercises": [
+    "write"
+  ],
+  "items": [
+    {
+      "a": "die schwarze Katze",
+      "b": "black cat",
+      "aAlt": [
+        "schwarze Katze"
+      ],
+      "ex": "The witch has a {black cat}.",
+      "exDe": "Die Hexe hat eine schwarze Katze."
+    },
+    {
+      "a": "der Geist",
+      "b": "ghost",
+      "aAlt": [
+        "Geist"
+      ],
+      "ex": "The {ghost} is white.",
+      "exDe": "Der Geist ist weiß."
+    },
+    {
+      "a": "der Kürbis",
+      "b": "pumpkin",
+      "aAlt": [
+        "Kürbis"
+      ],
+      "ex": "The {pumpkin} is orange.",
+      "exDe": "Der Kürbis ist orange."
+    },
+    {
+      "a": "die Fledermaus",
+      "b": "bat",
+      "aAlt": [
+        "Fledermaus"
+      ],
+      "ex": "The {bat} is black.",
+      "exDe": "Die Fledermaus ist schwarz."
+    },
+    {
+      "a": "das Skelett",
+      "b": "skeleton",
+      "aAlt": [
+        "Skelett"
+      ],
+      "ex": "The {skeleton} is in the haunted house.",
+      "exDe": "Das Skelett ist im Spukhaus."
+    },
+    {
+      "a": "der Kessel",
+      "b": "cauldron",
+      "aAlt": [
+        "Kessel"
+      ],
+      "ex": "The witch has a big {cauldron}.",
+      "exDe": "Die Hexe hat einen großen Kessel."
+    },
+    {
+      "a": "die Spinne",
+      "b": "spider",
+      "aAlt": [
+        "Spinne"
+      ],
+      "ex": "There is a {spider} on the wall!",
+      "exDe": "Da ist eine Spinne an der Wand!"
+    },
+    {
+      "a": "der Besen",
+      "b": "broomstick",
+      "aAlt": [
+        "Besen"
+      ],
+      "ex": "The witch is on her {broomstick}.",
+      "exDe": "Die Hexe sitzt auf ihrem Besen."
+    },
+    {
+      "a": "die Hexe",
+      "b": "witch",
+      "aAlt": [
+        "Hexe"
+      ],
+      "ex": "The {witch} has a black cat.",
+      "exDe": "Die Hexe hat eine schwarze Katze."
+    },
+    {
+      "a": "das Spukhaus",
+      "b": "haunted house",
+      "aAlt": [
+        "Spukhaus"
+      ],
+      "ex": "The {haunted house} is dark.",
+      "exDe": "Das Spukhaus ist dunkel."
+    }
+  ]
+}
