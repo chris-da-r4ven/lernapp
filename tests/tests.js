@@ -1,5 +1,5 @@
 // Selbsttest der Regel-Logik. Aufruf: <app>/tests/ im Browser öffnen.
-// Auf dieser Seite arbeitet store.js mit einem eigenen Speicher (lernapp.test.progress) –
+// Auf dieser Seite arbeitet store.js mit einem eigenen Profil (lernapp.p.test.progress) –
 // der echte Lernstand des Geräts wird nie angefasst. Das prüft der letzte Test.
 
 import { streakInfo, mood, DAY_GOAL } from '../js/streak.js';
@@ -7,13 +7,14 @@ import { mergeStates } from '../js/merge.js';
 import { check, parseGap } from '../js/exercises/questions.js';
 import { levelFor, glitterFor } from '../js/pet.js';
 import { record, roundBonus, buildRound } from '../js/srs.js';
-import { getState, replaceState, migrateLessons, addTestResult, medalStatus, itemState } from '../js/store.js';
+import { getState, replaceState, migrateLessons, addTestResult, medalStatus, itemState, addPoints, addDayStat, profileId } from '../js/store.js';
+import { deviceId } from '../js/device.js';
 import { MODES } from '../js/exercises/modes.js';
 import { modesFor, tasksFor, modeById } from '../js/exercises/registry.js';
 import { kindOf, targetSide, towardTarget, langOf, KINDS, isSupported } from '../js/lessons.js';
 import { APP_VERSION } from '../js/version.js';
 import { dayKey } from '../js/util.js';
-import { sanitizeState } from '../js/validate.js';
+import { sanitizeState, SCHEMA, LEGACY_DEVICE } from '../js/validate.js';
 
 const results = [];
 let group = '';
@@ -34,7 +35,8 @@ const days = (o) => Object.fromEntries(Object.entries(o).map(([off, v]) =>
   [key(+off), typeof v === 'number' ? { right: v, wrong: 0 } : v]));
 const empty = () => ({ items: {}, days: {}, points: 0, pet: null, tests: {}, resetAt: 0 });
 
-const realBefore = localStorage.getItem('lernapp.progress');
+const REAL_KEYS = ['lernapp.progress', 'lernapp.p.standard.progress'];
+const realBefore = REAL_KEYS.map((k) => localStorage.getItem(k));
 const original = JSON.parse(JSON.stringify(getState()));
 try {
   // --- Serie --------------------------------------------------------------------
@@ -165,6 +167,38 @@ try {
     eq(replaceState('kaputt'), false); eq(getState().points, 77);
   });
 
+  // --- Mehrere Geräte & Format 2 ------------------------------------------------------
+  section('Mehrere Geräte & Format');
+  await test('alter Stand (ohne v) wird verlustfrei umgewandelt: Werte zählen als Gerät „alt“', () => {
+    const r = sanitizeState({ points: 1045, days: { '2026-11-08': { right: 30, wrong: 4, e: 210 } } }).state;
+    eq([r.v, r.points, r.pointsBy, r.days['2026-11-08'].right, r.days['2026-11-08'].e, Object.keys(r.days['2026-11-08'].by)],
+      [SCHEMA, 1045, { [LEGACY_DEVICE]: 1045 }, 30, 210, [LEGACY_DEVICE]]);
+  });
+  await test('Stand im neuen Format bleibt beim Prüfen gleich', () => {
+    const a = sanitizeState({ v: 2, pointsBy: { gA: 10, gB: 5 }, days: { '2026-11-08': { by: { gA: { right: 3, wrong: 1, e: 30, s: { englisch: 30 } } } } } }).state;
+    eq(sanitizeState(a).state, a);
+    eq([a.points, a.days['2026-11-08'].s], [15, { englisch: 30 }]);
+  });
+  await test('zwei Geräte üben zwischen zwei Sicherungen: Sternchen und Tageswerte addieren sich', () => {
+    const base = { v: 2, pointsBy: { alt: 100 }, days: {} };
+    const tablet = { ...base, pointsBy: { alt: 100, gA: 20 }, days: { '2026-11-08': { by: { gA: { right: 5, wrong: 0, e: 50 } } } } };
+    const handy = { ...base, pointsBy: { alt: 100, gB: 7 }, days: { '2026-11-08': { by: { gB: { right: 2, wrong: 1, e: 30 } } } } };
+    const m = mergeStates(tablet, handy);
+    eq([m.points, m.days['2026-11-08'].right, m.days['2026-11-08'].wrong, m.days['2026-11-08'].e], [127, 7, 1, 80]);
+    eq(mergeStates(m, handy).points, 127, 'nochmal zusammenführen zählt nicht doppelt');
+  });
+  await test('neueres Format wird erkannt (Sicherung lehnt es ab)', () => {
+    eq([sanitizeState({ v: SCHEMA + 1 }).newer, sanitizeState({ v: SCHEMA }).newer, sanitizeState({}).newer], [true, false, false]);
+  });
+  await test('Sternchen und Tageswerte zählen beim eigenen Gerät, pro Fach', () => {
+    replaceState({ ...empty(), points: 50 });         // alter Stand → Gerät „alt“
+    addPoints(3); addDayStat(true, 1, 'englisch'); addDayStat(false, 0.2, 'englisch');
+    const st = getState(); const d = st.days[dayKey()];
+    eq([st.points, st.pointsBy[deviceId()], st.pointsBy[LEGACY_DEVICE]], [53, 3, 50]);
+    eq([d.right, d.wrong, d.e, d.s, d.by[deviceId()].right], [1, 1, 12, { englisch: 12 }, 1]);
+  });
+  await test('Selbsttest läuft im eigenen Profil', () => eq(profileId(), 'test'));
+
   // --- Medaille und Umzüge ----------------------------------------------------------
   section('Medaille & Umzüge');
   await test('2× ≥ 90 % an verschiedenen Tagen = Medaille', () => {
@@ -235,10 +269,10 @@ try {
   }
   section('Schutz des echten Lernstands');
   await test('Selbsttest hat den echten Lernstand nicht angefasst', () =>
-    eq(localStorage.getItem('lernapp.progress'), realBefore));
+    eq(REAL_KEYS.map((k) => localStorage.getItem(k)), realBefore));
 } finally {
   replaceState(original);
-  try { localStorage.removeItem('lernapp.test.progress'); } catch { /* egal */ }
+  try { localStorage.removeItem('lernapp.p.test.progress'); localStorage.removeItem('lernapp.test.progress'); } catch { /* egal */ }
 }
 
 // --- Ausgabe ------------------------------------------------------------------------------

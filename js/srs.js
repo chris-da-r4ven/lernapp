@@ -53,7 +53,7 @@ export function record(key, { correct, firstTry, typed, weight = 1, effort = 1 }
   }
   st.last = now;
   setItemState(key, st);
-  addDayStat(correct, effort);
+  addDayStat(correct, effort, key.split('/')[0]);   // Fach steht vorne im Schlüssel
   save();
   return correct ? pointsFor(firstTry, weight) : 0;
 }

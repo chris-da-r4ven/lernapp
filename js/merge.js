@@ -1,14 +1,16 @@
 // Zwei Spielstände zusammenführen (Gerät und Sicherung), ohne Fortschritt zu verlieren.
 //
-// Normalfall: pro Wort gewinnt der zuletzt geübte Eintrag, Übungstage und Tests werden
-// vereinigt, Sternchen nimmt den höheren Wert.
+// Normalfall: pro Wort gewinnt der zuletzt geübte Eintrag, Tests werden vereinigt.
+// Sternchen und Tageswerte zählt jedes Gerät für sich (pointsBy, days[…].by) – pro Gerät
+// gewinnt der höhere Wert, angezeigt wird die Summe. So geht nichts verloren, wenn zwei
+// Geräte zwischen zwei Sicherungen geübt haben, und nichts wird doppelt gezählt.
 //
 // Zurücksetzen: Ein Stand mit neuerem „resetAt“ (Statistik zurücksetzen, oder ein
 // Zurücksetzen auf eine frühere Uhrzeit über die Sicherung) gewinnt. Vom anderen Stand
 // bleibt nur, was nach diesem Zeitpunkt geübt wurde.
 
 import { dayKey } from './util.js';
-import { sanitizeState } from './validate.js';
+import { sanitizeState, sumDay, sumPoints } from './validate.js';
 
 const total = (d) => (d ? d.right + d.wrong : 0);
 
@@ -31,18 +33,31 @@ function mergeSame(a, b) {
     if (!items[k] || (v.last ?? 0) > (items[k].last ?? 0)) items[k] = v;
   }
   const days = { ...a.days };
-  for (const [k, v] of Object.entries(b.days)) if (total(v) > total(days[k])) days[k] = v;
+  for (const [k, v] of Object.entries(b.days)) days[k] = mergeDay(days[k], v);
+  const pointsBy = { ...a.pointsBy };
+  for (const [dev, n] of Object.entries(b.pointsBy)) pointsBy[dev] = Math.max(pointsBy[dev] ?? 0, n);
   return {
     ...a,
     items,
     days,
     tests: mergeTests(a.tests, b.tests),
-    points: Math.max(a.points ?? 0, b.points ?? 0),
+    pointsBy,
+    points: sumPoints(pointsBy),
     pet: a.pet ?? b.pet,
   };
 }
 
+// Ein Tag: pro Gerät der Eintrag mit mehr Antworten (die Zähler wachsen nur).
+function mergeDay(a, b) {
+  if (!a) return b;
+  const by = { ...a.by };
+  for (const [dev, c] of Object.entries(b.by)) if (total(c) > total(by[dev])) by[dev] = c;
+  return sumDay(by);
+}
+
 // newer wurde zurückgesetzt: vom älteren Stand nur übernehmen, was danach geübt wurde.
+// Sternchen bleiben die des neueren Stands (beim älteren lässt sich nicht trennen, was davor
+// und was danach gesammelt wurde).
 function mergeAfterReset(newer, older) {
   const since = newer.resetAt;
   const sinceDay = dayKey(new Date(since));
@@ -52,7 +67,7 @@ function mergeAfterReset(newer, older) {
   }
   const days = { ...newer.days };
   for (const [k, v] of Object.entries(older.days)) {
-    if (k >= sinceDay && total(v) > total(days[k])) days[k] = v;
+    if (k >= sinceDay) days[k] = mergeDay(days[k], v);
   }
   const olderTests = Object.fromEntries(Object.entries(older.tests)
     .map(([k, list]) => [k, list.filter((r) => r.day >= sinceDay)]));

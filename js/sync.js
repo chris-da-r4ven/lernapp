@@ -10,12 +10,13 @@
 //   holen, "resetAt" auf jetzt setzen, als neuen Commit schreiben.
 // - Jede Sicherung ist ein Commit – so lässt sich später jeder Stand wiederherstellen.
 
-import { getState, replaceState, onSave, revision, wasRecovered } from './store.js';
+import { getState, replaceState, onSave, revision, wasRecovered, profileId } from './store.js';
 import { sanitizeState } from './validate.js';
 import { mergeStates } from './merge.js';
 
 const CFG_KEY = 'lernapp.sync';
-const FILE = 'spielstand.json';
+// Eine Datei pro Profil; das Standardprofil behält den bisherigen Namen.
+const FILE = profileId() === 'standard' ? 'spielstand.json' : `spielstand-${profileId()}.json`;
 const IDLE_MS = 30 * 1000;
 const TIMEOUT_MS = 20 * 1000;   // länger wartet keine Anfrage – sonst hängt die Sicherung bei schlechtem WLAN
 export const DEFAULT_REPO = 'chris-da-r4ven/lernapp-daten';
@@ -139,8 +140,13 @@ async function pull() {
   let data;
   try { data = JSON.parse(fromB64(content)); } catch { data = null; }
   // Nur übernehmen, was als Spielstand taugt (validate.js) – sonst lieber gar nichts.
-  if (!data || !sanitizeState(data.state)) {
+  const clean = data && sanitizeState(data.state);
+  if (!clean) {
     throw new SyncError('Die Sicherung ist beschädigt und wird nicht übernommen. Der Stand auf dem Gerät bleibt.');
+  }
+  // Von einer neueren App geschrieben: nicht anfassen, sonst gingen deren Daten verloren.
+  if (clean.newer) {
+    throw new SyncError('Die Sicherung stammt von einer neueren App-Version. Bitte die App neu laden (Seite schließen und wieder öffnen).');
   }
   return { exists: true, sha: json.sha, data };
 }

@@ -1,20 +1,32 @@
-// Lernfortschritt im Browser des Tablets (optional zusätzlich gesichert, siehe sync.js).
-// items:  pro Karte und Richtung der Stand im Wiederholsystem
-// days:   pro Tag, wie viel geübt wurde (für Serie und Verlauf)
-// points: gesammelte Sternchen ✦ (im Code „points“) – bestimmen Fannys Glitzer-Stufe
+// Lernfortschritt im Browser des Geräts (optional zusätzlich gesichert, siehe sync.js).
+// Format und Prüfung: validate.js. Sternchen und Tageswerte zählen pro Gerät (device.js),
+// angezeigt werden die Summen (points, days[…].right/wrong/e).
+//
+// Profile: Jedes Kind hat seinen eigenen Lernstand unter lernapp.p.<profil>.progress.
+// Heute gibt es nur das Profil „standard“ (eine Auswahl kommt, wenn sie gebraucht wird).
 
 import { dayKey } from './util.js';
 import { streakInfo } from './streak.js';
-import { sanitizeState } from './validate.js';
+import { sanitizeState, sumDay, sumPoints, SCHEMA } from './validate.js';
+import { deviceId } from './device.js';
 
 // Die Selbsttest-Seite (tests/) arbeitet mit einem eigenen Speicher – der echte Lernstand
 // wird dort nie angefasst, auch wenn der Test mittendrin abbricht.
 const TESTING = typeof location !== 'undefined' && location.pathname.includes('/tests/');
-const KEY = TESTING ? 'lernapp.test.progress' : 'lernapp.progress';
-const CORRUPT_KEY = 'lernapp.progress.beschaedigt';
+const readKey = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
+const PROFILE = (TESTING ? 'test' : readKey('lernapp.profil')) || 'standard';
+export const profileId = () => PROFILE;
+const KEY = `lernapp.p.${PROFILE}.progress`;
+const OLD_KEY = 'lernapp.progress';            // vor den Profilen (bis App-Stand Paket F)
+const CORRUPT_KEY = `lernapp.p.${PROFILE}.beschaedigt`;
+
+// Einmaliger Umzug vom alten Schlüssel ins Standardprofil.
+if (!TESTING && PROFILE === 'standard' && readKey(KEY) === null && readKey(OLD_KEY) !== null) {
+  try { localStorage.setItem(KEY, readKey(OLD_KEY)); localStorage.removeItem(OLD_KEY); } catch { /* bleibt beim alten */ }
+}
 
 // resetAt: Zeitpunkt des letzten Zurücksetzens (für das Zusammenführen mit der Sicherung).
-const empty = () => ({ items: {}, days: {}, points: 0, pet: null, tests: {}, resetAt: 0 });
+const empty = () => ({ v: SCHEMA, items: {}, days: {}, points: 0, pointsBy: {}, pet: null, tests: {}, resetAt: 0 });
 
 // Konnte der gespeicherte Stand nicht (vollständig) gelesen werden? Dann hebt load() den
 // Rohtext auf, und die Sicherung führt beim nächsten Abgleich zusammen statt zu überschreiben.
@@ -24,8 +36,7 @@ export const wasRecovered = () => recovered;
 let state = load();
 
 function load() {
-  let raw = null;
-  try { raw = localStorage.getItem(KEY); } catch { return empty(); }
+  const raw = readKey(KEY) ?? (PROFILE === 'standard' ? readKey(OLD_KEY) : null);
   if (raw === null) return empty();
   let parsed = null;
   try { parsed = JSON.parse(raw); } catch { /* unten */ }
@@ -45,9 +56,14 @@ export const onSave = (fn) => listeners.push(fn);
 let rev = 0;
 export const revision = () => rev;
 
+// Konnte zuletzt nicht gespeichert werden (Speicher voll/gesperrt)? → Warnung für die Eltern.
+let storageFailed = false;
+export const storageProblem = () => storageFailed;
+
 function persist() {
   rev++;
-  try { localStorage.setItem(KEY, JSON.stringify(state)); return true; } catch {
+  try { localStorage.setItem(KEY, JSON.stringify(state)); storageFailed = false; return true; } catch {
+    storageFailed = true;
     console.warn('Lernstand konnte nicht gespeichert werden (Speicher voll oder gesperrt).');
     return false;
   }
@@ -135,16 +151,24 @@ export function setItemState(key, s) {
 
 // effort: wie viel die Aufgabe fürs Tagesziel zählt (Gewicht der Übungsart, Schreiben = 1).
 // Gespeichert in Zehnteln (e), damit sich keine Rundungsfehler aufsummieren.
-export function addDayStat(correct, effort = 1) {
+// Gezählt wird beim eigenen Gerät (und pro Fach, subject); der Tag zeigt die Summe aller Geräte.
+export function addDayStat(correct, effort = 1, subject = null) {
   const k = dayKey();
-  const d = state.days[k] ?? { right: 0, wrong: 0 };
-  if (correct) d.right++; else d.wrong++;
-  d.e = (d.e ?? (d.right + d.wrong - 1) * 10) + Math.round(effort * 10);
-  state.days[k] = d;
+  const dev = deviceId();
+  const by = { ...(state.days[k]?.by ?? {}) };
+  const c = { right: 0, wrong: 0, e: 0, ...(by[dev] ?? {}) };
+  if (correct) c.right++; else c.wrong++;
+  const add = Math.round(effort * 10);
+  c.e += add;
+  if (subject) c.s = { ...(c.s ?? {}), [subject]: (c.s?.[subject] ?? 0) + add };
+  by[dev] = c;
+  state.days[k] = sumDay(by);
 }
 
 export function addPoints(n) {
-  state.points += n;
+  const dev = deviceId();
+  state.pointsBy = { ...state.pointsBy, [dev]: (state.pointsBy?.[dev] ?? 0) + n };
+  state.points = sumPoints(state.pointsBy);
 }
 
 // Serie mit Tagesziel und Rettungstag – siehe streak.js.

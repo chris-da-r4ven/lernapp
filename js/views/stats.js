@@ -2,7 +2,8 @@
 
 import { getSubjects, getLesson, contentUpdated, contentVersion } from '../content.js';
 import { syncStatus, syncWarning } from '../sync.js';
-import { getState, itemState, streak } from '../store.js';
+import { getState, itemState, streak, storageProblem, profileId } from '../store.js';
+import { deviceId } from '../device.js';
 import { parentsSection, bindParents } from './parents.js';
 import { modesFor, tasksFor } from '../exercises/registry.js';
 import { status } from '../srs.js';
@@ -28,6 +29,7 @@ export function statsView(el, openParents = false) {
 
   el.innerHTML = `
     <h1>Fortschritt</h1>
+    ${storageProblem() ? '<p class="card warn-banner">⚠️ Der Lernstand konnte zuletzt nicht gespeichert werden – Speicher des Geräts voll oder gesperrt (privates Fenster?).</p>' : ''}
     ${syncWarning() ? `<p class="card warn-banner">⚠️ ${esc(syncWarning())}</p>` : ''}
 
     <section class="kpis">
@@ -161,6 +163,9 @@ function statusLine() {
   parts.push(s
     ? `Sicherung: ${s.lastSync ? esc(new Date(s.lastSync).toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short' })) : 'noch nie'}`
     : 'Sicherung: aus');
+  const size = JSON.stringify(getState()).length;
+  parts.push(`Lernstand ${size < 1e6 ? Math.ceil(size / 1024) + ' KB' : (size / 1e6).toFixed(1) + ' MB'}`);
+  parts.push(`Gerät ${esc(deviceId())}${profileId() !== 'standard' ? ` · Profil ${esc(profileId())}` : ''}`);
   return parts.join(' · ');
 }
 

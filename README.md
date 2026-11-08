@@ -41,6 +41,12 @@ Siehe **[INHALTE.md](INHALTE.md)** – Vorlage, Tabellen-Entwurf, `tools/inhalte
 Optional in ein privates GitHub-Repo (`lernapp-daten`, Datei `spielstand.json`), eingerichtet unter
 Fortschritt → Für Eltern. Gerät und Sicherung werden zusammengeführt (`js/merge.js`): pro Wort gewinnt
 der neuere Eintrag. Ein Zurücksetzen gewinnt gegen alles Ältere – dafür steht im Stand `resetAt`.
+Sternchen und Tageswerte zählt jedes Gerät für sich (`pointsBy`, `days[…].by`, Kennung in `js/device.js`);
+beim Zusammenführen gewinnt pro Gerät der höhere Wert, angezeigt wird die Summe – so geht nichts
+verloren, wenn zwei Geräte geübt haben. Das Format hat eine Version (`v`, `js/validate.js`); einen Stand
+aus einer neueren App fasst eine ältere nicht an. Profile: Lernstand liegt unter
+`lernapp.p.<profil>.progress` (heute nur `standard`; Sicherungsdatei für andere Profile:
+`spielstand-<profil>.json`).
 
 **Auf eine frühere Uhrzeit zurücksetzen:** `python3 tools/zuruecksetzen.py --bis "2026-11-08 19:00"` zeigt,
 was passieren würde; mit `--ausfuehren` wird der Stand von davor als neuer Commit (mit `resetAt` = jetzt)
