@@ -125,7 +125,18 @@ export function bindParents(el, rerender) {
     await syncNow();
     rerender(true);
   });
-  box.querySelector('[data-act=sync-off]')?.addEventListener('click', () => {
+  // Trennen in zwei Schritten: erstes Tippen fragt nach, erst das zweite (innerhalb von 5 s) trennt.
+  // Sonst müsste der Schlüssel nach einem versehentlichen Tippen neu eingegeben werden.
+  let offArmed = null;
+  box.querySelector('[data-act=sync-off]')?.addEventListener('click', (ev) => {
+    const btn = ev.currentTarget;
+    if (!offArmed) {
+      btn.textContent = 'Wirklich trennen? Nochmal tippen';
+      btn.classList.add('danger');
+      offArmed = setTimeout(() => { offArmed = null; btn.textContent = 'Trennen'; btn.classList.remove('danger'); }, 5000);
+      return;
+    }
+    clearTimeout(offArmed);
     disconnect();
     toast('Sicherung getrennt. Der Spielstand bleibt auf dem Gerät.');
     rerender(true);
