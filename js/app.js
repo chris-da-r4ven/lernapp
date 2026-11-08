@@ -63,6 +63,26 @@ startSync({ onRemoteChange: () => { applyMoves(); if (!practicing()) render(); }
 // Browser bitten, den Spielstand nicht bei Speichermangel selbst zu löschen.
 navigator.storage?.persist?.().catch(() => {});
 
+// Offline-Cache. Ist eine neue App-Version komplett geladen, übernimmt sie und die Seite
+// lädt sich einmal neu – aber nicht mitten in einer Übung, dann erst beim nächsten Seitenwechsel.
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch((e) => console.warn('Service Worker:', e));
+  const hadController = Boolean(navigator.serviceWorker.controller);
+  let reloadPending = false;
+  const reloadNow = () => { window.removeEventListener('hashchange', reloadWhenFree); location.reload(); };
+  const reloadWhenFree = () => { if (!practicing()) reloadNow(); };
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!hadController || reloadPending) return;   // allererste Installation: nichts neu laden
+    reloadPending = true;
+    if (practicing()) {
+      toast('Neue Version ist da – sie startet nach der Übung.');
+      window.addEventListener('hashchange', reloadWhenFree);
+    } else {
+      reloadNow();
+    }
+  });
+  navigator.serviceWorker.register('sw.js')
+    .then((reg) => document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') reg.update().catch(() => {});
+    }))
+    .catch((e) => console.warn('Service Worker:', e));
 }

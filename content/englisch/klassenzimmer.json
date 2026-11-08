@@ -11,6 +11,7 @@
   ],
   "items": [
     {
+      "id": "Good morning.",
       "a": "Guten Morgen.",
       "b": "Good morning.",
       "bAlt": [
@@ -20,6 +21,7 @@
       "exDe": "Guten Morgen, Herr Turner!"
     },
     {
+      "id": "boy",
       "a": "der Junge",
       "b": "boy",
       "aAlt": [
@@ -29,6 +31,7 @@
       "exDe": "Tom ist ein Junge."
     },
     {
+      "id": "girl",
       "a": "das Mädchen",
       "b": "girl",
       "aAlt": [
@@ -38,6 +41,7 @@
       "exDe": "Lisa ist ein Mädchen."
     },
     {
+      "id": "to look at",
       "a": "anschauen / ansehen",
       "b": "to look at",
       "bAlt": [
@@ -47,6 +51,7 @@
       "exDe": "Schaut bitte an die Tafel."
     },
     {
+      "id": "board",
       "a": "die Tafel",
       "b": "board",
       "aAlt": [
@@ -56,6 +61,7 @@
       "exDe": "Mein Name steht an der Tafel."
     },
     {
+      "id": "Can you help me?",
       "a": "Kannst du mir helfen?",
       "b": "Can you help me?",
       "aAlt": [
@@ -66,24 +72,28 @@
       "exDe": "Entschuldigung, kannst du mir helfen?"
     },
     {
+      "id": "yes",
       "a": "ja",
       "b": "yes",
       "ex": "Are you ten? – {Yes}, I am.",
       "exDe": "Bist du zehn? – Ja."
     },
     {
+      "id": "no",
       "a": "nein / kein / keine",
       "b": "no",
       "ex": "Do you have a pet? – {No}, I don't.",
       "exDe": "Hast du ein Haustier? – Nein."
     },
     {
+      "id": "of course",
       "a": "natürlich / selbstverständlich",
       "b": "of course",
       "ex": "Can I have a pen? – Yes, {of course}.",
       "exDe": "Kann ich einen Stift haben? – Ja, natürlich."
     },
     {
+      "id": "to sit down",
       "a": "sich hinsetzen / sich setzen",
       "b": "to sit down",
       "aAlt": [
@@ -97,12 +107,14 @@
       "exDe": "Setzt euch bitte alle hin."
     },
     {
+      "id": "quiet",
       "a": "ruhig / leise / still",
       "b": "quiet",
       "ex": "Please be {quiet} in the library.",
       "exDe": "Seid bitte leise in der Bibliothek."
     },
     {
+      "id": "to listen (to)",
       "a": "zuhören / anhören / hören",
       "b": "to listen (to)",
       "bAlt": [
@@ -116,6 +128,7 @@
       "exDe": "Wir hören der Lehrerin zu."
     },
     {
+      "id": "Don't talk.",
       "a": "Sei still! / Rede nicht!",
       "b": "Don't talk.",
       "aAlt": [
@@ -129,6 +142,7 @@
       "exDe": "Bitte redet nicht!"
     },
     {
+      "id": "Sorry.",
       "a": "Tut mir leid. / Entschuldigung.",
       "b": "Sorry.",
       "bAlt": [
@@ -138,6 +152,7 @@
       "exDe": "Tut mir leid, ich bin zu spät."
     },
     {
+      "id": "Excuse me!",
       "a": "Entschuldigung! (wenn man jemanden anspricht)",
       "b": "Excuse me!",
       "aAlt": [
@@ -151,12 +166,14 @@
       "exDe": "Entschuldigung, wo ist die Bibliothek?"
     },
     {
+      "id": "here",
       "a": "hier",
       "b": "here",
       "ex": "I'm {here}!",
       "exDe": "Ich bin hier!"
     },
     {
+      "id": "to have",
       "a": "haben",
       "b": "to have",
       "bAlt": [
@@ -166,6 +183,7 @@
       "exDe": "Ich habe einen Bruder."
     },
     {
+      "id": "Here you are.",
       "a": "Bitte schön.",
       "b": "Here you are.",
       "aAlt": [
@@ -175,12 +193,14 @@
       "exDe": "Kann ich einen Stift haben? – Bitte schön."
     },
     {
+      "id": "for",
       "a": "für",
       "b": "for",
       "ex": "This is a book {for} you.",
       "exDe": "Das ist ein Buch für dich."
     },
     {
+      "id": "to open",
       "a": "öffnen / aufmachen",
       "b": "to open",
       "bAlt": [
@@ -190,6 +210,7 @@
       "exDe": "Öffnet bitte eure Bücher."
     },
     {
+      "id": "to close",
       "a": "schließen / zumachen",
       "b": "to close",
       "bAlt": [
@@ -199,12 +220,14 @@
       "exDe": "Schließt bitte eure Bücher."
     },
     {
+      "id": "again",
       "a": "noch einmal / wieder",
       "b": "again",
       "ex": "Say that {again}, please.",
       "exDe": "Sag das bitte noch einmal."
     },
     {
+      "id": "to write",
       "a": "schreiben",
       "b": "to write",
       "bAlt": [
@@ -214,18 +237,21 @@
       "exDe": "Schreib deinen Namen auf das Blatt."
     },
     {
+      "id": "on",
       "a": "an / auf",
       "b": "on",
       "ex": "The book is {on} the table.",
       "exDe": "Das Buch liegt auf dem Tisch."
     },
     {
+      "id": "at",
       "a": "in / an / um / bei / auf",
       "b": "at",
       "ex": "School starts {at} eight.",
       "exDe": "Die Schule fängt um acht an."
     },
     {
+      "id": "to take out",
       "a": "herausnehmen / herausholen",
       "b": "to take out",
       "aAlt": [
@@ -239,6 +265,7 @@
       "exDe": "Nehmt bitte eure Hefte heraus."
     },
     {
+      "id": "to be",
       "a": "sein",
       "b": "to be",
       "bAlt": [

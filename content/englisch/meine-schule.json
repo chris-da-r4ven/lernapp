@@ -11,6 +11,7 @@
   ],
   "items": [
     {
+      "id": "it's",
       "a": "es ist / er ist / sie ist",
       "b": "it's",
       "bAlt": [
@@ -20,6 +21,7 @@
       "exDe": "Es ist eine große Schule."
     },
     {
+      "id": "he's",
       "a": "er ist",
       "b": "he's",
       "bAlt": [
@@ -29,6 +31,7 @@
       "exDe": "Er ist mein Freund."
     },
     {
+      "id": "she's",
       "a": "sie ist",
       "b": "she's",
       "bAlt": [
@@ -38,6 +41,7 @@
       "exDe": "Sie ist meine Lehrerin."
     },
     {
+      "id": "OK",
       "a": "okay",
       "b": "OK",
       "bAlt": [
@@ -47,12 +51,14 @@
       "exDe": "Ist das okay?"
     },
     {
+      "id": "a / an",
       "a": "ein / eine",
       "b": "a / an",
       "ex": "This is {an} apple.",
       "exDe": "Das ist ein Apfel."
     },
     {
+      "id": "teacher",
       "a": "der Lehrer / die Lehrerin",
       "b": "teacher",
       "aAlt": [
@@ -63,6 +69,7 @@
       "exDe": "Herr Turner ist mein Lehrer."
     },
     {
+      "id": "tutor",
       "a": "der Klassenlehrer / die Klassenlehrerin",
       "b": "tutor",
       "aAlt": [
@@ -73,18 +80,21 @@
       "exDe": "Frau Brown ist unsere Klassenlehrerin."
     },
     {
+      "id": "Mr",
       "a": "Herr",
       "b": "Mr",
       "ex": "Good morning, {Mr} Turner.",
       "exDe": "Guten Morgen, Herr Turner."
     },
     {
+      "id": "Mrs",
       "a": "Frau",
       "b": "Mrs",
       "ex": "Hello, {Mrs} Brown.",
       "exDe": "Hallo, Frau Brown."
     },
     {
+      "id": "caretaker",
       "a": "der Hausmeister / die Hausmeisterin",
       "b": "caretaker",
       "aAlt": [
@@ -95,6 +105,7 @@
       "exDe": "Der Hausmeister schließt morgens die Schule auf."
     },
     {
+      "id": "always",
       "a": "immer",
       "b": "always",
       "hard": true,
@@ -102,12 +113,14 @@
       "exDe": "Ich nehme immer meine Trinkflasche mit in die Schule."
     },
     {
+      "id": "busy",
       "a": "beschäftigt / belebt / arbeitsreich",
       "b": "busy",
       "ex": "The teacher is very {busy} today.",
       "exDe": "Die Lehrerin ist heute sehr beschäftigt."
     },
     {
+      "id": "friend",
       "a": "der Freund / die Freundin",
       "b": "friend",
       "aAlt": [
@@ -118,12 +131,14 @@
       "exDe": "Lisa ist meine beste Freundin."
     },
     {
+      "id": "new",
       "a": "neu",
       "b": "new",
       "ex": "This is my {new} school.",
       "exDe": "Das ist meine neue Schule."
     },
     {
+      "id": "class",
       "a": "die Klasse / der Unterricht / der Kurs",
       "b": "class",
       "aAlt": [
@@ -135,6 +150,7 @@
       "exDe": "In meiner Klasse sind 25 Kinder."
     },
     {
+      "id": "year",
       "a": "die Klasse / die Jahrgangsstufe / das Jahr",
       "b": "year",
       "aAlt": [
@@ -149,6 +165,7 @@
       "exDe": "Ich bin in Klasse 5."
     },
     {
+      "id": "life",
       "a": "das Leben",
       "b": "life",
       "aAlt": [
@@ -158,6 +175,7 @@
       "exDe": "Das Schulleben macht Spaß."
     },
     {
+      "id": "uniform",
       "a": "die Uniform / die Schuluniform",
       "b": "uniform",
       "aAlt": [
@@ -168,6 +186,7 @@
       "exDe": "In England tragen Kinder eine Schuluniform."
     },
     {
+      "id": "to go",
       "a": "gehen / fahren",
       "b": "to go",
       "bAlt": [
@@ -177,18 +196,21 @@
       "exDe": "Ich fahre mit dem Bus zur Schule."
     },
     {
+      "id": "to",
       "a": "in / zu / nach / bis",
       "b": "to",
       "ex": "We go {to} the library.",
       "exDe": "Wir gehen in die Bibliothek."
     },
     {
+      "id": "in",
       "a": "in / auf",
       "b": "in",
       "ex": "My pen is {in} my pencil case.",
       "exDe": "Mein Füller ist in meinem Mäppchen."
     },
     {
+      "id": "rule",
       "a": "die Regel",
       "b": "rule",
       "aAlt": [
@@ -198,6 +220,7 @@
       "exDe": "Renn nicht im Klassenzimmer. Das ist eine Regel."
     },
     {
+      "id": "classroom",
       "a": "das Klassenzimmer",
       "b": "classroom",
       "aAlt": [
@@ -207,6 +230,7 @@
       "exDe": "Wir sind im Klassenzimmer."
     },
     {
+      "id": "playground",
       "a": "der Schulhof / der Pausenhof / der Spielplatz",
       "b": "playground",
       "aAlt": [
@@ -218,6 +242,7 @@
       "exDe": "Wir spielen Fußball auf dem Schulhof."
     },
     {
+      "id": "cafeteria",
       "a": "die Cafeteria / die Mensa",
       "b": "cafeteria",
       "aAlt": [
@@ -228,6 +253,7 @@
       "exDe": "Wir essen in der Mensa zu Mittag."
     },
     {
+      "id": "toilet",
       "a": "die Toilette",
       "b": "toilet",
       "aAlt": [
@@ -237,6 +263,7 @@
       "exDe": "Wo ist bitte die Toilette?"
     },
     {
+      "id": "library",
       "a": "die Bibliothek / die Bücherei",
       "b": "library",
       "aAlt": [
@@ -247,6 +274,7 @@
       "exDe": "Ich hole Bücher aus der Schulbibliothek."
     },
     {
+      "id": "gym",
       "a": "die Turnhalle / das Fitnessstudio",
       "b": "gym",
       "aAlt": [
@@ -257,6 +285,7 @@
       "exDe": "Wir haben Sport in der Turnhalle."
     },
     {
+      "id": "office",
       "a": "das Büro",
       "b": "office",
       "aAlt": [

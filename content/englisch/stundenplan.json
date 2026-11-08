@@ -11,6 +11,7 @@
   ],
   "items": [
     {
+      "id": "subject",
       "a": "das Schulfach",
       "b": "subject",
       "aAlt": [
@@ -20,6 +21,7 @@
       "exDe": "Mein Lieblingsfach ist Englisch."
     },
     {
+      "id": "lesson",
       "a": "die Schulstunde / die Unterrichtsstunde / der Unterricht",
       "b": "lesson",
       "aAlt": [
@@ -31,6 +33,7 @@
       "exDe": "Die Englischstunde macht Spaß."
     },
     {
+      "id": "science",
       "a": "die Naturwissenschaft",
       "b": "science",
       "aAlt": [
@@ -42,30 +45,35 @@
       "exDe": "Wir haben am Montag Naturwissenschaften."
     },
     {
+      "id": "English",
       "a": "Englisch",
       "b": "English",
       "ex": "{English} is my favourite subject.",
       "exDe": "Englisch ist mein Lieblingsfach."
     },
     {
+      "id": "German",
       "a": "Deutsch",
       "b": "German",
       "ex": "We read a book in {German}.",
       "exDe": "Wir lesen in Deutsch ein Buch."
     },
     {
+      "id": "maths",
       "a": "Mathematik / Mathe",
       "b": "maths",
       "ex": "{Maths} is easy for me.",
       "exDe": "Mathe ist leicht für mich."
     },
     {
+      "id": "history",
       "a": "Geschichte",
       "b": "history",
       "ex": "We have {history} on Thursday.",
       "exDe": "Am Donnerstag haben wir Geschichte."
     },
     {
+      "id": "geography",
       "a": "Erdkunde / Geografie",
       "b": "geography",
       "aAlt": [
@@ -75,24 +83,28 @@
       "exDe": "In Erdkunde schauen wir uns Landkarten an."
     },
     {
+      "id": "music",
       "a": "Musik",
       "b": "music",
       "ex": "We sing in {music}.",
       "exDe": "In Musik singen wir."
     },
     {
+      "id": "technology",
       "a": "Technik",
       "b": "technology",
       "ex": "We make a box in {technology}.",
       "exDe": "In Technik bauen wir eine Kiste."
     },
     {
+      "id": "drama",
       "a": "Theater",
       "b": "drama",
       "ex": "In {drama} we play a story.",
       "exDe": "In Theater spielen wir eine Geschichte."
     },
     {
+      "id": "tutor time",
       "a": "die Klassenstunde / SoLe",
       "b": "tutor time",
       "aAlt": [
@@ -102,36 +114,42 @@
       "exDe": "In der Klassenstunde sprechen wir über unsere Klasse."
     },
     {
+      "id": "biology",
       "a": "Biologie",
       "b": "biology",
       "ex": "In {biology} we learn about animals.",
       "exDe": "In Biologie lernen wir etwas über Tiere."
     },
     {
+      "id": "IT",
       "a": "Informatik / Medienbildung",
       "b": "IT",
       "ex": "We use tablets in {IT}.",
       "exDe": "In Informatik benutzen wir Tablets."
     },
     {
+      "id": "art",
       "a": "Kunst / BK",
       "b": "art",
       "ex": "I paint a picture in {art}.",
       "exDe": "In Kunst male ich ein Bild."
     },
     {
+      "id": "PE",
       "a": "Sport",
       "b": "PE",
       "ex": "We have {PE} in the gym.",
       "exDe": "Wir haben Sport in der Turnhalle."
     },
     {
+      "id": "RE",
       "a": "Religion",
       "b": "RE",
       "ex": "We have {RE} on Friday.",
       "exDe": "Wir haben am Freitag Religion."
     },
     {
+      "id": "lunch",
       "a": "die Mittagspause / das Mittagessen",
       "b": "lunch",
       "aAlt": [
@@ -142,6 +160,7 @@
       "exDe": "Wir essen in der Mensa zu Mittag."
     },
     {
+      "id": "break",
       "a": "die Pause",
       "b": "break",
       "aAlt": [
@@ -151,24 +170,28 @@
       "exDe": "In der Pause spielen wir auf dem Schulhof."
     },
     {
+      "id": "difficult",
       "a": "schwierig",
       "b": "difficult",
       "ex": "Maths is {difficult} for me.",
       "exDe": "Mathe ist schwierig für mich."
     },
     {
+      "id": "Monday",
       "a": "Montag",
       "b": "Monday",
       "ex": "We have science on {Monday}.",
       "exDe": "Am Montag haben wir Naturwissenschaften."
     },
     {
+      "id": "Tuesday",
       "a": "Dienstag",
       "b": "Tuesday",
       "ex": "Assembly is on {Tuesday} morning.",
       "exDe": "Die Versammlung ist am Dienstagmorgen."
     },
     {
+      "id": "Wednesday",
       "a": "Mittwoch",
       "b": "Wednesday",
       "hard": true,
@@ -176,30 +199,35 @@
       "exDe": "Am Mittwoch haben wir Sport."
     },
     {
+      "id": "Thursday",
       "a": "Donnerstag",
       "b": "Thursday",
       "ex": "My music lesson is on {Thursday}.",
       "exDe": "Meine Musikstunde ist am Donnerstag."
     },
     {
+      "id": "Friday",
       "a": "Freitag",
       "b": "Friday",
       "ex": "{Friday} is my favourite day.",
       "exDe": "Freitag ist mein Lieblingstag."
     },
     {
+      "id": "Saturday",
       "a": "Samstag",
       "b": "Saturday",
       "ex": "On {Saturday} there is no school.",
       "exDe": "Am Samstag ist keine Schule."
     },
     {
+      "id": "Sunday",
       "a": "Sonntag",
       "b": "Sunday",
       "ex": "On {Sunday} I play with my friends.",
       "exDe": "Am Sonntag spiele ich mit meinen Freunden."
     },
     {
+      "id": "weekend",
       "a": "das Wochenende",
       "b": "weekend",
       "aAlt": [

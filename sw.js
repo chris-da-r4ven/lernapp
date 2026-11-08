@@ -1,9 +1,14 @@
 // Service Worker: hält die App offline verfügbar.
-// Strategie für die App-Dateien: erst Netz (damit Updates sofort ankommen),
-// bei fehlendem Netz der Cache. Lerninhalte (content/) lädt die App selbst
-// und speichert sie lokal – die laufen hier nicht durch.
+//
+// Eine App-Version = ein vollständiger Satz Dateien (SHELL) in einem Cache.
+// - Installation: alle Dateien frisch vom Server laden. Fehlt eine, wird die neue
+//   Version gar nicht erst aktiv – so laufen nie alte und neue Programmteile gemischt.
+// - Betrieb: Dateien kommen aus dem Cache der aktiven Version (schnell, offline).
+// - Update: CACHE-Namen ändern (bei jedem Push). Der Browser findet die neue sw.js,
+//   installiert die neue Version komplett, die App lädt sich dann einmal neu (app.js).
+// Lerninhalte (content/) lädt die App selbst und speichert sie lokal – die laufen hier nicht durch.
 
-const CACHE = 'lernapp-shell-v26';
+const CACHE = 'lernapp-shell-v27';
 const SHELL = [
   './',
   'index.html',
@@ -28,6 +33,7 @@ const SHELL = [
   'js/streak.js',
   'js/medal.js',
   'js/sync.js',
+  'js/merge.js',
   'js/exercises/registry.js',
   'js/exercises/round.js',
   'js/practice-now.js',
@@ -46,10 +52,12 @@ const SHELL = [
   'js/views/handwriting-test.js',
   'js/views/speech-test.js',
 ];
-const NETWORK_TIMEOUT_MS = 3000;
-
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
+  event.waitUntil(
+    caches.open(CACHE)
+      .then((c) => c.addAll(SHELL.map((u) => new Request(u, { cache: 'reload' }))))
+      .then(() => self.skipWaiting())
+  );
 });
 
 self.addEventListener('activate', (event) => {
@@ -64,27 +72,16 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   if (event.request.method !== 'GET' || url.origin !== location.origin) return;
   if (url.pathname.includes('/content/')) return;
-  event.respondWith(networkFirst(event.request));
+  event.respondWith(cacheFirst(event.request));
 });
 
-async function networkFirst(request) {
+async function cacheFirst(request) {
   const cache = await caches.open(CACHE);
-  try {
-    // no-cache: beim Server nachfragen, ob sich die Datei geändert hat (sonst kommen Updates verspätet an).
-    const response = await withTimeout(fetch(request, { cache: 'no-cache' }), NETWORK_TIMEOUT_MS);
-    if (response.ok) cache.put(request, response.clone());
-    return response;
-  } catch {
-    const cached = await cache.match(request, { ignoreSearch: true });
-    if (cached) return cached;
-    if (request.mode === 'navigate') return cache.match('index.html');
-    throw new Error('offline und nicht im Cache: ' + request.url);
-  }
-}
-
-function withTimeout(promise, ms) {
-  return new Promise((resolve, reject) => {
-    const t = setTimeout(() => reject(new Error('timeout')), ms);
-    promise.then((r) => { clearTimeout(t); resolve(r); }, (e) => { clearTimeout(t); reject(e); });
-  });
+  const cached = await cache.match(request, { ignoreSearch: true })
+    ?? (request.mode === 'navigate' ? await cache.match('index.html') : undefined);
+  if (cached) return cached;
+  // Nicht in der Liste (sollte nicht vorkommen): aus dem Netz holen und merken.
+  const response = await fetch(request);
+  if (response.ok) cache.put(request, response.clone());
+  return response;
 }

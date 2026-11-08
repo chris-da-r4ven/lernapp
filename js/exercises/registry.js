@@ -7,6 +7,7 @@
 import { itemKey, buildRound } from '../srs.js';
 import { canSpeak, englishSide } from '../speech.js';
 import { runRound } from './round.js';
+import { parseGap } from './questions.js';
 
 // Kurzform für Markierungen: Deutsch → DE, Englisch → EN.
 const CODES = { Deutsch: 'DE', Englisch: 'EN' };
@@ -64,8 +65,9 @@ export const listenChoose = exercise({
 export const gap = exercise({
   id: 'satz',
   label: 'Lückensätze',
-  auto: (lesson) => hasEnglish(lesson) && lesson.items.some((it) => it.ex),
-  usable: (item) => Boolean(item.ex),
+  auto: (lesson) => hasEnglish(lesson) && lesson.items.some((it) => parseGap(it.ex)),
+  // Nur Sätze mit gültiger {Lücke} – ein Tippfehler im Inhalt soll keine Runde abstürzen lassen.
+  usable: (item) => Boolean(parseGap(item.ex)),
   modes: () => [{ dir: 'satz', label: '📝 Lückensätze', short: '📝 Satz' }],
 });
 
@@ -73,7 +75,7 @@ export const gap = exercise({
 export const form = exercise({
   id: 'form',
   label: 'Richtige Form',
-  usable: (item) => Boolean(item.ex && item.choices),
+  usable: (item) => Boolean(parseGap(item.ex) && item.choices?.length),
   modes: () => [{ dir: 'form', label: '✏️ Richtige Form antippen', short: '✏️ Form' }],
 });
 

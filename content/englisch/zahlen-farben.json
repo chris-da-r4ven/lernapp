@@ -11,84 +11,98 @@
   ],
   "items": [
     {
+      "id": "zero",
       "a": "null",
       "b": "zero",
       "ex": "My phone number starts with {zero}.",
       "exDe": "Meine Handynummer fängt mit null an."
     },
     {
+      "id": "one",
       "a": "eins",
       "b": "one",
       "ex": "I have {one} brother.",
       "exDe": "Ich habe einen Bruder."
     },
     {
+      "id": "two",
       "a": "zwei",
       "b": "two",
       "ex": "I have {two} pencils.",
       "exDe": "Ich habe zwei Bleistifte."
     },
     {
+      "id": "three",
       "a": "drei",
       "b": "three",
       "ex": "We have {three} cats.",
       "exDe": "Wir haben drei Katzen."
     },
     {
+      "id": "four",
       "a": "vier",
       "b": "four",
       "ex": "There are {four} girls in the library.",
       "exDe": "In der Bibliothek sind vier Mädchen."
     },
     {
+      "id": "five",
       "a": "fünf",
       "b": "five",
       "ex": "I'm in Year {five}.",
       "exDe": "Ich bin in Klasse fünf."
     },
     {
+      "id": "six",
       "a": "sechs",
       "b": "six",
       "ex": "My brother is {six} years old.",
       "exDe": "Mein Bruder ist sechs Jahre alt."
     },
     {
+      "id": "seven",
       "a": "sieben",
       "b": "seven",
       "ex": "A week has {seven} days.",
       "exDe": "Eine Woche hat sieben Tage."
     },
     {
+      "id": "eight",
       "a": "acht",
       "b": "eight",
       "ex": "School starts at {eight}.",
       "exDe": "Die Schule fängt um acht an."
     },
     {
+      "id": "nine",
       "a": "neun",
       "b": "nine",
       "ex": "{Nine} plus one is ten.",
       "exDe": "Neun plus eins ist zehn."
     },
     {
+      "id": "ten",
       "a": "zehn",
       "b": "ten",
       "ex": "I'm {ten} years old.",
       "exDe": "Ich bin zehn Jahre alt."
     },
     {
+      "id": "eleven",
       "a": "elf",
       "b": "eleven",
       "ex": "My sister is {eleven}.",
       "exDe": "Meine Schwester ist elf."
     },
     {
+      "id": "twelve",
       "a": "zwölf",
       "b": "twelve",
       "ex": "There are {twelve} months in a year.",
       "exDe": "Ein Jahr hat zwölf Monate."
     },
     {
+      "id": "colour",
       "a": "die Farbe",
       "b": "colour",
       "aAlt": [
@@ -98,6 +112,7 @@
       "exDe": "Welche Farbe hat deine Tasche?"
     },
     {
+      "id": "favourite",
       "a": "Lieblings-",
       "b": "favourite",
       "aAlt": [
@@ -107,60 +122,70 @@
       "exDe": "Rosa ist meine Lieblingsfarbe."
     },
     {
+      "id": "black",
       "a": "schwarz",
       "b": "black",
       "ex": "The cat is {black}.",
       "exDe": "Die Katze ist schwarz."
     },
     {
+      "id": "blue",
       "a": "blau",
       "b": "blue",
       "ex": "My school blazer is {blue}.",
       "exDe": "Mein Schulblazer ist blau."
     },
     {
+      "id": "brown",
       "a": "braun",
       "b": "brown",
       "ex": "The dog is {brown}.",
       "exDe": "Der Hund ist braun."
     },
     {
+      "id": "green",
       "a": "grün",
       "b": "green",
       "ex": "My school bag is {green}.",
       "exDe": "Meine Schultasche ist grün."
     },
     {
+      "id": "grey",
       "a": "grau",
       "b": "grey",
       "ex": "The raccoon is {grey}.",
       "exDe": "Der Waschbär ist grau."
     },
     {
+      "id": "orange",
       "a": "orange",
       "b": "orange",
       "ex": "The pumpkin is {orange}.",
       "exDe": "Der Kürbis ist orange."
     },
     {
+      "id": "pink",
       "a": "pink / rosa",
       "b": "pink",
       "ex": "Fanny has a {pink} mane.",
       "exDe": "Fanny hat eine rosa Mähne."
     },
     {
+      "id": "red",
       "a": "rot",
       "b": "red",
       "ex": "My rubber is {red}.",
       "exDe": "Mein Radiergummi ist rot."
     },
     {
+      "id": "white",
       "a": "weiß",
       "b": "white",
       "ex": "The ghost is {white}.",
       "exDe": "Der Geist ist weiß."
     },
     {
+      "id": "yellow",
       "a": "gelb",
       "b": "yellow",
       "ex": "My pencil case is {yellow}.",

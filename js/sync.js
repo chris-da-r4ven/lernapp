@@ -3,11 +3,15 @@
 // - Der Zugangsschlüssel wird nur auf diesem Gerät gespeichert, nie im Code.
 // - Nach 30 Sekunden ohne neue Antwort (und beim Verlassen der App) wird gesichert.
 // - Beim Start und beim Zurückkehren in die App wird nachgesehen, ob die Sicherung
-//   von außen geändert wurde (z. B. auf eine frühere Uhrzeit zurückgesetzt).
-//   Dann gewinnt die Sicherung und ersetzt den Stand auf dem Gerät.
+//   von außen geändert wurde. Gab es auf dem Gerät keine neuen Antworten, wird sie
+//   übernommen. Sonst werden beide Stände zusammengeführt (merge.js) – pro Wort gewinnt
+//   der neuere Eintrag, ein bewusstes Zurücksetzen (resetAt) gewinnt gegen Älteres.
+// - Zurücksetzen auf eine frühere Uhrzeit (von außen): alten Stand aus der Git-Historie
+//   holen, "resetAt" auf jetzt setzen, als neuen Commit schreiben.
 // - Jede Sicherung ist ein Commit – so lässt sich später jeder Stand wiederherstellen.
 
 import { getState, replaceState, onSave } from './store.js';
+import { mergeStates } from './merge.js';
 
 const CFG_KEY = 'lernapp.sync';
 const FILE = 'spielstand.json';
@@ -81,7 +85,18 @@ async function pull() {
   }
   if (!r.ok) throw new SyncError(errorFor(r.status));
   const json = await r.json();
-  return { exists: true, sha: json.sha, data: JSON.parse(fromB64(json.content)) };
+  // Dateien über 1 MB liefert dieser Weg ohne Inhalt – dann über die Git-Blob-Schnittstelle.
+  let content = json.content;
+  if (!content || json.encoding === 'none') {
+    const b = await api(`/git/blobs/${json.sha}`);
+    if (!b.ok) throw new SyncError(errorFor(b.status));
+    content = (await b.json()).content;
+  }
+  let data;
+  try { data = JSON.parse(fromB64(content)); } catch {
+    throw new SyncError('Die Sicherung ist beschädigt und konnte nicht gelesen werden.');
+  }
+  return { exists: true, sha: json.sha, data };
 }
 
 async function push() {
@@ -106,7 +121,26 @@ function adopt(remote) {
   onRemote();
 }
 
-// Abgleich: von außen geändert → übernehmen; sonst eigene Änderungen hochladen.
+// Gerätestand und Sicherung zusammenführen und das Ergebnis hochladen.
+async function combineAndPush(remote) {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    if (!remote.exists) {
+      // Sicherung wurde gelöscht: einfach den Gerätestand neu hochladen.
+      cfg.sha = null;
+      if ((await push()) === 'ok') return;
+      remote = await pull();
+      continue;
+    }
+    replaceState(mergeStates(getState(), remote.data.state));
+    cfg.sha = remote.sha;
+    onRemote();
+    if ((await push()) === 'ok') return;
+    remote = await pull();   // in der Zwischenzeit wieder geändert – nochmal
+  }
+  throw new SyncError('Die Sicherung ändert sich gerade ständig – später nochmal.');
+}
+
+// Abgleich: von außen geändert → übernehmen bzw. zusammenführen; sonst eigene Änderungen hochladen.
 async function reconcile() {
   if (!cfg) return;
   try {
@@ -114,16 +148,17 @@ async function reconcile() {
     if (!remote.exists) {
       await push();
     } else if (remote.sha !== cfg.sha) {
-      adopt(remote);
+      if (cfg.dirty) await combineAndPush(remote);
+      else adopt(remote);
     } else if (cfg.dirty) {
-      if ((await push()) === 'conflict') adopt(await pull());
+      if ((await push()) === 'conflict') await combineAndPush(await pull());
     }
     cfg.dirty = false;
     cfg.lastSync = Date.now();
     cfg.error = null;
   } catch (e) {
-    // Offline: einfach später nochmal. Echte Fehler anzeigen.
-    cfg.error = e instanceof SyncError ? e.message : null;
+    // Kein Netz (fetch wirft TypeError): einfach später nochmal. Alles andere anzeigen.
+    cfg.error = e instanceof SyncError ? e.message : e instanceof TypeError ? null : `Sicherung fehlgeschlagen: ${e.message}`;
   }
   saveCfg();
 }
@@ -137,8 +172,9 @@ export async function connect(repo, token) {
   try {
     await serial(async () => {
       const remote = await pull();
-      // Gibt es schon eine Sicherung (z. B. neues Gerät), wird sie übernommen.
-      if (remote.exists) adopt(remote);
+      // Gibt es schon eine Sicherung (neues Gerät oder neu verbunden), wird sie mit dem
+      // Stand auf dem Gerät zusammengeführt – es geht nichts verloren.
+      if (remote.exists) await combineAndPush(remote);
       else await push();
       cfg.lastSync = Date.now();
     });

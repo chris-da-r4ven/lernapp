@@ -11,6 +11,7 @@
   ],
   "items": [
     {
+      "id": "Hello",
       "a": "Hallo",
       "b": "Hello",
       "bAlt": [
@@ -20,6 +21,7 @@
       "exDe": "Hallo, ich bin Lisa."
     },
     {
+      "id": "I'm",
       "a": "ich bin",
       "b": "I'm",
       "bAlt": [
@@ -29,12 +31,14 @@
       "exDe": "Ich bin zehn Jahre alt."
     },
     {
+      "id": "the",
       "a": "der / die / das",
       "b": "the",
       "ex": "{The} raccoon is cool.",
       "exDe": "Der Waschbär ist cool."
     },
     {
+      "id": "raccoon",
       "a": "der Waschbär",
       "b": "raccoon",
       "aAlt": [
@@ -44,18 +48,21 @@
       "exDe": "Der Waschbär ist grau und schwarz."
     },
     {
+      "id": "my",
       "a": "mein / meine",
       "b": "my",
       "ex": "This is {my} friend Tom.",
       "exDe": "Das ist mein Freund Tom."
     },
     {
+      "id": "is",
       "a": "ist",
       "b": "is",
       "ex": "My name {is} Emma.",
       "exDe": "Ich heiße Emma."
     },
     {
+      "id": "what's",
       "a": "was ist",
       "b": "what's",
       "bAlt": [
@@ -65,12 +72,14 @@
       "exDe": "Wie heißt du?"
     },
     {
+      "id": "your",
       "a": "dein / deine / euer / eure / Ihr / Ihre",
       "b": "your",
       "ex": "What's {your} name?",
       "exDe": "Wie heißt du?"
     },
     {
+      "id": "My name is …",
       "a": "Ich heiße …",
       "b": "My name is …",
       "aAlt": [
@@ -83,6 +92,7 @@
       "exDe": "Ich heiße Ben."
     },
     {
+      "id": "What's your name?",
       "a": "Wie heißt du?",
       "b": "What's your name?",
       "bAlt": [
@@ -92,12 +102,14 @@
       "exDe": "Hallo! Wie heißt du?"
     },
     {
+      "id": "What are your names?",
       "a": "Wie heißt ihr?",
       "b": "What are your names?",
       "ex": "Hello, children. {What are your names}?",
       "exDe": "Hallo, Kinder. Wie heißt ihr?"
     },
     {
+      "id": "Nice to meet you.",
       "a": "Schön, dich kennenzulernen.",
       "b": "Nice to meet you.",
       "aAlt": [
@@ -108,6 +120,7 @@
       "exDe": "Hallo, Tom. Schön, dich kennenzulernen."
     },
     {
+      "id": "How are you?",
       "a": "Wie geht es dir?",
       "b": "How are you?",
       "aAlt": [
@@ -119,12 +132,14 @@
       "exDe": "Hallo, Frau Brown. Wie geht es Ihnen?"
     },
     {
+      "id": "great",
       "a": "toll / großartig / gut",
       "b": "great",
       "ex": "The music is {great}!",
       "exDe": "Die Musik ist toll!"
     },
     {
+      "id": "See you later.",
       "a": "Bis später! / Bis bald!",
       "b": "See you later.",
       "aAlt": [
@@ -134,6 +149,7 @@
       "exDe": "Tschüss, Lisa! Bis später!"
     },
     {
+      "id": "Bye",
       "a": "Tschüss",
       "b": "Bye",
       "bAlt": [
@@ -143,12 +159,14 @@
       "exDe": "Tschüss, Mama!"
     },
     {
+      "id": "Goodbye",
       "a": "Auf Wiedersehen",
       "b": "Goodbye",
       "ex": "{Goodbye}, Mr Turner!",
       "exDe": "Auf Wiedersehen, Herr Turner!"
     },
     {
+      "id": "to say",
       "a": "sagen / sprechen",
       "b": "to say",
       "bAlt": [
@@ -158,24 +176,28 @@
       "exDe": "Kannst du das bitte noch einmal sagen?"
     },
     {
+      "id": "and",
       "a": "und",
       "b": "and",
       "ex": "Tom {and} Lisa are friends.",
       "exDe": "Tom und Lisa sind Freunde."
     },
     {
+      "id": "this",
       "a": "das / dies",
       "b": "this",
       "ex": "{This} is my school.",
       "exDe": "Das ist meine Schule."
     },
     {
+      "id": "too",
       "a": "auch",
       "b": "too",
       "ex": "I'm ten. I'm ten {too}!",
       "exDe": "Ich bin zehn. Ich bin auch zehn!"
     },
     {
+      "id": "pardon",
       "a": "Wie bitte? / Entschuldigung?",
       "b": "pardon",
       "bAlt": [
@@ -185,6 +207,7 @@
       "exDe": "Wie bitte? Kannst du das noch einmal sagen?"
     },
     {
+      "id": "Can you spell that, please?",
       "a": "Kannst du das bitte buchstabieren?",
       "b": "Can you spell that, please?",
       "bAlt": [
@@ -194,12 +217,14 @@
       "exDe": "Du heißt Smith? Kannst du das bitte buchstabieren?"
     },
     {
+      "id": "please",
       "a": "bitte",
       "b": "please",
       "ex": "Sit down, {please}.",
       "exDe": "Setzt euch bitte."
     },
     {
+      "id": "Thank you.",
       "a": "Danke.",
       "b": "Thank you.",
       "bAlt": [
@@ -209,18 +234,21 @@
       "exDe": "Bitte schön. – Danke!"
     },
     {
+      "id": "How old are you?",
       "a": "Wie alt bist du?",
       "b": "How old are you?",
       "ex": "{How old are you}? – I'm ten.",
       "exDe": "Wie alt bist du? – Ich bin zehn."
     },
     {
+      "id": "Where are you from?",
       "a": "Woher kommst du?",
       "b": "Where are you from?",
       "ex": "{Where are you from}? – I'm from Stuttgart.",
       "exDe": "Woher kommst du? – Ich komme aus Stuttgart."
     },
     {
+      "id": "I'm from …",
       "a": "Ich komme aus …",
       "b": "I'm from …",
       "aAlt": [
@@ -234,6 +262,7 @@
       "exDe": "Ich komme aus Deutschland."
     },
     {
+      "id": "student",
       "a": "der Schüler / die Schülerin",
       "b": "student",
       "aAlt": [
@@ -244,6 +273,7 @@
       "exDe": "Lisa ist Schülerin an meiner Schule."
     },
     {
+      "id": "school",
       "a": "die Schule",
       "b": "school",
       "aAlt": [
@@ -253,6 +283,7 @@
       "exDe": "Meine Schule ist groß."
     },
     {
+      "id": "cool",
       "a": "cool / super",
       "b": "cool",
       "ex": "Your new bag is {cool}!",

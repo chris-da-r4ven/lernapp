@@ -11,6 +11,7 @@
   ],
   "items": [
     {
+      "id": "black cat",
       "a": "die schwarze Katze",
       "b": "black cat",
       "aAlt": [
@@ -20,6 +21,7 @@
       "exDe": "Die Hexe hat eine schwarze Katze."
     },
     {
+      "id": "ghost",
       "a": "der Geist",
       "b": "ghost",
       "aAlt": [
@@ -29,6 +31,7 @@
       "exDe": "Der Geist ist weiß."
     },
     {
+      "id": "pumpkin",
       "a": "der Kürbis",
       "b": "pumpkin",
       "aAlt": [
@@ -38,6 +41,7 @@
       "exDe": "Der Kürbis ist orange."
     },
     {
+      "id": "bat",
       "a": "die Fledermaus",
       "b": "bat",
       "aAlt": [
@@ -47,6 +51,7 @@
       "exDe": "Die Fledermaus ist schwarz."
     },
     {
+      "id": "skeleton",
       "a": "das Skelett",
       "b": "skeleton",
       "aAlt": [
@@ -56,6 +61,7 @@
       "exDe": "Das Skelett ist im Spukhaus."
     },
     {
+      "id": "cauldron",
       "a": "der Kessel",
       "b": "cauldron",
       "aAlt": [
@@ -65,6 +71,7 @@
       "exDe": "Die Hexe hat einen großen Kessel."
     },
     {
+      "id": "spider",
       "a": "die Spinne",
       "b": "spider",
       "aAlt": [
@@ -74,6 +81,7 @@
       "exDe": "Da ist eine Spinne an der Wand!"
     },
     {
+      "id": "broomstick",
       "a": "der Besen",
       "b": "broomstick",
       "aAlt": [
@@ -83,6 +91,7 @@
       "exDe": "Die Hexe sitzt auf ihrem Besen."
     },
     {
+      "id": "witch",
       "a": "die Hexe",
       "b": "witch",
       "aAlt": [
@@ -92,6 +101,7 @@
       "exDe": "Die Hexe hat eine schwarze Katze."
     },
     {
+      "id": "haunted house",
       "a": "das Spukhaus",
       "b": "haunted house",
       "aAlt": [

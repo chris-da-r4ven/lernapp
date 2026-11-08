@@ -11,6 +11,7 @@
   ],
   "items": [
     {
+      "id": "school bag",
       "a": "die Schultasche / der Schulranzen",
       "b": "school bag",
       "aAlt": [
@@ -21,6 +22,7 @@
       "exDe": "Meine Schultasche ist grün."
     },
     {
+      "id": "book",
       "a": "das Buch",
       "b": "book",
       "aAlt": [
@@ -30,6 +32,7 @@
       "exDe": "Das ist ein Buch für dich."
     },
     {
+      "id": "exercise book",
       "a": "das Heft / das Schulheft",
       "b": "exercise book",
       "aAlt": [
@@ -40,6 +43,7 @@
       "exDe": "Schreib die Wörter in dein Heft."
     },
     {
+      "id": "tablet",
       "a": "das Tablet",
       "b": "tablet",
       "aAlt": [
@@ -49,6 +53,7 @@
       "exDe": "Mein neues Tablet ist grau."
     },
     {
+      "id": "water bottle",
       "a": "die Wasserflasche / die Trinkflasche",
       "b": "water bottle",
       "aAlt": [
@@ -59,6 +64,7 @@
       "exDe": "Meine Trinkflasche ist in meiner Schultasche."
     },
     {
+      "id": "lunch box",
       "a": "die Brotbox / die Brotdose",
       "b": "lunch box",
       "aAlt": [
@@ -69,6 +75,7 @@
       "exDe": "Mein Brot ist in meiner Brotbox."
     },
     {
+      "id": "scissors",
       "a": "die Schere",
       "b": "scissors",
       "aAlt": [
@@ -78,6 +85,7 @@
       "exDe": "Ich schneide das Papier mit meiner Schere."
     },
     {
+      "id": "glue",
       "a": "der Kleber",
       "b": "glue",
       "aAlt": [
@@ -87,6 +95,7 @@
       "exDe": "Kann ich bitte den Kleber haben?"
     },
     {
+      "id": "glue stick",
       "a": "der Klebestift",
       "b": "glue stick",
       "aAlt": [
@@ -96,6 +105,7 @@
       "exDe": "Mein Klebestift ist leer."
     },
     {
+      "id": "pencil case",
       "a": "das Mäppchen / das Federmäppchen",
       "b": "pencil case",
       "aAlt": [
@@ -106,6 +116,7 @@
       "exDe": "Mein Mäppchen ist in meiner Tasche."
     },
     {
+      "id": "pen",
       "a": "der Füller / der Stift",
       "b": "pen",
       "aAlt": [
@@ -116,6 +127,7 @@
       "exDe": "Ich habe einen blauen Füller."
     },
     {
+      "id": "pencil",
       "a": "der Bleistift",
       "b": "pencil",
       "aAlt": [
@@ -125,6 +137,7 @@
       "exDe": "Schreib bitte mit einem Bleistift."
     },
     {
+      "id": "coloured pencils",
       "a": "die Buntstifte",
       "b": "coloured pencils",
       "aAlt": [
@@ -135,6 +148,7 @@
       "exDe": "Kann ich deine Buntstifte benutzen?"
     },
     {
+      "id": "rubber",
       "a": "der Radiergummi",
       "b": "rubber",
       "aAlt": [
@@ -144,6 +158,7 @@
       "exDe": "Mein Radiergummi ist weiß."
     },
     {
+      "id": "ruler",
       "a": "das Lineal",
       "b": "ruler",
       "aAlt": [
@@ -153,6 +168,7 @@
       "exDe": "Kann ich bitte dein Lineal haben?"
     },
     {
+      "id": "sharpener",
       "a": "der Spitzer / der Bleistiftspitzer",
       "b": "sharpener",
       "aAlt": [
@@ -163,6 +179,7 @@
       "exDe": "Wo ist mein Spitzer?"
     },
     {
+      "id": "folder",
       "a": "der Ordner",
       "b": "folder",
       "aAlt": [
@@ -172,6 +189,7 @@
       "exDe": "Mein Ordner ist rot."
     },
     {
+      "id": "phone",
       "a": "das Handy",
       "b": "phone",
       "aAlt": [

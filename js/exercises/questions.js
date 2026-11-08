@@ -228,6 +228,7 @@ const chooseQuestion = {
 // "exDe" ist die deutsche Übersetzung des Satzes.
 
 export function parseGap(ex) {
+  if (!ex) return null;
   const m = String(ex).match(/^(.*?)\{([^}]+)\}(.*)$/);
   if (!m) return null;
   const [answer, ...alts] = m[2].split('|').map((s) => s.trim());

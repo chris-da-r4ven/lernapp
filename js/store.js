@@ -8,7 +8,8 @@ import { streakInfo } from './streak.js';
 
 const KEY = 'lernapp.progress';
 
-const empty = () => ({ items: {}, days: {}, points: 0, pet: null, tests: {} });
+// resetAt: Zeitpunkt des letzten Zurücksetzens (für das Zusammenführen mit der Sicherung).
+const empty = () => ({ items: {}, days: {}, points: 0, pet: null, tests: {}, resetAt: 0 });
 
 let state = load();
 
@@ -38,7 +39,7 @@ export const getState = () => state;
 
 // Alles zurück auf null: Punkte, Serie, Lernstand. Lektionen bleiben erhalten.
 export function resetProgress() {
-  state = empty();
+  state = { ...empty(), resetAt: Date.now() };
   save();
 }
 

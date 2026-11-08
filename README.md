@@ -30,8 +30,21 @@ Beim Start und per Knopf „Neue Inhalte suchen“ holt sie neue Lektionen.
 - `a` / `b`: die beiden Seiten. Abgefragt wird in beide Richtungen.
 - `aAlt` / `bAlt`: weitere Schreibweisen, die als richtig zählen.
 - Enthält eine Seite `/` (z. B. „Freund / Freundin“), zählt auch jeder Teil einzeln.
-- `id` pro Wort ist optional. Ohne `id` wird die englische Seite (`b`) als Schlüssel für den Lernstand genommen –
-  wird `b` später korrigiert, beginnt dieses Wort beim Lernstand von vorn.
+- `id` pro Wort: feste Kennung für den Lernstand. **Nie ändern** – auch wenn `a`/`b` korrigiert werden.
+  Neue Wörter bekommen als `id` ihr englisches Wort (einmal gesetzt, bleibt es so).
+- `ex` / `exDe`: Beispielsatz mit `{Lücke}` (Varianten mit `|`: `{I am|I'm}`) und Übersetzung.
+- Lektionen zusammenlegen/umbenennen: beim Fach in `content/index.json` unter `moved` eintragen
+  (`{"alteLektion": "neueLektion"}`), dann zieht der Lernstand mit.
+
+## Sicherung des Spielstands
+
+Optional in ein privates GitHub-Repo (`lernapp-daten`, Datei `spielstand.json`), eingerichtet unter
+Fortschritt → Für Eltern. Gerät und Sicherung werden zusammengeführt (`js/merge.js`): pro Wort gewinnt
+der neuere Eintrag. Ein Zurücksetzen gewinnt gegen alles Ältere – dafür steht im Stand `resetAt`.
+
+**Auf eine frühere Uhrzeit zurücksetzen:** passenden Commit in `lernapp-daten` suchen, dessen
+`spielstand.json` nehmen, im `state` `resetAt` auf den jetzigen Zeitpunkt (ms seit 1970) setzen und als
+neuen Commit schreiben (nie force-push). Das Tablet übernimmt den Stand beim nächsten Öffnen.
 
 ## Aufbau
 
@@ -41,7 +54,8 @@ Beim Start und per Knopf „Neue Inhalte suchen“ holt sie neue Lektionen.
 - `js/exercises/` – Übungsarten; neue in `registry.js` eintragen
 - `js/views/` – Seiten: Start, Fach, Lektion, Üben, Fortschritt
 - `js/pet.js` – Platzhalter fürs Tier (wird mit dem Kind gestaltet)
-- `sw.js` – Offline-Cache für die App-Dateien. Neue JS-Dateien dort in `SHELL` eintragen.
+- `sw.js` – Offline-Cache für die App-Dateien. Neue Dateien dort in `SHELL` eintragen und bei jedem
+  Push `CACHE` hochzählen – eine neue Version wird nur komplett aktiv.
 
 ## Lokal testen
 
