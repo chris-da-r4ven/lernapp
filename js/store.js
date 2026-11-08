@@ -80,7 +80,9 @@ export function addTestResult(lessonKey, pct) {
   state.tests[lessonKey] = list.slice(-20);
 }
 
-export const testedToday = (lessonKey) => (state.tests?.[lessonKey] ?? []).some((r) => r.day === dayKey());
+// minPct: nur Tests zählen, die mindestens so gut waren.
+export const testedToday = (lessonKey, minPct = 0) =>
+  (state.tests?.[lessonKey] ?? []).some((r) => r.day === dayKey() && r.pct >= minPct);
 
 export function medalStatus(lessonKey) {
   const list = state.tests?.[lessonKey] ?? [];
