@@ -359,3 +359,19 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
 .pet-big .sparkle { text-shadow: 0 0 2px rgba(60, 50, 110, 0.55), 0 0 10px var(--glitter-glow); }
 .pet-big.glitter-silver .sparkle { color: #ffffff; -webkit-text-stroke: 1px #7a80b0; text-shadow: 0 0 3px rgba(80, 80, 140, 0.7), 0 0 12px #ffffff; }
 .pet-big.glitter-gold .sparkle { -webkit-text-stroke: 1px #c48a00; }
+
+/* Medaillen */
+.medal { font-size: 1.8rem; line-height: 1; filter: drop-shadow(0 0 6px rgba(255, 196, 0, 0.75)); flex: none; }
+.lesson-tile.has-medal { border-color: #f5c542; background: linear-gradient(135deg, var(--card) 70%, rgba(245, 197, 66, 0.18)); }
+.medal-hint { margin-top: 4px; }
+.mastered { margin-top: 4px; }
+.mastered > summary { cursor: pointer; padding: 8px 4px; font-weight: 600; color: var(--muted); }
+.mastered[open] > summary { margin-bottom: 8px; }
+.medal-banner { display: inline-flex; align-items: center; gap: 10px; padding: 8px 14px; margin-bottom: 12px;
+  border-radius: 999px; border: 2px solid #f5c542; background: rgba(245, 197, 66, 0.15); }
+.medal-new { display: flex; align-items: center; gap: 12px; justify-content: center; margin: 10px auto;
+  padding: 10px 16px; max-width: 420px; border-radius: 14px; border: 2px solid #f5c542; background: rgba(245, 197, 66, 0.15); }
+.medal-new .medal { font-size: 2.6rem; animation: medal-pop 0.8s ease-out; }
+@keyframes medal-pop { 0% { transform: scale(0.2) rotate(-30deg); } 70% { transform: scale(1.25) rotate(8deg); } 100% { transform: scale(1); } }
+.test-group { margin: 14px 0 6px; font-size: 1rem; }
+@media (prefers-reduced-motion: reduce) { .medal-new .medal { animation: none; } }

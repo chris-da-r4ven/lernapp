@@ -7,6 +7,7 @@ import { englishSide } from '../speech.js';
 import { tasksFor } from '../exercises/registry.js';
 import { runRound } from '../exercises/round.js';
 import { esc, shuffle } from '../util.js';
+import { lessonMedal } from '../medal.js';
 
 export function testView(el, sid) {
   const subject = getSubject(sid);
@@ -22,9 +23,14 @@ export function testView(el, sid) {
          Jedes Wort kommt nur einmal, ohne Hilfe. Am Ende siehst du, wie viel du richtig hattest.</p>
       <h2>Welche Lektionen?</h2>
       <form class="test-form">
-        ${lessons.map((l) => `
+        ${lessons.map((l, i) => {
+          const meta = subject.lessons.find((x) => x.id === l.id) ?? {};
+          const prev = i ? subject.lessons.find((x) => x.id === lessons[i - 1].id) ?? {} : {};
+          const head = meta.group && meta.group !== prev.group ? `<h3 class="test-group">${esc(meta.group)}</h3>` : '';
+          return `${head}
           <label class="check"><input type="checkbox" name="lesson" value="${esc(l.id)}">
-            ${esc(subject.lessons.find((x) => x.id === l.id)?.title ?? l.title)} <span class="muted small">(${l.items.length} Wörter)</span></label>`).join('')}
+            ${lessonMedal(sid, l).medal ? '🏅 ' : ''}${esc(meta.title ?? l.title)} <span class="muted small">(${l.items.length} Wörter)</span></label>`;
+        }).join('')}
         <p class="test-count muted small"></p>
         <div class="actions"><button class="btn primary" type="submit">Test starten</button></div>
       </form>

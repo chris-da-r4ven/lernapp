@@ -3,6 +3,7 @@ import { itemState } from '../store.js';
 import { itemKey, status, mastery } from '../srs.js';
 import { exercisesFor, modesFor, usableIn } from '../exercises/registry.js';
 import { esc } from '../util.js';
+import { lessonMedal } from '../medal.js';
 
 const STATUS_LABEL = { neu: 'neu', wackelt: 'wackelt', sicher: 'sicher' };
 
@@ -14,11 +15,15 @@ export function lessonView(el, sid, lid) {
   const base = `#/ueben/${encodeURIComponent(sid)}/${encodeURIComponent(lid)}`;
   const exList = exercisesFor(lesson);
   const modes = modesFor(lesson);
+  const medal = lessonMedal(sid, lesson);
 
   el.innerHTML = `
     <a class="back" href="#/fach/${encodeURIComponent(sid)}">← ${esc(subject.name)}</a>
     <h1>${esc(lesson.title)}</h1>
-    <p class="muted">${lesson.items.length} Wörter · ${Math.round(mastery(sid, lesson) * 100)} % sicher</p>
+    <p class="muted">${lesson.items.length} ${lesson.grammar ? 'Sätze' : 'Wörter'} · ${Math.round(mastery(sid, lesson) * 100)} % sicher</p>
+    ${medal.medal
+      ? '<div class="medal-banner"><span class="medal" aria-hidden="true">🏅</span><strong>Kannst du schon gut!</strong></div>'
+      : `<p class="muted small">🏅 ${esc(medal.hint)}</p>`}
 
     <section class="card">
       <h2>Üben</h2>

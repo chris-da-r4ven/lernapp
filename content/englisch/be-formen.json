@@ -274,6 +274,78 @@
         "is",
         "are"
       ]
+    },
+    {
+      "id": "s23",
+      "a": "Sie ist meine Schwester.",
+      "b": "She is my sister.",
+      "ex": "She {is} my sister.",
+      "exDe": "Sie ist meine Schwester.",
+      "choices": [
+        "am",
+        "is",
+        "are"
+      ]
+    },
+    {
+      "id": "s24",
+      "a": "Er ist in der Bibliothek.",
+      "b": "He is in the library.",
+      "ex": "He {is} in the library.",
+      "exDe": "Er ist in der Bibliothek.",
+      "choices": [
+        "am",
+        "is",
+        "are"
+      ]
+    },
+    {
+      "id": "s25",
+      "a": "Es ist eine große Schule.",
+      "b": "It is a big school.",
+      "ex": "It {is} a big school.",
+      "exDe": "Es ist eine große Schule.",
+      "choices": [
+        "am",
+        "is",
+        "are"
+      ]
+    },
+    {
+      "id": "s26",
+      "a": "Sie sind meine Freunde.",
+      "b": "They are my friends.",
+      "ex": "They {are} my friends.",
+      "exDe": "Sie sind meine Freunde.",
+      "choices": [
+        "am",
+        "is",
+        "are"
+      ]
+    },
+    {
+      "id": "s27",
+      "a": "Ihr seid zu spät, Kinder!",
+      "b": "You are late, children!",
+      "ex": "You {are} late, children!",
+      "exDe": "Ihr seid zu spät, Kinder!",
+      "choices": [
+        "am",
+        "is",
+        "are"
+      ]
+    },
+    {
+      "id": "s28",
+      "a": "Wir sind in Klasse 5.",
+      "b": "We are in Year 5.",
+      "ex": "We {are} in Year 5.",
+      "exDe": "Wir sind in Klasse 5.",
+      "choices": [
+        "am",
+        "is",
+        "are"
+      ]
     }
   ]
 }

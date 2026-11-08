@@ -5,7 +5,7 @@
 
 import { esc } from '../util.js';
 import { record, weightFor, roundBonus } from '../srs.js';
-import { getState } from '../store.js';
+import { getState, addTestResult, medalStatus, save } from '../store.js';
 import { levelFor } from '../pet.js';
 import { roundSummary } from './summary.js';
 import { questionFor } from './questions.js';
@@ -72,13 +72,37 @@ export function runRound(el, { tasks, test = false, onAgain, onBack, backLabel }
     q.render(el.querySelector('.prompt-card'), task, api, { test });
   }
 
+  // Im Test: Ergebnis für jede beteiligte Lektion einzeln speichern (für die Medaille 🏅).
+  function saveTestResults() {
+    const byLesson = new Map();
+    for (const t of tasks) {
+      const k = `${t.sid}/${t.lesson.id}`;
+      const r = byLesson.get(k) ?? { right: 0, total: 0, title: t.lesson.title };
+      r.total++;
+      if (!mistakes.has(t.key)) r.right++;
+      byLesson.set(k, r);
+    }
+    const newMedals = [];
+    for (const [k, r] of byLesson) {
+      const had = medalStatus(k).medal;
+      addTestResult(k, Math.round((r.right / r.total) * 100));
+      if (!had && medalStatus(k).medal) newMedals.push(r.title);
+    }
+    save();
+    return newMedals;
+  }
+
   function summary() {
     const list = [...mistakes.values()];
     const pct = Math.round((firstTry / total) * 100);
+    const newMedals = test ? saveTestResults() : [];
+    const medalHtml = newMedals.map((t) => `
+      <div class="medal-new"><span class="medal" aria-hidden="true">🏅</span>
+        <span><strong>Medaille!</strong> „${esc(t)}“ kannst du jetzt richtig gut.</span></div>`).join('');
     roundSummary(el, {
       total, firstTry, points, startLevel,
       bonus: roundBonus(tasks.map((t) => t.dir)),
-      intro: test ? `<p class="big">${firstTry} von ${total} richtig (${pct} %)</p>` : null,
+      intro: test ? `<p class="big">${firstTry} von ${total} richtig (${pct} %)</p>${medalHtml}` : null,
       mistakesTitle: test ? 'Diese Wörter waren noch nicht richtig:' : null,
       mistakes: list.map(({ task, typed }) => {
         const [q, a] = questionFor(task.dir).pair(task);

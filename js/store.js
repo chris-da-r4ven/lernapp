@@ -8,7 +8,7 @@ import { streakInfo } from './streak.js';
 
 const KEY = 'lernapp.progress';
 
-const empty = () => ({ items: {}, days: {}, points: 0, pet: null });
+const empty = () => ({ items: {}, days: {}, points: 0, pet: null, tests: {} });
 
 let state = load();
 
@@ -40,6 +40,51 @@ export const getState = () => state;
 export function resetProgress() {
   state = empty();
   save();
+}
+
+// Lektionen zusammengelegt/umbenannt: Lernstand der Wörter mitnehmen.
+// moved: { alteLektion: neueLektion } innerhalb eines Fachs. Mehrfach aufrufen schadet nicht.
+export function migrateLessons(sid, moved = {}) {
+  let changed = false;
+  for (const [from, to] of Object.entries(moved)) {
+    const prefix = `${sid}/${from}/`;
+    for (const key of Object.keys(state.items)) {
+      if (!key.startsWith(prefix)) continue;
+      const target = `${sid}/${to}/` + key.slice(prefix.length);
+      const old = state.items[key];
+      const cur = state.items[target];
+      if (!cur || (old.last ?? 0) > (cur.last ?? 0)) state.items[target] = old;
+      delete state.items[key];
+      changed = true;
+    }
+    const tFrom = `${sid}/${from}`;
+    if (state.tests?.[tFrom]) {
+      state.tests[`${sid}/${to}`] = [...(state.tests[`${sid}/${to}`] ?? []), ...state.tests[tFrom]];
+      delete state.tests[tFrom];
+      changed = true;
+    }
+  }
+  if (changed) save();
+  return changed;
+}
+
+// --- Testergebnisse und Medaillen ---------------------------------------------
+// Medaille 🏅: zweimal mindestens 90 % im Test, an zwei verschiedenen Tagen.
+export const MEDAL_PCT = 90;
+export const MEDAL_DAYS = 2;
+
+export function addTestResult(lessonKey, pct) {
+  state.tests ??= {};
+  const list = state.tests[lessonKey] ?? [];
+  list.push({ day: dayKey(), pct });
+  state.tests[lessonKey] = list.slice(-20);
+}
+
+export function medalStatus(lessonKey) {
+  const list = state.tests?.[lessonKey] ?? [];
+  const goodDays = new Set(list.filter((r) => r.pct >= MEDAL_PCT).map((r) => r.day));
+  const best = list.reduce((m, r) => Math.max(m, r.pct), 0);
+  return { medal: goodDays.size >= MEDAL_DAYS, goodDays: goodDays.size, tests: list.length, best };
 }
 
 export function itemState(key) {

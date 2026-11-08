@@ -1,6 +1,6 @@
 {
-  "id": "faecher",
-  "title": "Schulfächer",
+  "id": "stundenplan",
+  "title": "Stundenplan",
   "type": "pairs",
   "sides": {
     "a": "Deutsch",
@@ -155,6 +155,58 @@
       "b": "difficult",
       "ex": "Maths is {difficult} for me.",
       "exDe": "Mathe ist schwierig für mich."
+    },
+    {
+      "a": "Montag",
+      "b": "Monday",
+      "ex": "We have science on {Monday}.",
+      "exDe": "Am Montag haben wir Naturwissenschaften."
+    },
+    {
+      "a": "Dienstag",
+      "b": "Tuesday",
+      "ex": "Assembly is on {Tuesday} morning.",
+      "exDe": "Die Versammlung ist am Dienstagmorgen."
+    },
+    {
+      "a": "Mittwoch",
+      "b": "Wednesday",
+      "hard": true,
+      "ex": "On {Wednesday} we have PE.",
+      "exDe": "Am Mittwoch haben wir Sport."
+    },
+    {
+      "a": "Donnerstag",
+      "b": "Thursday",
+      "ex": "My music lesson is on {Thursday}.",
+      "exDe": "Meine Musikstunde ist am Donnerstag."
+    },
+    {
+      "a": "Freitag",
+      "b": "Friday",
+      "ex": "{Friday} is my favourite day.",
+      "exDe": "Freitag ist mein Lieblingstag."
+    },
+    {
+      "a": "Samstag",
+      "b": "Saturday",
+      "ex": "On {Saturday} there is no school.",
+      "exDe": "Am Samstag ist keine Schule."
+    },
+    {
+      "a": "Sonntag",
+      "b": "Sunday",
+      "ex": "On {Sunday} I play with my friends.",
+      "exDe": "Am Sonntag spiele ich mit meinen Freunden."
+    },
+    {
+      "a": "das Wochenende",
+      "b": "weekend",
+      "aAlt": [
+        "Wochenende"
+      ],
+      "ex": "See you after the {weekend}!",
+      "exDe": "Bis nach dem Wochenende!"
     }
   ]
 }

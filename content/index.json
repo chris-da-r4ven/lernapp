@@ -1,5 +1,5 @@
 {
-  "version": 6,
+  "version": 7,
   "updated": "2026-11-08",
   "subjects": [
     {
@@ -10,64 +10,60 @@
         {
           "id": "hallo",
           "title": "Hallo & Kennenlernen",
+          "group": "Schule & ich",
           "file": "englisch/hallo.json"
         },
         {
-          "id": "zahlen",
-          "title": "Zahlen 0–12",
-          "file": "englisch/zahlen.json"
+          "id": "zahlen-farben",
+          "title": "Zahlen & Farben",
+          "group": "Schule & ich",
+          "file": "englisch/zahlen-farben.json"
         },
         {
-          "id": "farben",
-          "title": "Farben",
-          "file": "englisch/farben.json"
-        },
-        {
-          "id": "leute",
-          "title": "Leute in der Schule",
-          "file": "englisch/leute.json"
+          "id": "meine-schule",
+          "title": "Meine Schule",
+          "group": "Schule & ich",
+          "file": "englisch/meine-schule.json"
         },
         {
           "id": "schulsachen",
           "title": "Schulsachen",
+          "group": "Schule & ich",
           "file": "englisch/schulsachen.json"
         },
         {
           "id": "klassenzimmer",
           "title": "Im Klassenzimmer",
+          "group": "Schule & ich",
           "file": "englisch/klassenzimmer.json"
         },
         {
-          "id": "orte",
-          "title": "Orte in der Schule",
-          "file": "englisch/orte.json"
-        },
-        {
-          "id": "faecher",
-          "title": "Schulfächer",
-          "file": "englisch/faecher.json"
-        },
-        {
-          "id": "wochentage",
-          "title": "Wochentage",
-          "file": "englisch/wochentage.json"
+          "id": "stundenplan",
+          "title": "Stundenplan",
+          "group": "Schule & ich",
+          "file": "englisch/stundenplan.json"
         },
         {
           "id": "halloween",
           "title": "Halloween",
+          "group": "Feiertage",
           "file": "englisch/halloween.json"
-        },
-        {
-          "id": "to-be",
-          "title": "to be (sein)",
-          "file": "englisch/to-be.json"
         },
         {
           "id": "be-formen",
           "title": "am, is oder are?",
+          "group": "Grammatik",
           "file": "englisch/be-formen.json"
         }
-      ]
+      ],
+      "moved": {
+        "zahlen": "zahlen-farben",
+        "farben": "zahlen-farben",
+        "leute": "meine-schule",
+        "orte": "meine-schule",
+        "faecher": "stundenplan",
+        "wochentage": "stundenplan"
+      }
     }
   ]
 }

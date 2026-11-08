@@ -1,6 +1,6 @@
 {
-  "id": "farben",
-  "title": "Farben",
+  "id": "zahlen-farben",
+  "title": "Zahlen & Farben",
   "type": "pairs",
   "sides": {
     "a": "Deutsch",
@@ -10,6 +10,84 @@
     "write"
   ],
   "items": [
+    {
+      "a": "null",
+      "b": "zero",
+      "ex": "My phone number starts with {zero}.",
+      "exDe": "Meine Handynummer fängt mit null an."
+    },
+    {
+      "a": "eins",
+      "b": "one",
+      "ex": "I have {one} brother.",
+      "exDe": "Ich habe einen Bruder."
+    },
+    {
+      "a": "zwei",
+      "b": "two",
+      "ex": "I have {two} pencils.",
+      "exDe": "Ich habe zwei Bleistifte."
+    },
+    {
+      "a": "drei",
+      "b": "three",
+      "ex": "We have {three} cats.",
+      "exDe": "Wir haben drei Katzen."
+    },
+    {
+      "a": "vier",
+      "b": "four",
+      "ex": "There are {four} girls in the library.",
+      "exDe": "In der Bibliothek sind vier Mädchen."
+    },
+    {
+      "a": "fünf",
+      "b": "five",
+      "ex": "I'm in Year {five}.",
+      "exDe": "Ich bin in Klasse fünf."
+    },
+    {
+      "a": "sechs",
+      "b": "six",
+      "ex": "My brother is {six} years old.",
+      "exDe": "Mein Bruder ist sechs Jahre alt."
+    },
+    {
+      "a": "sieben",
+      "b": "seven",
+      "ex": "A week has {seven} days.",
+      "exDe": "Eine Woche hat sieben Tage."
+    },
+    {
+      "a": "acht",
+      "b": "eight",
+      "ex": "School starts at {eight}.",
+      "exDe": "Die Schule fängt um acht an."
+    },
+    {
+      "a": "neun",
+      "b": "nine",
+      "ex": "{Nine} plus one is ten.",
+      "exDe": "Neun plus eins ist zehn."
+    },
+    {
+      "a": "zehn",
+      "b": "ten",
+      "ex": "I'm {ten} years old.",
+      "exDe": "Ich bin zehn Jahre alt."
+    },
+    {
+      "a": "elf",
+      "b": "eleven",
+      "ex": "My sister is {eleven}.",
+      "exDe": "Meine Schwester ist elf."
+    },
+    {
+      "a": "zwölf",
+      "b": "twelve",
+      "ex": "There are {twelve} months in a year.",
+      "exDe": "Ein Jahr hat zwölf Monate."
+    },
     {
       "a": "die Farbe",
       "b": "colour",

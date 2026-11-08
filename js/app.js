@@ -1,4 +1,4 @@
-import { checkUpdates } from './content.js';
+import { checkUpdates, applyMoves } from './content.js';
 import { startSync } from './sync.js';
 import { toast } from './util.js';
 import { homeView } from './views/home.js';
@@ -53,11 +53,12 @@ export async function updateContent({ quiet = false } = {}) {
 }
 
 window.addEventListener('hashchange', render);
+applyMoves();
 render();
 updateContent({ quiet: true });
 // Sicherung: wurde sie von außen geändert (z. B. zurückgesetzt), Seite neu zeichnen –
 // außer mitten in einer Übungsrunde.
-startSync({ onRemoteChange: () => { if (!practicing()) render(); } });
+startSync({ onRemoteChange: () => { applyMoves(); if (!practicing()) render(); } });
 
 // Browser bitten, den Spielstand nicht bei Speichermangel selbst zu löschen.
 navigator.storage?.persist?.().catch(() => {});

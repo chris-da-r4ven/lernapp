@@ -2,6 +2,8 @@
 // damit die App offline weiterläuft. Neue Inhalte erkennt sie an
 // "version" in content/index.json. "updated" (JJJJ-MM-TT) ist nur zur Anzeige.
 
+import { migrateLessons } from './store.js';
+
 const KEY = 'lernapp.content';
 
 let data = load() ?? { version: null, subjects: [], lessons: {} };
@@ -20,6 +22,11 @@ export const getSubjects = () => data.subjects;
 export const getSubject = (sid) => data.subjects.find((s) => s.id === sid);
 export const getLesson = (sid, lid) => data.lessons[sid + '/' + lid];
 
+// Lektionen, die zusammengelegt wurden: Lernstand dorthin mitnehmen (siehe store.migrateLessons).
+export function applyMoves() {
+  for (const s of data.subjects) if (s.moved) migrateLessons(s.id, s.moved);
+}
+
 // Liefert 'updated', 'current' oder 'offline'.
 export async function checkUpdates() {
   try {
@@ -33,6 +40,7 @@ export async function checkUpdates() {
     }
     data = { version: idx.version, updated: idx.updated ?? null, subjects: idx.subjects, lessons };
     save();
+    applyMoves();
     return 'updated';
   } catch (e) {
     console.warn('Inhalte nicht geladen:', e);

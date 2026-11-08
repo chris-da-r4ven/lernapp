@@ -1,6 +1,6 @@
 {
-  "id": "leute",
-  "title": "Leute in der Schule",
+  "id": "meine-schule",
+  "title": "Meine Schule",
   "type": "pairs",
   "sides": {
     "a": "Deutsch",
@@ -187,6 +187,83 @@
       "b": "in",
       "ex": "My pen is {in} my pencil case.",
       "exDe": "Mein Füller ist in meinem Mäppchen."
+    },
+    {
+      "a": "die Regel",
+      "b": "rule",
+      "aAlt": [
+        "Regel"
+      ],
+      "ex": "Don't run in the classroom. That's a {rule}.",
+      "exDe": "Renn nicht im Klassenzimmer. Das ist eine Regel."
+    },
+    {
+      "a": "das Klassenzimmer",
+      "b": "classroom",
+      "aAlt": [
+        "Klassenzimmer"
+      ],
+      "ex": "We are in the {classroom}.",
+      "exDe": "Wir sind im Klassenzimmer."
+    },
+    {
+      "a": "der Schulhof / der Pausenhof / der Spielplatz",
+      "b": "playground",
+      "aAlt": [
+        "Pausenhof",
+        "Schulhof",
+        "Spielplatz"
+      ],
+      "ex": "We play football on the {playground}.",
+      "exDe": "Wir spielen Fußball auf dem Schulhof."
+    },
+    {
+      "a": "die Cafeteria / die Mensa",
+      "b": "cafeteria",
+      "aAlt": [
+        "Cafeteria",
+        "Mensa"
+      ],
+      "ex": "We have lunch in the {cafeteria}.",
+      "exDe": "Wir essen in der Mensa zu Mittag."
+    },
+    {
+      "a": "die Toilette",
+      "b": "toilet",
+      "aAlt": [
+        "Toilette"
+      ],
+      "ex": "Where is the {toilet}, please?",
+      "exDe": "Wo ist bitte die Toilette?"
+    },
+    {
+      "a": "die Bibliothek / die Bücherei",
+      "b": "library",
+      "aAlt": [
+        "Bibliothek",
+        "Bücherei"
+      ],
+      "ex": "I get books from the school {library}.",
+      "exDe": "Ich hole Bücher aus der Schulbibliothek."
+    },
+    {
+      "a": "die Turnhalle / das Fitnessstudio",
+      "b": "gym",
+      "aAlt": [
+        "Fitnessstudio",
+        "Turnhalle"
+      ],
+      "ex": "We have PE in the {gym}.",
+      "exDe": "Wir haben Sport in der Turnhalle."
+    },
+    {
+      "a": "das Büro",
+      "b": "office",
+      "aAlt": [
+        "Büro"
+      ],
+      "ex": "The principal is in the {office}.",
+      "exDe": "Die Schulleiterin ist im Büro."
     }
   ]
 }
