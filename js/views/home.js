@@ -4,7 +4,7 @@ import { mood, DAY_GOAL } from '../streak.js';
 import { petStatus, PET } from '../pet.js';
 import { esc } from '../util.js';
 import { updateContent } from '../app.js';
-import { portrait } from './portrait.js';
+import { portrait, bigPortrait } from './portrait.js';
 import { dueSummary } from '../practice-now.js';
 
 const PET_NAME = PET.name;
@@ -45,7 +45,7 @@ export function homeView(el) {
     </div>
 
     <dialog class="pet-dialog">
-      <img src="${esc(pet.imageFull)}" alt="${esc(pet.alt)}" width="1024" height="1024">
+      ${bigPortrait(pet)}
       <button class="btn" data-act="pet-close">Schließen</button>
     </dialog>`;
 

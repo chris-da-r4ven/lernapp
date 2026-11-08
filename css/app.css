@@ -167,7 +167,7 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
 .glitter-silver .sparkle { -webkit-text-stroke: 0.8px #8d95bd; text-shadow: 0 0 4px rgba(120, 130, 190, 0.6), 0 0 8px #ffffff; }
 
 @media (prefers-reduced-motion: reduce) {
-  .pet-open.hop, .pet-portrait.ring::before, .sparkle { animation: none; }
+  .pet-open.hop, .pet-portrait.ring::before, .pet-big.ring::before, .sparkle { animation: none; }
   .sparkle { opacity: 0.9; }
 }
 .pet-dialog {
@@ -175,7 +175,15 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
   width: min(92vw, 640px); text-align: center;
 }
 .pet-dialog::backdrop { background: rgba(20, 22, 31, 0.6); }
-.pet-dialog img { display: block; width: 100%; height: auto; border-radius: 12px; margin-bottom: 12px; }
+.pet-big { position: relative; margin-bottom: 12px; border-radius: 12px; }
+.pet-big img { position: relative; z-index: 1; display: block; width: 100%; height: auto; border-radius: 12px; }
+.pet-big.glow img { box-shadow: 0 0 22px 3px var(--glitter-glow); }
+.pet-big.ring::before {
+  content: ''; position: absolute; inset: -5px; border-radius: 16px; z-index: 0;
+  background: linear-gradient(120deg, var(--glitter-a), var(--glitter-b), var(--glitter-a), var(--glitter-b), var(--glitter-a));
+  background-size: 300% 300%; animation: shimmer 5s linear infinite;
+}
+@keyframes shimmer { to { background-position: 300% 0; } }
 .pet-info { flex: 1 1 200px; }
 .pet-info h2 { margin-bottom: 2px; }
 .pet-stats { display: flex; gap: 16px; }
@@ -347,3 +355,7 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
 .form-choices { grid-template-columns: repeat(3, 1fr); max-width: 420px; margin-left: auto; margin-right: auto; }
 .gap-right { color: var(--good); border-color: var(--good); }
 .gap-wrong { color: var(--good); border-color: var(--bad); }
+/* Großansicht: Sternchen auf hellem Bild deutlicher */
+.pet-big .sparkle { text-shadow: 0 0 2px rgba(60, 50, 110, 0.55), 0 0 10px var(--glitter-glow); }
+.pet-big.glitter-silver .sparkle { color: #ffffff; -webkit-text-stroke: 1px #7a80b0; text-shadow: 0 0 3px rgba(80, 80, 140, 0.7), 0 0 12px #ffffff; }
+.pet-big.glitter-gold .sparkle { -webkit-text-stroke: 1px #c48a00; }
