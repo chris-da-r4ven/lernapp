@@ -50,7 +50,8 @@ export async function checkUpdates() {
 }
 
 async function fetchJson(path) {
-  const r = await fetch(path + '?t=' + Date.now(), { cache: 'no-store' });
+  // Zeitlimit: bei schlechtem WLAN nicht ewig hängen – dann gelten die gespeicherten Inhalte.
+  const r = await fetch(path + '?t=' + Date.now(), { cache: 'no-store', signal: AbortSignal.timeout?.(20000) });
   if (!r.ok) throw new Error(path + ': HTTP ' + r.status);
   return r.json();
 }

@@ -34,7 +34,7 @@ export function statsView(el, openParents = false) {
       <div class="card kpi"><strong>${serie.count}</strong><span>Tage am Stück</span></div>
       <div class="card kpi"><strong>${practiceDays}</strong><span>Übungstage</span></div>
       <div class="card kpi"><strong>${pct(totalRight, totalRight + totalWrong)}</strong><span>Trefferquote</span></div>
-      <div class="card kpi"><strong>${st.points} ✦</strong><span>Sternchen</span></div>
+      <div class="card kpi"><strong>${Number(st.points) || 0} ✦</strong><span>Sternchen</span></div>
     </section>
 
     <section class="card">
@@ -131,7 +131,8 @@ function historyChart(days, rescued) {
   const list = [];
   for (let i = HISTORY_DAYS - 1; i >= 0; i--) {
     const d = addDays(new Date(), -i);
-    list.push({ d, rescued: rescued.has(dayKey(d)), ...(days[dayKey(d)] ?? { right: 0, wrong: 0 }) });
+    const day = days[dayKey(d)] ?? {};
+    list.push({ d, rescued: rescued.has(dayKey(d)), right: Number(day.right) || 0, wrong: Number(day.wrong) || 0 });
   }
   const max = Math.max(1, ...list.map((x) => x.right + x.wrong));
   return `

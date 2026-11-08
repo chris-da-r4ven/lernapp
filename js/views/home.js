@@ -27,7 +27,7 @@ export function homeView(el) {
         <div class="meter"><div style="width:${pet.progress * 100}%"></div></div>
       </div>
       <div class="pet-stats">
-        <div><strong>${st.points} ✦</strong><span>Sternchen</span></div>
+        <div><strong>${Number(st.points) || 0} ✦</strong><span>Sternchen</span></div>
         <div><strong>${serie.count}</strong><span>${serie.count === 1 ? 'Tag' : 'Tage'} am Stück</span></div>
       </div>
     </section>

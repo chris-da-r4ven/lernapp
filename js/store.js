@@ -5,16 +5,37 @@
 
 import { dayKey } from './util.js';
 import { streakInfo } from './streak.js';
+import { sanitizeState } from './validate.js';
 
-const KEY = 'lernapp.progress';
+// Die Selbsttest-Seite (tests/) arbeitet mit einem eigenen Speicher – der echte Lernstand
+// wird dort nie angefasst, auch wenn der Test mittendrin abbricht.
+const TESTING = typeof location !== 'undefined' && location.pathname.includes('/tests/');
+const KEY = TESTING ? 'lernapp.test.progress' : 'lernapp.progress';
+const CORRUPT_KEY = 'lernapp.progress.beschaedigt';
 
 // resetAt: Zeitpunkt des letzten Zurücksetzens (für das Zusammenführen mit der Sicherung).
 const empty = () => ({ items: {}, days: {}, points: 0, pet: null, tests: {}, resetAt: 0 });
 
+// Konnte der gespeicherte Stand nicht (vollständig) gelesen werden? Dann hebt load() den
+// Rohtext auf, und die Sicherung führt beim nächsten Abgleich zusammen statt zu überschreiben.
+let recovered = false;
+export const wasRecovered = () => recovered;
+
 let state = load();
 
 function load() {
-  try { return { ...empty(), ...JSON.parse(localStorage.getItem(KEY)) }; } catch { return empty(); }
+  let raw = null;
+  try { raw = localStorage.getItem(KEY); } catch { return empty(); }
+  if (raw === null) return empty();
+  let parsed = null;
+  try { parsed = JSON.parse(raw); } catch { /* unten */ }
+  const clean = sanitizeState(parsed);
+  if (!clean || clean.dropped) {
+    recovered = true;
+    try { localStorage.setItem(CORRUPT_KEY, JSON.stringify({ at: new Date().toISOString(), raw })); } catch { /* egal */ }
+    console.warn('Lernstand war beschädigt – Rohdaten unter', CORRUPT_KEY, 'aufgehoben.');
+  }
+  return clean ? clean.state : empty();
 }
 
 const listeners = [];
@@ -26,7 +47,10 @@ export const revision = () => rev;
 
 function persist() {
   rev++;
-  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { /* Speicher voll/gesperrt */ }
+  try { localStorage.setItem(KEY, JSON.stringify(state)); return true; } catch {
+    console.warn('Lernstand konnte nicht gespeichert werden (Speicher voll oder gesperrt).');
+    return false;
+  }
 }
 
 export function save() {
@@ -35,9 +59,13 @@ export function save() {
 }
 
 // Spielstand von außen übernehmen (Sicherung) – meldet sich nicht als Änderung zurück.
+// Wird vorher geprüft; ist er unbrauchbar, bleibt der jetzige Stand.
 export function replaceState(next) {
-  state = { ...empty(), ...next };
+  const clean = sanitizeState(next);
+  if (!clean) return false;
+  state = clean.state;
   persist();
+  return true;
 }
 
 export const getState = () => state;

@@ -24,7 +24,7 @@ export function roundSummary(el, { total, firstTry, points, bonus, extraPoints =
         <div>✦ +${bonus} fürs Durchhalten</div>
         <div>✦ +${points} für die Wörter</div>
         ${extraPoints ? `<div>🏅 +${extraPoints} Medaillen-Bonus</div>` : ''}
-        <p class="big">= +${bonus + points + extraPoints} ✦ Sternchen · jetzt ${getState().points} ✦</p>
+        <p class="big">= +${bonus + points + extraPoints} ✦ Sternchen · jetzt ${Number(getState().points) || 0} ✦</p>
       </div>
       ${levelUp ? `
         <div class="level-up mood-${pet.mood}">

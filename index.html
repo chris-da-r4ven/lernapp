@@ -3,6 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <!-- Nur eigene Dateien ausführen/laden; Netz nur zur App selbst und zur Sicherung bei GitHub.
+       Selbst wenn je etwas Fremdes ins HTML gerät, läuft es so nicht. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://api.github.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <title>LernApp</title>
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#4f6cf7">

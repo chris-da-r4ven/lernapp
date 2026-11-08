@@ -8,6 +8,7 @@
 // bleibt nur, was nach diesem Zeitpunkt geübt wurde.
 
 import { dayKey } from './util.js';
+import { sanitizeState } from './validate.js';
 
 const total = (d) => (d ? d.right + d.wrong : 0);
 
@@ -19,8 +20,9 @@ export function mergeStates(local, remote) {
   return mergeAfterReset(newer, older);
 }
 
+// Beide Seiten vorher prüfen – Unbrauchbares zählt als leerer Stand.
 function normalize(s) {
-  return { items: {}, days: {}, points: 0, pet: null, tests: {}, resetAt: 0, ...(s ?? {}) };
+  return sanitizeState(s ?? {})?.state ?? sanitizeState({}).state;
 }
 
 function mergeSame(a, b) {

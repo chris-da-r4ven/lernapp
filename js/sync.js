@@ -10,12 +10,14 @@
 //   holen, "resetAt" auf jetzt setzen, als neuen Commit schreiben.
 // - Jede Sicherung ist ein Commit – so lässt sich später jeder Stand wiederherstellen.
 
-import { getState, replaceState, onSave } from './store.js';
+import { getState, replaceState, onSave, revision, wasRecovered } from './store.js';
+import { sanitizeState } from './validate.js';
 import { mergeStates } from './merge.js';
 
 const CFG_KEY = 'lernapp.sync';
 const FILE = 'spielstand.json';
 const IDLE_MS = 30 * 1000;
+const TIMEOUT_MS = 20 * 1000;   // länger wartet keine Anfrage – sonst hängt die Sicherung bei schlechtem WLAN
 export const DEFAULT_REPO = 'chris-da-r4ven/lernapp-daten';
 
 let cfg = loadCfg(); // { repo, token, sha, dirty, lastSync, error }
@@ -46,17 +48,27 @@ const serial = (fn) => (queue = queue.then(fn, fn));
 
 // --- GitHub-API -------------------------------------------------------------
 
-function api(path, options = {}) {
-  return fetch(`https://api.github.com/repos/${cfg.repo}${path}`, {
-    ...options,
-    cache: 'no-store',
-    headers: {
-      Authorization: `Bearer ${cfg.token}`,
-      Accept: 'application/vnd.github+json',
-      'X-GitHub-Api-Version': '2022-11-28',
-      ...(options.body ? { 'Content-Type': 'application/json' } : {}),
-    },
-  });
+// Netzfehler (kein Internet, Zeitüberschreitung) – kein Grund zur Sorge, später nochmal.
+class OfflineError extends Error {}
+
+async function api(path, options = {}) {
+  const c = cfg;
+  if (!c) throw new SyncError('Die Sicherung wurde getrennt.');
+  try {
+    return await fetch(`https://api.github.com/repos/${c.repo}${path}`, {
+      ...options,
+      cache: 'no-store',
+      signal: AbortSignal.timeout?.(TIMEOUT_MS),
+      headers: {
+        Authorization: `Bearer ${c.token}`,
+        Accept: 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28',
+        ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+      },
+    });
+  } catch (e) {
+    throw new OfflineError(e.message);
+  }
 }
 
 const toB64 = (text) => {
@@ -68,7 +80,11 @@ const fromB64 = (b64) => new TextDecoder().decode(Uint8Array.from(atob(b64.repla
 
 class SyncError extends Error {}
 
-function errorFor(status) {
+function errorFor(r) {
+  const status = r.status;
+  if (status === 429 || (status === 403 && r.headers?.get('x-ratelimit-remaining') === '0')) {
+    return 'GitHub hat gerade zu viele Anfragen gezählt – die Sicherung versucht es später wieder.';
+  }
   if (status === 401) return 'Schlüssel ungültig oder abgelaufen.';
   if (status === 403) return 'Schlüssel darf dieses Repo nicht beschreiben.';
   if (status === 404) return 'Repo nicht gefunden – Name richtig? Hat der Schlüssel Zugriff?';
@@ -80,26 +96,34 @@ async function pull() {
   if (r.status === 404) {
     // Datei fehlt – aber gibt es das Repo überhaupt?
     const repo = await api('');
-    if (!repo.ok) throw new SyncError(errorFor(repo.status));
+    if (!repo.ok) throw new SyncError(errorFor(repo));
     return { exists: false };
   }
-  if (!r.ok) throw new SyncError(errorFor(r.status));
+  if (!r.ok) throw new SyncError(errorFor(r));
   const json = await r.json();
   // Dateien über 1 MB liefert dieser Weg ohne Inhalt – dann über die Git-Blob-Schnittstelle.
   let content = json.content;
   if (!content || json.encoding === 'none') {
     const b = await api(`/git/blobs/${json.sha}`);
-    if (!b.ok) throw new SyncError(errorFor(b.status));
+    if (!b.ok) throw new SyncError(errorFor(b));
     content = (await b.json()).content;
   }
   let data;
-  try { data = JSON.parse(fromB64(content)); } catch {
-    throw new SyncError('Die Sicherung ist beschädigt und konnte nicht gelesen werden.');
+  try { data = JSON.parse(fromB64(content)); } catch { data = null; }
+  // Nur übernehmen, was als Spielstand taugt (validate.js) – sonst lieber gar nichts.
+  if (!data || !sanitizeState(data.state)) {
+    throw new SyncError('Die Sicherung ist beschädigt und wird nicht übernommen. Der Stand auf dem Gerät bleibt.');
   }
   return { exists: true, sha: json.sha, data };
 }
 
+// Stand-Nummer (store.revision), die zuletzt mit der Sicherung übereinstimmte. Kommt während
+// des Hochladens eine Antwort dazu, ist der Stand danach weiter → bleibt „ungesichert“.
+let syncedRev = -1;
+let recoveryDone = false;
+
 async function push() {
+  const rev = revision();
   const stamp = new Date().toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short' });
   const body = {
     message: `Spielstand ${stamp}`,
@@ -108,16 +132,17 @@ async function push() {
   };
   const r = await api(`/contents/${FILE}`, { method: 'PUT', body: JSON.stringify(body) });
   if (r.status === 409 || r.status === 422) return 'conflict';
-  if (!r.ok) throw new SyncError(errorFor(r.status));
+  if (!r.ok) throw new SyncError(errorFor(r));
   const json = await r.json();
-  cfg.sha = json.content.sha;
+  if (cfg) cfg.sha = json.content.sha;
+  syncedRev = rev;
   return 'ok';
 }
 
 function adopt(remote) {
-  replaceState(remote.data.state ?? {});
+  if (!replaceState(remote.data.state)) throw new SyncError('Die Sicherung ist beschädigt und wird nicht übernommen.');
   cfg.sha = remote.sha;
-  cfg.dirty = false;
+  syncedRev = revision();
   onRemote();
 }
 
@@ -140,27 +165,38 @@ async function combineAndPush(remote) {
   throw new SyncError('Die Sicherung ändert sich gerade ständig – später nochmal.');
 }
 
-// Abgleich: von außen geändert → übernehmen bzw. zusammenführen; sonst eigene Änderungen hochladen.
+// Abgleich mit der Sicherung:
+// - von außen geändert, auf dem Gerät nichts Neues → übernehmen
+// - sonst immer zusammenführen und hochladen (nie blind überschreiben – so kann auch ein
+//   beschädigter oder leerer Gerätestand die Sicherung nicht kaputtmachen)
 async function reconcile() {
-  if (!cfg) return;
+  const c = cfg;
+  if (!c) return;
   try {
     const remote = await pull();
+    const needsMerge = c.dirty || (wasRecovered() && !recoveryDone);
     if (!remote.exists) {
       await push();
-    } else if (remote.sha !== cfg.sha) {
-      if (cfg.dirty) await combineAndPush(remote);
-      else adopt(remote);
-    } else if (cfg.dirty) {
-      if ((await push()) === 'conflict') await combineAndPush(await pull());
+    } else if (remote.sha !== c.sha && !needsMerge) {
+      adopt(remote);
+    } else if (needsMerge) {
+      await combineAndPush(remote);
+      recoveryDone = true;
+    } else {
+      syncedRev = revision();   // nichts zu tun: Gerät und Sicherung stimmen überein
     }
-    cfg.dirty = false;
-    cfg.lastSync = Date.now();
-    cfg.error = null;
+    if (cfg !== c) return;      // während des Abgleichs getrennt
+    c.dirty = revision() !== syncedRev;
+    c.lastSync = Date.now();
+    c.error = null;
   } catch (e) {
-    // Kein Netz (fetch wirft TypeError): einfach später nochmal. Alles andere anzeigen.
-    cfg.error = e instanceof SyncError ? e.message : e instanceof TypeError ? null : `Sicherung fehlgeschlagen: ${e.message}`;
+    if (cfg !== c) return;
+    if (e instanceof OfflineError) c.error = null;           // kein Netz: später nochmal
+    else if (e instanceof SyncError) c.error = e.message;
+    else { console.error('Sicherung:', e); c.error = `Sicherung fehlgeschlagen: ${e.message}`; }
   }
   saveCfg();
+  if (c.dirty) { clearTimeout(timer); timer = setTimeout(syncNow, IDLE_MS); }
 }
 
 export const syncNow = () => serial(reconcile);
@@ -183,7 +219,7 @@ export async function connect(repo, token) {
   } catch (e) {
     cfg = null;
     saveCfg();
-    return { ok: false, error: e instanceof SyncError ? e.message : 'Keine Verbindung zu GitHub – Internet an?' };
+    return { ok: false, error: e instanceof SyncError ? e.message : e instanceof OfflineError ? 'Keine Verbindung zu GitHub – Internet an?' : `Fehler: ${e.message}` };
   }
 }
 

@@ -1,6 +1,6 @@
 // Selbsttest der Regel-Logik. Aufruf: <app>/tests/ im Browser öffnen.
-// Reine Rechenlogik wird direkt geprüft; wo der Lernstand gebraucht wird, wird er kurz durch einen
-// Test-Stand ersetzt und am Ende wiederhergestellt (auch wenn ein Test abstürzt).
+// Auf dieser Seite arbeitet store.js mit einem eigenen Speicher (lernapp.test.progress) –
+// der echte Lernstand des Geräts wird nie angefasst. Das prüft der letzte Test.
 
 import { streakInfo, mood, DAY_GOAL } from '../js/streak.js';
 import { mergeStates } from '../js/merge.js';
@@ -12,6 +12,7 @@ import { MODES } from '../js/exercises/modes.js';
 import { modesFor, tasksFor, modeById } from '../js/exercises/registry.js';
 import { kindOf, targetSide, towardTarget, langOf, KINDS } from '../js/lessons.js';
 import { dayKey } from '../js/util.js';
+import { sanitizeState } from '../js/validate.js';
 
 const results = [];
 let group = '';
@@ -32,6 +33,7 @@ const days = (o) => Object.fromEntries(Object.entries(o).map(([off, v]) =>
   [key(+off), typeof v === 'number' ? { right: v, wrong: 0 } : v]));
 const empty = () => ({ items: {}, days: {}, points: 0, pet: null, tests: {}, resetAt: 0 });
 
+const realBefore = localStorage.getItem('lernapp.progress');
 const original = JSON.parse(JSON.stringify(getState()));
 try {
   // --- Serie --------------------------------------------------------------------
@@ -85,7 +87,7 @@ try {
     eq([Object.keys(m.items).length, m.points], [0, 0]);
   });
   await test('Tests werden ohne Doppelte vereinigt', () => {
-    const m = mergeStates({ tests: { x: [{ day: 'd1', pct: 95 }] } }, { tests: { x: [{ day: 'd1', pct: 95 }, { day: 'd2', pct: 90 }] } });
+    const m = mergeStates({ tests: { x: [{ day: '2026-11-07', pct: 95 }] } }, { tests: { x: [{ day: '2026-11-07', pct: 95 }, { day: '2026-11-08', pct: 90 }] } });
     eq(m.tests.x.length, 2);
   });
 
@@ -137,6 +139,29 @@ try {
     const entries = Array.from({ length: 30 }, (_, i) => ({ item: { b: 'w' + i }, key: `t/a/w${i}|ab` }));
     eq(buildRound(entries).length, 15);
     eq(buildRound(entries, true).length, 30);
+  });
+
+  // --- Spielstand prüfen ------------------------------------------------------------
+  section('Spielstand prüfen (validate.js)');
+  await test('kein Objekt → unbrauchbar', () => { eq(sanitizeState(null), null); eq(sanitizeState('x'), null); eq(sanitizeState([]), null); });
+  await test('Sternchen als Text (z. B. eingeschleustes HTML) → 0', () =>
+    eq(sanitizeState({ points: '<img src=x onerror=alert(1)>' }).state.points, 0));
+  await test('kaputte Einträge fliegen raus, gute bleiben', () => {
+    const r = sanitizeState({ items: { ok: { box: 2, due: 1, right: 2, wrong: 0, last: 5 }, bad: 'x', bad2: { box: 9 } },
+      days: { '2026-11-08': { right: 3, wrong: 1, e: 40 }, 'gestern': { right: 1 } } });
+    eq([Object.keys(r.state.items), Object.keys(r.state.days), r.dropped], [['ok'], ['2026-11-08'], 3]);
+  });
+  await test('falsche Typen werden ersetzt statt abzustürzen', () => {
+    const r = sanitizeState({ items: null, days: null, tests: { x: 'kaputt', y: [{ day: '2026-11-08', pct: 95 }, { day: 'x', pct: 1 }] } });
+    eq([r.state.items, r.state.days, r.state.tests], [{}, {}, { y: [{ day: '2026-11-08', pct: 95 }] }]);
+  });
+  await test('unbrauchbare Sicherung wird beim Zusammenführen als leer behandelt', () => {
+    const m = mergeStates({ items: { a: it(3, 15) }, points: 40 }, 'Müll');
+    eq([m.items.a.box, m.points], [3, 40]);
+  });
+  await test('replaceState lehnt Unbrauchbares ab, Stand bleibt', () => {
+    replaceState({ ...empty(), points: 77 });
+    eq(replaceState('kaputt'), false); eq(getState().points, 77);
   });
 
   // --- Medaille und Umzüge ----------------------------------------------------------
@@ -202,8 +227,12 @@ try {
       });
     }
   }
+  section('Schutz des echten Lernstands');
+  await test('Selbsttest hat den echten Lernstand nicht angefasst', () =>
+    eq(localStorage.getItem('lernapp.progress'), realBefore));
 } finally {
-  replaceState(original);   // echten Lernstand wiederherstellen
+  replaceState(original);
+  try { localStorage.removeItem('lernapp.test.progress'); } catch { /* egal */ }
 }
 
 // --- Ausgabe ------------------------------------------------------------------------------

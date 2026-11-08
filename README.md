@@ -86,7 +86,7 @@ passende Einträge gibt. Mit `"modes": ["ab", "satz"]` in der Lektion lässt sic
 `tests/` im Browser öffnen (lokal `http://localhost:8766/tests/`, online `…/lernapp/tests/`): prüft Serie,
 Tagesziel, Zusammenführen der Sicherung, Antwort-Prüfung, Sternchen, Medaille, Umzüge, Übungsarten und
 alle Inhalte. **Nach jeder Änderung an der Logik laufen lassen.** Neue Regeln bekommen einen Test in
-`tests/tests.js`. Der Lernstand des Browsers wird dabei kurz ersetzt und danach wiederhergestellt.
+`tests/tests.js`. Die Seite arbeitet mit einem eigenen Test-Speicher, der echte Lernstand bleibt unberührt.
 
 ## Lokal testen
 
