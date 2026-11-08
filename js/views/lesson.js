@@ -40,7 +40,7 @@ export function lessonView(el, sid, lid) {
     </section>
 
     <section class="card">
-      <h2>Wörter</h2>
+      <h2>${esc(kindInfo(lesson).unit[1])}</h2>
       <ul class="word-list">
         ${lesson.items.map((it) => `
           <li>

@@ -4,7 +4,7 @@
 // Die gewählte Stimme wird gemerkt – später nutzt die Hör-Übung sie.
 
 import { esc } from '../util.js';
-import { getLesson, getSubjects } from '../content.js';
+import { allLessons } from '../content.js';
 import { targetSide } from '../lessons.js';
 
 const VOICE_KEY = 'lernapp.voice';
@@ -17,11 +17,8 @@ const SAMPLES = [
 
 function lessonWords() {
   const words = [];
-  for (const s of getSubjects()) {
-    for (const l of s.lessons) {
-      const lesson = getLesson(s.id, l.id);
-      lesson?.items?.slice(0, 4).forEach((it) => words.push(it[targetSide(lesson)]));
-    }
+  for (const { lesson } of allLessons()) {
+    lesson.items.slice(0, 4).forEach((it) => words.push(it[targetSide(lesson)]));
   }
   return words;
 }

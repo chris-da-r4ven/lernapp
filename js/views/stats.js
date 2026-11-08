@@ -1,12 +1,13 @@
 // Fortschritt – dieselbe Seite für Kind und Eltern.
 
-import { getSubjects, getLesson, contentUpdated, contentVersion } from '../content.js';
+import { allLessons, contentUpdated, contentVersion } from '../content.js';
 import { syncStatus, syncWarning } from '../sync.js';
 import { getState, itemState, streak, storageProblem, profileId } from '../store.js';
 import { deviceId } from '../device.js';
 import { parentsSection, bindParents } from './parents.js';
 import { modesFor, tasksFor } from '../exercises/registry.js';
-import { status } from '../srs.js';
+import { status, itemKey } from '../srs.js';
+import { kindOf, masteryMode } from '../lessons.js';
 import { esc, dayKey, addDays } from '../util.js';
 import { DAY_GOAL } from '../streak.js';
 
@@ -17,9 +18,7 @@ export function statsView(el, openParents = false) {
   const st = getState();
   const serie = streak();
   const rows = collectItems();
-  const counts = { neu: 0, wackelt: 0, sicher: 0 };
-  // „Wörter sicher“ zählt wie bisher nur das Schreiben (beide Richtungen).
-  rows.filter((r) => r.mode.group === 'schreiben').forEach((r) => counts[r.status]++);
+  const counts = wordCounts();
   const practiceDays = Object.keys(st.days).length;
   const totalRight = Object.values(st.days).reduce((n, d) => n + d.right, 0);
   const totalWrong = Object.values(st.days).reduce((n, d) => n + d.wrong, 0);
@@ -79,19 +78,27 @@ export function statsView(el, openParents = false) {
   });
 }
 
+// „Wörter sicher / wackeln noch“: jedes Vokabel-Wort einmal, gemessen an der Richtung,
+// die auch der Test abfragt (Deutsch → Englisch) – wie die Sterne der Lektion.
+function wordCounts() {
+  const counts = { neu: 0, wackelt: 0, sicher: 0 };
+  for (const { sid, lesson } of allLessons()) {
+    if (kindOf(lesson) !== 'vokabeln') continue;
+    const mode = masteryMode(lesson);
+    for (const it of lesson.items) counts[status(itemState(itemKey(sid, lesson.id, it, mode)))]++;
+  }
+  return counts;
+}
+
 // Ein Eintrag pro Wort und Übungsart.
 function collectItems() {
   const rows = [];
-  for (const s of getSubjects()) {
-    for (const l of s.lessons) {
-      const lesson = getLesson(s.id, l.id);
-      if (!lesson) continue;
-      for (const m of modesFor(lesson)) {
-        for (const t of tasksFor(s.id, lesson, m.id)) {
-          const st = itemState(t.key);
-          const [prompt, answer] = m.question.pair(t);
-          rows.push({ st, status: status(st), prompt, answer, mode: { ...m, short: m.short(lesson), label: m.label(lesson) } });
-        }
+  for (const { sid, lesson } of allLessons()) {
+    for (const m of modesFor(lesson)) {
+      for (const t of tasksFor(sid, lesson, m.id)) {
+        const st = itemState(t.key);
+        const [prompt, answer] = m.question.pair(t);
+        rows.push({ st, status: status(st), prompt, answer, mode: { ...m, short: m.short(lesson), label: m.label(lesson) } });
       }
     }
   }
@@ -100,32 +107,28 @@ function collectItems() {
 
 function lessonTable() {
   const blocks = [];
-  for (const s of getSubjects()) {
-    for (const l of s.lessons) {
-      const lesson = getLesson(s.id, l.id);
-      if (!lesson) continue;
-      const lines = modesFor(lesson).map((m) => {
-        const tasks = tasksFor(s.id, lesson, m.id);
-        const n = tasks.length || 1;
-        const c = { neu: 0, wackelt: 0, sicher: 0 };
-        tasks.forEach((t) => c[status(itemState(t.key))]++);
-        return `
-          <div class="mode-line">
-            <span class="small">${esc(m.label(lesson).replace(/^Schreiben: /, '✍️ '))}</span>
-            <div class="stack" role="img" aria-label="${c.sicher} sicher, ${c.wackelt} wackeln, ${c.neu} neu">
-              <div class="sicher" style="width:${(c.sicher / n) * 100}%"></div>
-              <div class="wackelt" style="width:${(c.wackelt / n) * 100}%"></div>
-              <div class="neu" style="width:${(c.neu / n) * 100}%"></div>
-            </div>
-            <span class="small muted">${c.sicher} sicher · ${c.wackelt} wackeln · ${c.neu} neu</span>
-          </div>`;
-      });
-      blocks.push(`
-        <div class="lesson-line">
-          <div class="lesson-name"><strong>${esc(l.title)}</strong> <span class="muted small">${esc(s.name)}</span></div>
-          ${lines.join('')}
-        </div>`);
-    }
+  for (const { sid, subject: s, lesson } of allLessons()) {
+    const lines = modesFor(lesson).map((m) => {
+      const tasks = tasksFor(sid, lesson, m.id);
+      const n = tasks.length || 1;
+      const c = { neu: 0, wackelt: 0, sicher: 0 };
+      tasks.forEach((t) => c[status(itemState(t.key))]++);
+      return `
+        <div class="mode-line">
+          <span class="small">${esc(m.label(lesson).replace(/^Schreiben: /, '✍️ '))}</span>
+          <div class="stack" role="img" aria-label="${c.sicher} sicher, ${c.wackelt} wackeln, ${c.neu} neu">
+            <div class="sicher" style="width:${(c.sicher / n) * 100}%"></div>
+            <div class="wackelt" style="width:${(c.wackelt / n) * 100}%"></div>
+            <div class="neu" style="width:${(c.neu / n) * 100}%"></div>
+          </div>
+          <span class="small muted">${c.sicher} sicher · ${c.wackelt} wackeln · ${c.neu} neu</span>
+        </div>`;
+    });
+    blocks.push(`
+      <div class="lesson-line">
+        <div class="lesson-name"><strong>${esc(lesson.title)}</strong> <span class="muted small">${esc(s.name)}</span></div>
+        ${lines.join('')}
+      </div>`);
   }
   return `
     <div class="legend small"><span class="dot sicher"></span>sicher <span class="dot wackelt"></span>wackelt <span class="dot neu"></span>neu</div>

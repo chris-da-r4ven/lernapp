@@ -1,4 +1,4 @@
-import { checkUpdates, applyMoves } from './content.js';
+import { applyMoves } from './content.js';
 import { startSync } from './sync.js';
 import { toast } from './util.js';
 import { homeView } from './views/home.js';
@@ -10,6 +10,8 @@ import { handwritingTestView } from './views/handwriting-test.js';
 import { speechTestView } from './views/speech-test.js';
 import { nowView } from './views/now.js';
 import { testView } from './views/test.js';
+import { setRenderer, practicing } from './nav.js';
+import { updateContent } from './updates.js';
 
 const routes = [
   [/^#?\/?$/, homeView, 'home'],
@@ -25,10 +27,7 @@ const routes = [
 
 const app = document.getElementById('app');
 
-// Mitten in einer Übung die Seite nicht neu zeichnen.
-const practicing = () => /^#\/(ueben|jetzt|test)\//.test(location.hash + '/');
-
-export function render() {
+function render() {
   const hash = location.hash || '#/';
   const match = routes.find(([re]) => re.test(hash));
   if (!match) { location.hash = '#/'; return; }
@@ -40,20 +39,7 @@ export function render() {
   view(app, ...params);
 }
 
-// Von "Neue Inhalte suchen" und beim Start aufgerufen.
-export async function updateContent({ quiet = false } = {}) {
-  const result = await checkUpdates();
-  if (result === 'updated') {
-    toast('Neue Inhalte geladen 🎉');
-    if (!practicing()) render();
-  } else if (!quiet) {
-    toast(result === 'current' ? 'Alles aktuell.'
-      : result === 'app-zu-alt' ? 'Neue Inhalte brauchen eine neuere App – die kommt gleich von selbst.'
-      : 'Kein Internet – du übst mit den gespeicherten Inhalten.');
-  }
-  return result;
-}
-
+setRenderer(render);
 window.addEventListener('hashchange', render);
 applyMoves();
 render();

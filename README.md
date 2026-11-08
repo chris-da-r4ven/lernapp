@@ -79,13 +79,19 @@ Inhalte            content/<fach>/<lektion>.json   →  js/content.js (lädt, of
 Lektionsarten      js/lessons.js    kind (vokabeln, grammatik …), Lernsprache, „sicher“-Anteil
 Übungsarten        js/exercises/modes.js   ← EINE Liste, alles andere leitet sich daraus ab
 Fragetypen         js/exercises/questions.js   zeigt eine Aufgabe, meldet richtig/falsch
-Runde              js/exercises/round.js   Wiederholen, Sternchen, Test, Medaille, Bilanz
+Runde              js/exercises/round.js   Ablauf: Wiederholen, Sternchen, Test → summary.js (Bilanz), round-notes.js (Hinweise)
 Lernstand          js/store.js + js/srs.js (Karteikasten)  →  js/sync.js + js/merge.js (Sicherung)
 Seiten             js/views/…   Start, Fach, Lektion, Üben, Jetzt üben, Test, Fortschritt
 ```
 
 - `js/practice-now.js` – „Jetzt üben“: fällige Wörter aus allen Lektionen und Übungsarten
-- `js/medal.js`, `js/streak.js`, `js/pet.js` – Medaille, Serie, Fanny
+- `js/medal.js`, `js/streak.js`, `js/pet.js` – Medaille, Serie, Fanny (Medaillen-Regeln und Test-Auswertung nur in `medal.js`)
+- `js/nav.js` – neu zeichnen und „gerade am Üben?“ ohne Import von `app.js` (kein Import-Kreis);
+  `js/updates.js` – „Neue Inhalte suchen“
+- Hilfen: `allLessons()` (content.js) für „alle Lektionen aller Fächer“, `lessonKey()`, `unitOf()` (lessons.js)
+- `tools/inhalte.py` liest Übungs- und Lektionsarten aus dem App-Code und schreibt sie nach
+  `content/index.json` („app“) – der Selbsttest vergleicht sie mit der App. Umzüge („moved“) dürfen nie
+  entfernt werden (Fehler beim Bauen).
 - `sw.js` – Offline-Cache für die App-Dateien. Neue Dateien dort in `SHELL` eintragen und bei jedem
   Push `CACHE` hochzählen – eine neue Version wird nur komplett aktiv.
 

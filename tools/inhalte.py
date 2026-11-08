@@ -34,9 +34,15 @@ LESSON_TYPES = {'pairs'}
 
 
 def _from_app(path, pattern):
-    """Gültige Namen direkt aus dem App-Code lesen – so laufen App und Werkzeug nie auseinander."""
+    """Gültige Namen direkt aus dem App-Code lesen – so laufen App und Werkzeug nie auseinander.
+    Abgesichert doppelt: Findet das Muster nichts, bricht das Werkzeug ab. Und die gefundenen Namen
+    landen in content/index.json ("app"), wo der Selbsttest sie mit der echten Liste der App vergleicht –
+    passt das Muster nach einer Umformatierung nicht mehr, fällt das dort sofort auf."""
     text = (ROOT / path).read_text(encoding='utf-8')
-    return set(re.findall(pattern, text, re.M))
+    found = set(re.findall(pattern, text, re.M))
+    if not found:
+        sys.exit(f'{path}: keine Namen gefunden – Muster in tools/inhalte.py anpassen')
+    return found
 
 
 KNOWN_MODES = _from_app('js/exercises/modes.js', r"^\s+id: '([a-z-]+)',")
@@ -190,7 +196,28 @@ def check(subjects):
             if src in lesson_ids:
                 warnings.append(f'Fach {sid}: Umzug von "{src}", aber "{src}" gibt es noch als Lektion')
     warnings += removed_ids(subjects)
+    errors += removed_moves(subjects)
     return errors, warnings
+
+
+def removed_moves(subjects):
+    """Fehler, wenn ein Umzug ("moved") gegenüber dem letzten Commit verschwindet oder ein anderes Ziel
+    bekommt. Umzüge müssen für immer bleiben: Ein Gerät, das lange nicht geöffnet wurde, braucht sie noch,
+    um seinen Lernstand in die neue Lektion mitzunehmen."""
+    out = []
+    for fach, _ in subjects:
+        path = f'content/{fach.get("id")}/_fach.json'
+        try:
+            old = subprocess.run(['git', 'show', f'HEAD:{path}'], cwd=ROOT, capture_output=True, text=True, check=True).stdout
+            old_moved = json.loads(old).get('moved') or {}
+        except Exception:
+            continue
+        now = fach.get('moved') or {}
+        for src, dst in old_moved.items():
+            if now.get(src) != dst:
+                out.append(f'{path}: Umzug "{src}" → "{dst}" fehlt oder wurde geändert – Umzüge müssen bleiben '
+                           '(sonst verlieren Geräte, die länger nicht offen waren, den Lernstand)')
+    return out
 
 
 def removed_ids(subjects):
@@ -296,7 +323,9 @@ def build():
     if old.get('minApp') != min_app:
         version = max(version, old.get('version', 0) + 1)
         updated = datetime.date.today().isoformat()
-    index = {'version': version, 'updated': updated, 'hash': digest, 'minApp': min_app, 'subjects': index_subjects}
+    index = {'version': version, 'updated': updated, 'hash': digest, 'minApp': min_app,
+             'app': {'modes': sorted(KNOWN_MODES), 'kinds': sorted(KNOWN_KINDS)},   # für den Selbsttest
+             'subjects': index_subjects}
     if write_json(INDEX, index):
         changed_files.append(rel(INDEX))
 

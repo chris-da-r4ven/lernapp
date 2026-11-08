@@ -28,6 +28,16 @@ export const isSupported = (lesson) => Boolean(lesson && kindOf(lesson) && Array
 export const kindInfo = (lesson) => KINDS[kindOf(lesson)];
 export const unitWord = (lesson, n) => kindInfo(lesson).unit[n === 1 ? 0 : 1];
 
+// Einheit für mehrere Lektionen (z. B. „Jetzt üben“): gleiche Art → deren Wort, sonst „Aufgaben“.
+export function unitOf(lessons) {
+  const kinds = new Set(lessons.map(kindOf));
+  return kinds.size === 1 ? KINDS[[...kinds][0]].unit : ['Aufgabe', 'Aufgaben'];
+}
+export const countWord = (unit, n) => `${n} ${unit[n === 1 ? 0 : 1]}`;
+
+// Schlüssel einer Lektion im Lernstand (Tests, Medaille): "<fach>/<lektion>"
+export const lessonKey = (sid, lesson) => `${sid}/${lesson.id}`;
+
 // Sprachcode je Seitenname (falls die Lektion keine "langs" angibt).
 const LANG_BY_NAME = { Deutsch: 'de-DE', Englisch: 'en-GB', Französisch: 'fr-FR', Spanisch: 'es-ES', Latein: 'la' };
 

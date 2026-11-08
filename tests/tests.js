@@ -7,7 +7,9 @@ import { mergeStates } from '../js/merge.js';
 import { check, parseGap } from '../js/exercises/questions.js';
 import { levelFor, glitterFor } from '../js/pet.js';
 import { record, roundBonus, buildRound } from '../js/srs.js';
-import { getState, replaceState, migrateLessons, addTestResult, medalStatus, itemState, addPoints, addDayStat, profileId } from '../js/store.js';
+import { getState, replaceState, migrateLessons, addTestResult, itemState, addPoints, addDayStat, profileId } from '../js/store.js';
+import { medalStatus } from '../js/medal.js';
+import { unitOf, lessonKey } from '../js/lessons.js';
 import { deviceId } from '../js/device.js';
 import { MODES } from '../js/exercises/modes.js';
 import { modesFor, tasksFor, modeById } from '../js/exercises/registry.js';
@@ -216,6 +218,12 @@ try {
     eq(k, ['e/neu/v|ab', 'e/neu/w|ab']); eq(getState().items['e/neu/w|ab'].box, 3);
   });
 
+  await test('Bilanz-Einheit: Wörter, Sätze oder gemischt Aufgaben', () => {
+    eq([unitOf([{ kind: 'vokabeln' }]), unitOf([{ kind: 'grammatik' }]), unitOf([{ kind: 'vokabeln' }, { kind: 'grammatik' }])],
+      [['Wort', 'Wörter'], ['Satz', 'Sätze'], ['Aufgabe', 'Aufgaben']]);
+    eq(lessonKey('englisch', { id: 'u1' }), 'englisch/u1');
+  });
+
   // --- Übungsarten --------------------------------------------------------------------
   section('Übungsarten (modes.js)');
   await test('ids eindeutig, Pflichtfelder vorhanden', () => {
@@ -243,6 +251,10 @@ try {
   section('Inhalte (content/)');
   const idx = await (await fetch('../content/index.json', { cache: 'no-store' })).json();
   await test(`Inhalte passen zu dieser App (minApp ${idx.minApp} ≤ ${APP_VERSION})`, () => ok((idx.minApp ?? 0) <= APP_VERSION, 'Inhalte brauchen eine neuere App'));
+  await test('tools/inhalte.py kennt dieselben Übungsarten und Lektionsarten wie die App', () => {
+    eq(idx.app?.modes, MODES.map((m) => m.id).sort(), 'Übungsarten');
+    eq(idx.app?.kinds, Object.keys(KINDS).sort(), 'Lektionsarten');
+  });
   for (const s of idx.subjects) {
     for (const l of s.lessons) {
       const lesson = await (await fetch(`../content/${l.file}`, { cache: 'no-store' })).json();

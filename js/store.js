@@ -118,11 +118,7 @@ export function migrateLessons(sid, moved = {}) {
   return changed;
 }
 
-// --- Testergebnisse und Medaillen ---------------------------------------------
-// Medaille 🏅: zweimal mindestens 90 % im Test, an zwei verschiedenen Tagen.
-export const MEDAL_PCT = 90;
-export const MEDAL_DAYS = 2;
-
+// --- Testergebnisse (ausgewertet in medal.js) -----------------------------------
 export function addTestResult(lessonKey, pct) {
   state.tests ??= {};
   const list = state.tests[lessonKey] ?? [];
@@ -130,16 +126,7 @@ export function addTestResult(lessonKey, pct) {
   state.tests[lessonKey] = list.slice(-20);
 }
 
-// minPct: nur Tests zählen, die mindestens so gut waren.
-export const testedToday = (lessonKey, minPct = 0) =>
-  (state.tests?.[lessonKey] ?? []).some((r) => r.day === dayKey() && r.pct >= minPct);
-
-export function medalStatus(lessonKey) {
-  const list = state.tests?.[lessonKey] ?? [];
-  const goodDays = new Set(list.filter((r) => r.pct >= MEDAL_PCT).map((r) => r.day));
-  const best = list.reduce((m, r) => Math.max(m, r.pct), 0);
-  return { medal: goodDays.size >= MEDAL_DAYS, goodDays: goodDays.size, tests: list.length, best };
-}
+export const testResults = (lessonKey) => state.tests?.[lessonKey] ?? [];
 
 export function itemState(key) {
   return state.items[key] ?? { box: 0, due: 0, right: 0, wrong: 0, wrongs: [], last: 0 };

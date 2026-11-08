@@ -3,6 +3,20 @@
   "updated": "2026-11-08",
   "hash": "d06043774a1782c2",
   "minApp": 2,
+  "app": {
+    "modes": [
+      "ab",
+      "ba",
+      "form",
+      "hoeren",
+      "hoeren-wahl",
+      "satz"
+    ],
+    "kinds": [
+      "grammatik",
+      "vokabeln"
+    ]
+  },
   "subjects": [
     {
       "id": "englisch",

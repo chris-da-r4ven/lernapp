@@ -32,6 +32,18 @@ export const getLesson = (sid, lid) => {
   return isSupported(l) ? l : undefined;
 };
 
+// Alle Lektionen aller Fächer, in Anzeige-Reihenfolge: [{ sid, subject, lesson }]
+export function allLessons() {
+  const out = [];
+  for (const subject of getSubjects()) {
+    for (const l of subject.lessons) {
+      const lesson = getLesson(subject.id, l.id);
+      if (lesson) out.push({ sid: subject.id, subject, lesson });
+    }
+  }
+  return out;
+}
+
 // Lektionen, die zusammengelegt wurden: Lernstand dorthin mitnehmen (siehe store.migrateLessons).
 export function applyMoves() {
   for (const s of data.subjects) if (s.moved) migrateLessons(s.id, s.moved);

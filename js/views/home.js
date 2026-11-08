@@ -3,7 +3,7 @@ import { getState, streak } from '../store.js';
 import { mood, DAY_GOAL } from '../streak.js';
 import { petStatus, PET } from '../pet.js';
 import { esc } from '../util.js';
-import { updateContent } from '../app.js';
+import { updateContent } from '../updates.js';
 import { portrait, bigPortrait } from './portrait.js';
 import { dueSummary } from '../practice-now.js';
 
