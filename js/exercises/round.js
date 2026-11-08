@@ -47,7 +47,7 @@ export function runRound(el, { tasks, test = false, chosen = true, onAgain, onBa
     right() {
       const task = queue[0];
       const isFirst = task.attempts === 0;
-      points += record(task.key, { correct: true, firstTry: isFirst, weight: weight(task) });
+      points += record(task.key, { correct: true, firstTry: isFirst, weight: weight(task), effort: weightFor(task.dir) });
       if (isFirst) firstTry++;
       queue.shift();
       done++;
@@ -56,7 +56,7 @@ export function runRound(el, { tasks, test = false, chosen = true, onAgain, onBa
     // Fehler eintragen – die Frage zeigt danach selbst die Lösung (und ggf. Abschreiben).
     wrong(typed) {
       const task = queue[0];
-      record(task.key, { correct: false, typed: typed?.trim() });
+      record(task.key, { correct: false, typed: typed?.trim(), effort: weightFor(task.dir) });
       task.attempts++;
       mistakes.set(task.key, { task, typed });
     },

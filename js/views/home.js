@@ -74,17 +74,18 @@ function subjectTile(s) {
 }
 
 function streakMessage(s) {
-  const left = Math.max(0, s.need - s.todayWords);
-  const w = (n) => `${n} ${n === 1 ? 'Wort' : 'Wörter'}`;
+  // Tagesziel nach Schwierigkeit: Schreiben zählt 1, Antippen nur 0,2 – aufrunden auf ganze Aufgaben.
+  const left = Math.max(0, Math.ceil(s.need - s.todayWords - 1e-9));
+  const w = (n) => `${n} ${n === 1 ? 'Schreib-Aufgabe' : 'Schreib-Aufgaben'}`;
   switch (s.state) {
     case 'active':
       return s.todayDone ? 'Heute geschafft! 🎉' : `Heute noch ${w(left)} für deine Serie.`;
     case 'danger':
       return `${esc(PET_NAME)} vermisst dich! Noch ${w(left)} heute, dann ist deine Serie von ${s.count} ${s.count === 1 ? 'Tag' : 'Tagen'} gerettet.`;
     case 'broken':
-      return `${esc(PET_NAME)} vermisst dich! Mit ${w(DAY_GOAL)} startest du eine neue Serie.`;
+      return `${esc(PET_NAME)} vermisst dich! Mit ${w(left)} ${left < DAY_GOAL ? 'mehr ' : ''}startest du eine neue Serie.`;
     default:
-      return `Übe ${w(DAY_GOAL)}, dann startet deine Serie.`;
+      return left < DAY_GOAL ? `Noch ${w(left)}, dann startet deine Serie.` : `Übe ${w(DAY_GOAL)}, dann startet deine Serie.`;
   }
 }
 

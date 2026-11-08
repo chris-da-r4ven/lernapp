@@ -20,7 +20,12 @@ function load() {
 const listeners = [];
 export const onSave = (fn) => listeners.push(fn);
 
+// Zählt jede Änderung am Lernstand – damit können andere Teile Berechnungen zwischenspeichern.
+let rev = 0;
+export const revision = () => rev;
+
 function persist() {
+  rev++;
   try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { /* Speicher voll/gesperrt */ }
 }
 
@@ -100,10 +105,13 @@ export function setItemState(key, s) {
   state.items[key] = s;
 }
 
-export function addDayStat(correct) {
+// effort: wie viel die Aufgabe fürs Tagesziel zählt (Gewicht der Übungsart, Schreiben = 1).
+// Gespeichert in Zehnteln (e), damit sich keine Rundungsfehler aufsummieren.
+export function addDayStat(correct, effort = 1) {
   const k = dayKey();
   const d = state.days[k] ?? { right: 0, wrong: 0 };
   if (correct) d.right++; else d.wrong++;
+  d.e = (d.e ?? (d.right + d.wrong - 1) * 10) + Math.round(effort * 10);
   state.days[k] = d;
 }
 

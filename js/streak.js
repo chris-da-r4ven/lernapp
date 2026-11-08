@@ -1,7 +1,9 @@
 // Serie (Tage am Stück) mit Tagesziel und Rettungstag.
 //
 // Regeln:
-// - Ein Tag zählt, wenn an ihm mindestens DAY_GOAL Wörter beantwortet wurden.
+// - Ein Tag zählt, wenn an ihm Aufgaben im Wert von mindestens DAY_GOAL gelöst wurden.
+//   Jede Aufgabe zählt mit dem Gewicht ihrer Übungsart (Schreiben 1, Antippen 0,2 …),
+//   auch wenn sie falsch war – Bemühen zählt, Durchtippen nicht.
 // - Ein verpasster Tag lässt die Serie noch nicht reißen: Am Tag danach ist sie
 //   „in Gefahr“. Wer an diesem Tag das eigene Tagesziel plus das, was gestern
 //   gefehlt hat, schafft, rettet den verpassten Tag – er zählt dann mit.
@@ -13,10 +15,9 @@ import { dayKey, addDays } from './util.js';
 
 export const DAY_GOAL = 10;
 
-const words = (days, d) => {
-  const x = days[dayKey(d)];
-  return x ? x.right + x.wrong : 0;
-};
+// Ältere Tage (vor der Gewichtung) haben kein "e": dort zählt jede Antwort voll.
+export const dayValue = (x) => (x ? (x.e != null ? x.e / 10 : x.right + x.wrong) : 0);
+const words = (days, d) => dayValue(days[dayKey(d)]);
 
 // Für jeden Tag bis heute: zählt er (ok) und wurde er gerettet (rescued)?
 function evaluate(days, today) {

@@ -6,14 +6,19 @@
 //   learnOrder in modes.js – erst hören und antippen (leicht), dann schreiben, Diktat, Lückensatz.
 // - Jedes Wort höchstens einmal pro Runde.
 
-import { getSubjects, getLesson } from './content.js';
-import { itemState } from './store.js';
+import { getSubjects, getLesson, contentVersion } from './content.js';
+import { itemState, revision } from './store.js';
 import { modesFor, tasksFor, learnOrderOf } from './exercises/registry.js';
 import { shuffle } from './util.js';
 
 export const ROUND_SIZE = 12;
 
+// Alle Aufgaben aller Lektionen – zwischengespeichert, solange sich Inhalte und Lernstand nicht ändern
+// (die Startseite fragt bei jedem Aufruf danach).
+let cache = { key: null, tasks: [] };
 function allTasks() {
+  const key = `${contentVersion()}|${revision()}`;
+  if (cache.key === key) return cache.tasks;
   const tasks = [];
   for (const s of getSubjects()) {
     for (const l of s.lessons) {
@@ -26,6 +31,7 @@ function allTasks() {
       }
     }
   }
+  cache = { key, tasks };
   return tasks;
 }
 

@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LernApp – Selbsttest</title>
+  <style>
+    :root { --bg: #f6f7fb; --text: #1d2233; --good: #1f9d55; --bad: #d64545; --muted: #6b7290; }
+    @media (prefers-color-scheme: dark) { :root { --bg: #14161f; --text: #e8eaf3; --good: #48c27a; --bad: #ef6b6b; --muted: #9aa1bd; } }
+    body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 16px; max-width: 900px; }
+    h1 { font-size: 1.4rem; }
+    .sum { font-size: 1.2rem; font-weight: 700; margin: 12px 0; }
+    .ok { color: var(--good); } .bad { color: var(--bad); }
+    li { margin: 2px 0; } .detail { color: var(--muted); font-size: 0.9em; white-space: pre-wrap; }
+    h2 { font-size: 1.05rem; margin: 18px 0 4px; }
+  </style>
+</head>
+<body>
+  <h1>LernApp – Selbsttest der Regel-Logik</h1>
+  <p class="detail">Prüft Serie, Zusammenführen, Antwort-Prüfung, Sternchen, Medaille, Umzüge, Übungsarten und Inhalte.
+    Der Lernstand dieses Browsers wird kurz ersetzt und danach wiederhergestellt.</p>
+  <div id="out">Läuft …</div>
+  <script type="module" src="tests.js"></script>
+</body>
+</html>

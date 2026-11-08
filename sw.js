@@ -8,7 +8,7 @@
 //   installiert die neue Version komplett, die App lädt sich dann einmal neu (app.js).
 // Lerninhalte (content/) lädt die App selbst und speichert sie lokal – die laufen hier nicht durch.
 
-const CACHE = 'lernapp-shell-v28';
+const CACHE = 'lernapp-shell-v31';
 const SHELL = [
   './',
   'index.html',
@@ -73,9 +73,18 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   if (event.request.method !== 'GET' || url.origin !== location.origin) return;
-  if (url.pathname.includes('/content/')) return;
-  event.respondWith(cacheFirst(event.request));
+  // Inhalte lädt die App selbst; die Testseite soll immer frisch sein.
+  if (url.pathname.includes('/content/') || url.pathname.includes('/tests/')) return;
+  event.respondWith(fromTestPage(event.clientId).then((test) =>
+    // Die Testseite soll immer den aktuellen Code prüfen, nicht den gespeicherten.
+    (test ? fetch(event.request.url, { cache: 'no-store' }) : cacheFirst(event.request))));
 });
+
+async function fromTestPage(clientId) {
+  if (!clientId) return false;
+  const client = await self.clients.get(clientId);
+  return Boolean(client?.url.includes('/tests/'));
+}
 
 async function cacheFirst(request) {
   const cache = await caches.open(CACHE);

@@ -36,7 +36,8 @@ export function status(st) {
 
 // Ein Ergebnis eintragen. firstTry: ohne vorherigen Fehler in dieser Runde.
 // typed: die falsche Schreibweise (wird für "schwere Wörter" gemerkt).
-export function record(key, { correct, firstTry, typed, weight = 1 }) {
+// weight: Sternchen-Faktor (Übungsart, ggf. weniger bei Medaille), effort: zählt fürs Tagesziel.
+export function record(key, { correct, firstTry, typed, weight = 1, effort = 1 }) {
   const st = { ...itemState(key) };
   const now = Date.now();
   if (correct) {
@@ -52,7 +53,7 @@ export function record(key, { correct, firstTry, typed, weight = 1 }) {
   }
   st.last = now;
   setItemState(key, st);
-  addDayStat(correct);
+  addDayStat(correct, effort);
   save();
   return correct ? pointsFor(firstTry, weight) : 0;
 }

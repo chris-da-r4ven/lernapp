@@ -17,6 +17,7 @@ function save() {
 }
 
 export const contentUpdated = () => data.updated ?? null;
+export const contentVersion = () => data.version;
 export const hasContent = () => data.subjects.length > 0;
 export const getSubjects = () => data.subjects;
 export const getSubject = (sid) => data.subjects.find((s) => s.id === sid);

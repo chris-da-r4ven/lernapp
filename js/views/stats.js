@@ -146,7 +146,7 @@ function historyChart(days, rescued) {
         </div>`).join('')}
     </div>
     <div class="legend small"><span class="dot right"></span>richtig <span class="dot wrong"></span>falsch</div>
-    <p class="muted small">Ein Tag zählt für die Serie ab ${DAY_GOAL} Wörtern. 🛟 = verpasst, aber am Tag danach gerettet.</p>`;
+    <p class="muted small">Ein Tag zählt für die Serie ab ${DAY_GOAL} Aufgaben. Schreiben und Diktat zählen voll, Lückensätze fast, Antippen nur ein Fünftel. 🛟 = verpasst, aber am Tag danach gerettet.</p>`;
 }
 
 function formatDate(iso) {
