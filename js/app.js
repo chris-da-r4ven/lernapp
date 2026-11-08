@@ -47,7 +47,9 @@ export async function updateContent({ quiet = false } = {}) {
     toast('Neue Inhalte geladen 🎉');
     if (!practicing()) render();
   } else if (!quiet) {
-    toast(result === 'current' ? 'Alles aktuell.' : 'Kein Internet – du übst mit den gespeicherten Inhalten.');
+    toast(result === 'current' ? 'Alles aktuell.'
+      : result === 'app-zu-alt' ? 'Neue Inhalte brauchen eine neuere App – die kommt gleich von selbst.'
+      : 'Kein Internet – du übst mit den gespeicherten Inhalten.');
   }
   return result;
 }

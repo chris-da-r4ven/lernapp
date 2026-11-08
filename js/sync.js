@@ -40,7 +40,35 @@ function saveCfg() {
 export const onSyncStatus = (fn) => statusListeners.push(fn);
 export function syncStatus() {
   if (!cfg) return null;
-  return { repo: cfg.repo, lastSync: cfg.lastSync ?? null, dirty: !!cfg.dirty, error: cfg.error ?? null };
+  return { repo: cfg.repo, lastSync: cfg.lastSync ?? null, dirty: !!cfg.dirty, error: cfg.error ?? null, tokenUntil: cfg.tokenUntil ?? null };
+}
+
+// Ablaufdatum des Schlüssels (JJJJ-MM-TT). GitHub verrät es dem Browser nicht – die Eltern tragen es ein.
+export function setTokenUntil(day) {
+  if (!cfg) return;
+  cfg.tokenUntil = /^\d{4}-\d{2}-\d{2}$/.test(day ?? '') ? day : null;
+  saveCfg();
+}
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+export const STALE_DAYS = 3;
+export const EXPIRY_WARN_DAYS = 14;
+
+// Ein Satz für die Eltern, wenn mit der Sicherung etwas nicht stimmt – sonst null.
+export function syncWarning(now = Date.now()) {
+  if (!cfg) return null;
+  if (cfg.tokenUntil) {
+    // ganze Kalendertage bis zum Ablauftag (Ortszeit)
+    const today = new Date(now); today.setHours(0, 0, 0, 0);
+    const left = Math.round((new Date(cfg.tokenUntil + 'T00:00:00').getTime() - today.getTime()) / DAY_MS);
+    if (left < 0) return 'Der Schlüssel für die Sicherung ist abgelaufen – neuen anlegen und neu verbinden.';
+    if (left <= EXPIRY_WARN_DAYS) return `Der Schlüssel für die Sicherung läuft ${left === 0 ? 'heute' : `in ${left} ${left === 1 ? 'Tag' : 'Tagen'}`} ab – rechtzeitig einen neuen anlegen.`;
+  }
+  if (cfg.error) return `Sicherung: ${cfg.error}`;
+  const since = cfg.lastSync ? Math.floor((now - cfg.lastSync) / DAY_MS) : null;
+  if (since === null) return 'Die Sicherung hat noch nie geklappt.';
+  if (since >= STALE_DAYS) return `Seit ${since} Tagen nicht gesichert – ist das Tablet online?`;
+  return null;
 }
 
 // Alle Netzaktionen nacheinander, nie zwei gleichzeitig.
@@ -203,8 +231,9 @@ export const syncNow = () => serial(reconcile);
 
 // --- Einrichten / Trennen ---------------------------------------------------
 
-export async function connect(repo, token) {
-  cfg = { repo: repo.trim(), token: token.trim(), sha: null, dirty: false, lastSync: null, error: null };
+export async function connect(repo, token, tokenUntil = null) {
+  cfg = { repo: repo.trim(), token: token.trim(), sha: null, dirty: false, lastSync: null, error: null,
+    tokenUntil: /^\d{4}-\d{2}-\d{2}$/.test(tokenUntil ?? '') ? tokenUntil : null };
   try {
     await serial(async () => {
       const remote = await pull();

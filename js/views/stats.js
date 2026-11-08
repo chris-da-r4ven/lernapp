@@ -1,6 +1,7 @@
 // Fortschritt – dieselbe Seite für Kind und Eltern.
 
-import { getSubjects, getLesson, contentUpdated } from '../content.js';
+import { getSubjects, getLesson, contentUpdated, contentVersion } from '../content.js';
+import { syncStatus, syncWarning } from '../sync.js';
 import { getState, itemState, streak } from '../store.js';
 import { parentsSection, bindParents } from './parents.js';
 import { modesFor, tasksFor } from '../exercises/registry.js';
@@ -27,6 +28,7 @@ export function statsView(el, openParents = false) {
 
   el.innerHTML = `
     <h1>Fortschritt</h1>
+    ${syncWarning() ? `<p class="card warn-banner">⚠️ ${esc(syncWarning())}</p>` : ''}
 
     <section class="kpis">
       <div class="card kpi"><strong>${counts.sicher}</strong><span>Wörter sicher</span></div>
@@ -66,7 +68,8 @@ export function statsView(el, openParents = false) {
 
     ${parentsSection(openParents)}
 
-    ${contentUpdated() ? `<p class="muted small">Lerninhalte vom ${esc(formatDate(contentUpdated()))}</p>` : ''}`;
+    <p class="muted small status-line">${statusLine()}</p>`;
+  fillAppVersion(el);
 
   bindParents(el, (open) => {
     statsView(el, open);
@@ -148,6 +151,29 @@ function historyChart(days, rescued) {
     </div>
     <div class="legend small"><span class="dot right"></span>richtig <span class="dot wrong"></span>falsch</div>
     <p class="muted small">Ein Tag zählt für die Serie ab ${DAY_GOAL} Aufgaben. Schreiben und Diktat zählen voll, Lückensätze fast, Antippen nur ein Fünftel. 🛟 = verpasst, aber am Tag danach gerettet.</p>`;
+}
+
+// Für die Eltern: Stand von App, Inhalten und Sicherung auf einen Blick.
+function statusLine() {
+  const parts = ['App-Stand <span class="app-version">…</span>'];
+  if (contentVersion()) parts.push(`Inhalte Version ${esc(contentVersion())}${contentUpdated() ? ` vom ${esc(formatDate(contentUpdated()))}` : ''}`);
+  const s = syncStatus();
+  parts.push(s
+    ? `Sicherung: ${s.lastSync ? esc(new Date(s.lastSync).toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short' })) : 'noch nie'}`
+    : 'Sicherung: aus');
+  return parts.join(' · ');
+}
+
+// App-Stand = Name des aktiven Offline-Caches (Fingerabdruck der App-Dateien), dazu ob ein Update lädt.
+async function fillAppVersion(el) {
+  const span = el.querySelector('.app-version');
+  if (!span) return;
+  try {
+    const name = (await caches.keys()).find((k) => k.startsWith('lernapp-'));
+    const reg = await navigator.serviceWorker?.getRegistration();
+    span.textContent = (name ? name.replace('lernapp-', '').replace('shell-', '') : 'unbekannt')
+      + (reg?.installing || reg?.waiting ? ' (Update wird geladen)' : '');
+  } catch { span.textContent = 'unbekannt'; }
 }
 
 function formatDate(iso) {

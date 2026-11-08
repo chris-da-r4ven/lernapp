@@ -10,7 +10,8 @@ import { record, roundBonus, buildRound } from '../js/srs.js';
 import { getState, replaceState, migrateLessons, addTestResult, medalStatus, itemState } from '../js/store.js';
 import { MODES } from '../js/exercises/modes.js';
 import { modesFor, tasksFor, modeById } from '../js/exercises/registry.js';
-import { kindOf, targetSide, towardTarget, langOf, KINDS } from '../js/lessons.js';
+import { kindOf, targetSide, towardTarget, langOf, KINDS, isSupported } from '../js/lessons.js';
+import { APP_VERSION } from '../js/version.js';
 import { dayKey } from '../js/util.js';
 import { sanitizeState } from '../js/validate.js';
 
@@ -200,9 +201,14 @@ try {
   await test('Lernstand-Kennungen unverändert (ab, ba, hoeren, hoeren-wahl, satz, form)', () =>
     ok(['ab', 'ba', 'hoeren', 'hoeren-wahl', 'satz', 'form'].every((id) => modeById(id)), 'Kennung fehlt'));
 
+  await test('unbekannte Lektionsart wird ausgeblendet, alte Lektionen ohne kind gehen weiter', () => {
+    eq([isSupported({ kind: 'quiz', items: [] }), isSupported({ items: [] }), isSupported({ kind: 'grammatik', items: [] })], [false, true, true]);
+  });
+
   // --- Inhalte --------------------------------------------------------------------------
   section('Inhalte (content/)');
   const idx = await (await fetch('../content/index.json', { cache: 'no-store' })).json();
+  await test(`Inhalte passen zu dieser App (minApp ${idx.minApp} ≤ ${APP_VERSION})`, () => ok((idx.minApp ?? 0) <= APP_VERSION, 'Inhalte brauchen eine neuere App'));
   for (const s of idx.subjects) {
     for (const l of s.lessons) {
       const lesson = await (await fetch(`../content/${l.file}`, { cache: 'no-store' })).json();

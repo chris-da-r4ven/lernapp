@@ -291,7 +291,12 @@ def build():
     if old.get('hash') != digest:
         version += 1
         updated = datetime.date.today().isoformat()
-    index = {'version': version, 'updated': updated, 'hash': digest, 'subjects': index_subjects}
+    # Inhalte brauchen mindestens den Funktionsstand der App, mit der sie gebaut wurden.
+    min_app = int(re.search(r'APP_VERSION = (\d+)', (ROOT / 'js' / 'version.js').read_text()).group(1))
+    if old.get('minApp') != min_app:
+        version = max(version, old.get('version', 0) + 1)
+        updated = datetime.date.today().isoformat()
+    index = {'version': version, 'updated': updated, 'hash': digest, 'minApp': min_app, 'subjects': index_subjects}
     if write_json(INDEX, index):
         changed_files.append(rel(INDEX))
 

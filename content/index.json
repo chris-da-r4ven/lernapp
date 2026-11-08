@@ -1,7 +1,8 @@
 {
-  "version": 11,
+  "version": 12,
   "updated": "2026-11-08",
   "hash": "d06043774a1782c2",
+  "minApp": 2,
   "subjects": [
     {
       "id": "englisch",

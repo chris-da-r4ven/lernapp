@@ -2,7 +2,7 @@
 // mit Statistik zurücksetzen, Sicherung des Spielstands und Geräte-Tests.
 
 import { resetProgress } from '../store.js';
-import { syncStatus, connect, disconnect, syncNow, DEFAULT_REPO } from '../sync.js';
+import { syncStatus, connect, disconnect, syncNow, setTokenUntil, DEFAULT_REPO } from '../sync.js';
 import { esc, toast } from '../util.js';
 
 export function parentsSection(open = false) {
@@ -44,6 +44,7 @@ function syncBlock() {
                autocomplete="off" autocapitalize="off" spellcheck="false"></label>
         <label class="small">Zugangsschlüssel<input class="answer" name="token" type="password"
                autocomplete="off" placeholder="github_pat_…"></label>
+        <label class="small">Schlüssel gültig bis (steht bei GitHub beim Schlüssel)<input class="answer" name="until" type="date"></label>
         <p class="sync-error bad small" hidden></p>
         <button class="btn primary" type="submit">Verbinden</button>
       </form>`;
@@ -52,6 +53,11 @@ function syncBlock() {
   return `
     <p class="small">Verbunden mit <strong>${esc(s.repo)}</strong> · zuletzt gesichert: ${esc(when)}${s.dirty ? ' · neue Antworten warten' : ''}</p>
     ${s.error ? `<p class="bad small">${esc(s.error)}</p>` : ''}
+    <form class="until-form actions" autocomplete="off">
+      <label class="small">Schlüssel gültig bis <input class="answer" name="until" type="date" value="${esc(s.tokenUntil ?? '')}"></label>
+      <button class="btn small" type="submit">Merken</button>
+    </form>
+    <p class="muted small">„Trennen“ löscht den Schlüssel nur auf diesem Gerät. Bei Verlust des Tablets den Schlüssel bei GitHub löschen.</p>
     <div class="actions">
       <button class="btn" type="button" data-act="sync-now">Jetzt sichern</button>
       <button class="btn ghost" type="button" data-act="sync-off">Trennen</button>
@@ -96,7 +102,7 @@ export function bindParents(el, rerender) {
     if (!syncForm.repo.value.trim() || !syncForm.token.value.trim()) return;
     btn.disabled = true;
     btn.textContent = 'Verbinde …';
-    const res = await connect(syncForm.repo.value, syncForm.token.value);
+    const res = await connect(syncForm.repo.value, syncForm.token.value, syncForm.until.value);
     if (res.ok) {
       toast('Sicherung eingerichtet.');
       rerender(true);
@@ -106,6 +112,12 @@ export function bindParents(el, rerender) {
       btn.disabled = false;
       btn.textContent = 'Verbinden';
     }
+  });
+  box.querySelector('.until-form')?.addEventListener('submit', (ev) => {
+    ev.preventDefault();
+    setTokenUntil(ev.target.until.value);
+    toast('Ablaufdatum gemerkt.');
+    rerender(true);
   });
   box.querySelector('[data-act=sync-now]')?.addEventListener('click', async (ev) => {
     ev.target.disabled = true;

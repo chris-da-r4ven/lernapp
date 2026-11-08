@@ -4,11 +4,12 @@
 // - Installation: alle Dateien frisch vom Server laden. Fehlt eine, wird die neue
 //   Version gar nicht erst aktiv – so laufen nie alte und neue Programmteile gemischt.
 // - Betrieb: Dateien kommen aus dem Cache der aktiven Version (schnell, offline).
-// - Update: CACHE-Namen ändern (bei jedem Push). Der Browser findet die neue sw.js,
+// - Update: Der CACHE-Name ist ein Fingerabdruck der App-Dateien und wird von
+//   tools/check.py --fix gesetzt (läuft vor jedem Push). Der Browser findet die neue sw.js,
 //   installiert die neue Version komplett, die App lädt sich dann einmal neu (app.js).
 // Lerninhalte (content/) lädt die App selbst und speichert sie lokal – die laufen hier nicht durch.
 
-const CACHE = 'lernapp-shell-v32';
+const CACHE = 'lernapp-d8d109e77d';
 const SHELL = [
   './',
   'index.html',
@@ -36,6 +37,7 @@ const SHELL = [
   'js/sync.js',
   'js/merge.js',
   'js/validate.js',
+  'js/version.js',
   'js/exercises/registry.js',
   'js/exercises/modes.js',
   'js/exercises/round.js',
@@ -58,7 +60,13 @@ const SHELL = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE)
-      .then((c) => c.addAll(SHELL.map((u) => new Request(u, { cache: 'reload' }))))
+      // ?v=… umgeht auch den Zwischenspeicher von GitHub Pages (bis 10 Minuten) – sonst könnte
+      // kurz nach einem Push noch eine alte Datei in die neue Version geraten.
+      .then((c) => Promise.all(SHELL.map(async (u) => {
+        const r = await fetch(new Request(`${u}${u.includes('?') ? '&' : '?'}v=${CACHE}`, { cache: 'reload' }));
+        if (!r.ok) throw new Error(`${u}: HTTP ${r.status}`);
+        await c.put(u, r);   // gespeichert unter der normalen Adresse
+      })))
       .then(() => self.skipWaiting())
   );
 });

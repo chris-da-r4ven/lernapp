@@ -42,9 +42,29 @@ Optional in ein privates GitHub-Repo (`lernapp-daten`, Datei `spielstand.json`),
 Fortschritt → Für Eltern. Gerät und Sicherung werden zusammengeführt (`js/merge.js`): pro Wort gewinnt
 der neuere Eintrag. Ein Zurücksetzen gewinnt gegen alles Ältere – dafür steht im Stand `resetAt`.
 
-**Auf eine frühere Uhrzeit zurücksetzen:** passenden Commit in `lernapp-daten` suchen, dessen
-`spielstand.json` nehmen, im `state` `resetAt` auf den jetzigen Zeitpunkt (ms seit 1970) setzen und als
-neuen Commit schreiben (nie force-push). Das Tablet übernimmt den Stand beim nächsten Öffnen.
+**Auf eine frühere Uhrzeit zurücksetzen:** `python3 tools/zuruecksetzen.py --bis "2026-11-08 19:00"` zeigt,
+was passieren würde; mit `--ausfuehren` wird der Stand von davor als neuer Commit (mit `resetAt` = jetzt)
+geschrieben. Die Historie bleibt erhalten. Das Tablet übernimmt ihn beim nächsten Öffnen.
+
+## Betrieb – Checkliste
+
+**Vor jedem Push** (läuft als Git-Hook automatisch, einrichten mit `python3 tools/check.py --hook`):
+1. `python3 tools/check.py --fix` – setzt den Cache-Namen (Fingerabdruck der App-Dateien), baut die
+   Inhalte, prüft die Offline-Liste. Danach geänderte Dateien committen.
+2. `tests/` im Browser (lokal) – alles grün.
+3. Neue Lektions- oder Übungsart? Dann `APP_VERSION` in `js/version.js` hochzählen und
+   `python3 tools/inhalte.py bauen` – Geräte mit älterer App behalten ihre Inhalte, bis die neue App da ist.
+
+**Nach dem Push:** 2–10 Minuten warten, App auf dem Tablet schließen und öffnen (lädt sich einmal neu).
+Unter Fortschritt (ganz unten) App-Stand, Inhalte und „Sicherung“ ansehen.
+
+**Wenn etwas nicht geht:**
+- Warnung oben auf der Fortschrittsseite lesen (Sicherung alt, Fehler, Schlüssel läuft ab).
+- App alt: `tools/check.py` grün? Online `…/lernapp/sw.js` hat den neuen Cache-Namen?
+- Inhalte alt: `…/lernapp/content/index.json` ansehen, in der App „Neue Inhalte suchen“.
+- Schlüssel abgelaufen: neuen anlegen, Für Eltern → Trennen → neu verbinden (wird zusammengeführt).
+- Stand weg oder falsch: auf dem Tablet nicht weiterüben, dann `tools/zuruecksetzen.py`.
+- Browserdaten in Chrome erst löschen, wenn „Sicherung“ aktuell ist.
 
 ## Aufbau
 

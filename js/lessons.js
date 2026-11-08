@@ -18,7 +18,13 @@ export const KINDS = {
 
 // "grammar": true war das alte Format (Inhalte bis Version 9) – noch verstehen,
 // falls ein Gerät die neue App, aber noch die alten Inhalte hat.
-export const kindOf = (lesson) => (KINDS[lesson?.kind] ? lesson.kind : lesson?.grammar ? 'grammatik' : 'vokabeln');
+export const kindOf = (lesson) => {
+  if (KINDS[lesson?.kind]) return lesson.kind;
+  if (lesson?.kind) return null;              // Art, die diese App (noch) nicht kennt
+  return lesson?.grammar ? 'grammatik' : 'vokabeln';
+};
+// Kann diese App die Lektion darstellen? (Unbekannte Arten werden ausgeblendet statt falsch gezeigt.)
+export const isSupported = (lesson) => Boolean(lesson && kindOf(lesson) && Array.isArray(lesson.items));
 export const kindInfo = (lesson) => KINDS[kindOf(lesson)];
 export const unitWord = (lesson, n) => kindInfo(lesson).unit[n === 1 ? 0 : 1];
 

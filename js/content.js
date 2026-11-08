@@ -3,6 +3,8 @@
 // "version" in content/index.json. "updated" (JJJJ-MM-TT) ist nur zur Anzeige.
 
 import { migrateLessons } from './store.js';
+import { APP_VERSION } from './version.js';
+import { isSupported } from './lessons.js';
 
 const KEY = 'lernapp.content';
 
@@ -19,20 +21,29 @@ function save() {
 export const contentUpdated = () => data.updated ?? null;
 export const contentVersion = () => data.version;
 export const hasContent = () => data.subjects.length > 0;
-export const getSubjects = () => data.subjects;
-export const getSubject = (sid) => data.subjects.find((s) => s.id === sid);
-export const getLesson = (sid, lid) => data.lessons[sid + '/' + lid];
+// Lektionen, die diese App nicht darstellen kann (unbekannte Lektionsart), werden ausgeblendet.
+export const getSubjects = () => data.subjects.map((s) => ({
+  ...s,
+  lessons: s.lessons.filter((l) => isSupported(data.lessons[s.id + '/' + l.id])),
+}));
+export const getSubject = (sid) => getSubjects().find((s) => s.id === sid);
+export const getLesson = (sid, lid) => {
+  const l = data.lessons[sid + '/' + lid];
+  return isSupported(l) ? l : undefined;
+};
 
 // Lektionen, die zusammengelegt wurden: Lernstand dorthin mitnehmen (siehe store.migrateLessons).
 export function applyMoves() {
   for (const s of data.subjects) if (s.moved) migrateLessons(s.id, s.moved);
 }
 
-// Liefert 'updated', 'current' oder 'offline'.
+// Liefert 'updated', 'current', 'offline' oder 'app-zu-alt' (Inhalte brauchen eine neuere App –
+// dann bleiben die bisherigen Inhalte, bis die neue App da ist).
 export async function checkUpdates() {
   try {
     const idx = await fetchJson('content/index.json');
     if (idx.version === data.version) return 'current';
+    if ((idx.minApp ?? 0) > APP_VERSION) return 'app-zu-alt';
     const lessons = {};
     for (const s of idx.subjects) {
       for (const l of s.lessons) {
