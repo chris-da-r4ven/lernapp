@@ -20,6 +20,13 @@
   <p class="detail">Prüft Serie, Zusammenführen, Antwort-Prüfung, Sternchen, Medaille, Umzüge, Übungsarten und Inhalte.
     Arbeitet mit einem eigenen Test-Speicher – der echte Lernstand bleibt unberührt.</p>
   <div id="out">Läuft …</div>
-  <script type="module" src="tests.js"></script>
+  <script type="module">
+    // Erst alle App-Dateien frisch vom Server holen (der Browser hält sie sonst bis zu 10 Minuten
+    // zwischengespeichert) – sonst prüft der Test kurz nach einem Push alten und neuen Code gemischt.
+    const sw = await (await fetch('../sw.js', { cache: 'reload' })).text();
+    const files = [...sw.matchAll(/'(js\/[^']+)'/g)].map((m) => m[1]);
+    await Promise.all(files.map((f) => fetch('../' + f, { cache: 'reload' })));
+    await import('./tests.js?t=' + Date.now());
+  </script>
 </body>
 </html>
