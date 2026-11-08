@@ -375,3 +375,11 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
 @keyframes medal-pop { 0% { transform: scale(0.2) rotate(-30deg); } 70% { transform: scale(1.25) rotate(8deg); } 100% { transform: scale(1); } }
 .test-group { margin: 14px 0 6px; font-size: 1rem; }
 @media (prefers-reduced-motion: reduce) { .medal-new .medal { animation: none; } }
+
+/* Teste dich doch mal! */
+.test-ready { display: flex; align-items: center; gap: 12px; margin: 12px auto; padding: 10px 14px; max-width: 520px;
+  border-radius: 14px; border: 2px solid var(--primary); text-align: left; }
+.test-ready-icon { font-size: 1.8rem; }
+.test-ready .btn { margin-left: auto; flex: none; }
+.ready-hint { color: var(--primary); font-weight: 600; margin-top: 4px; }
+.ready-btn { box-shadow: 0 0 0 3px rgba(79, 108, 247, 0.25); }

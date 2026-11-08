@@ -17,7 +17,7 @@ const routes = [
   [/^#\/lektion\/([^/]+)\/([^/]+)$/, lessonView, 'home'],
   [/^#\/ueben\/([^/]+)\/([^/]+)\/([^/]+)\/(ab|ba|hoeren|hoeren-wahl|satz|form)(\/alle)?$/, practiceView, 'home'],
   [/^#\/jetzt$/, nowView, 'home'],
-  [/^#\/test\/([^/]+)$/, testView, 'home'],
+  [/^#\/test\/([^/]+)(?:\/([^/]+))?$/, testView, 'home'],
   [/^#\/statistik$/, statsView, 'statistik'],
   [/^#\/handschrift-test$/, handwritingTestView, 'home'],
   [/^#\/vorlese-test$/, speechTestView, 'home'],

@@ -3,7 +3,7 @@ import { itemState } from '../store.js';
 import { itemKey, status, mastery } from '../srs.js';
 import { exercisesFor, modesFor, usableIn } from '../exercises/registry.js';
 import { esc } from '../util.js';
-import { lessonMedal } from '../medal.js';
+import { lessonMedal, testReady } from '../medal.js';
 
 const STATUS_LABEL = { neu: 'neu', wackelt: 'wackelt', sicher: 'sicher' };
 
@@ -16,6 +16,7 @@ export function lessonView(el, sid, lid) {
   const exList = exercisesFor(lesson);
   const modes = modesFor(lesson);
   const medal = lessonMedal(sid, lesson);
+  const ready = testReady(sid, lesson);
 
   el.innerHTML = `
     <a class="back" href="#/fach/${encodeURIComponent(sid)}">← ${esc(subject.name)}</a>
@@ -28,6 +29,10 @@ export function lessonView(el, sid, lid) {
     <section class="card">
       <h2>Üben</h2>
       <label class="check"><input type="checkbox" data-all> Ganze Lektion üben (z. B. vor dem Test)</label>
+      ${lesson.grammar ? '' : `
+        <div class="actions wrap">
+          <a class="btn${ready ? ' primary ready-btn' : ''}" href="#/test/${encodeURIComponent(sid)}/${encodeURIComponent(lid)}">📝 Diese Lektion testen${ready ? ' – du bist bereit!' : ''}</a>
+        </div>`}
       ${groups(exList).map((group) => `
         <div class="actions wrap">
           ${group.flatMap((ex) => ex.modes(lesson).map((m) => `<button class="btn primary" data-href="${base}/${ex.id}/${m.dir}">${esc(m.label)}</button>`)).join('')}

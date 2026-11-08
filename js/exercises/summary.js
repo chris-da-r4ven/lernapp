@@ -9,7 +9,8 @@ import { portrait } from '../views/portrait.js';
 
 // mistakes: Liste von [gefragt, Antwort]
 // intro: eigene Zeile statt „X Wörter geübt …“ (z. B. Testergebnis)
-export function roundSummary(el, { total, firstTry, points, bonus, startLevel, mistakes, intro, mistakesTitle, onAgain, onBack, backLabel = 'Zur Lektion' }) {
+// notice: zusätzlicher Hinweis unter den Sternchen (z. B. „Teste dich doch mal!“)
+export function roundSummary(el, { total, firstTry, points, bonus, startLevel, mistakes, intro, mistakesTitle, notice = '', onAgain, onBack, backLabel = 'Zur Lektion' }) {
   addPoints(bonus);
   save();
   const pet = petStatus(getState().points, mood(streak()));
@@ -34,6 +35,7 @@ export function roundSummary(el, { total, firstTry, points, bonus, startLevel, m
           <div class="meter"><div style="width:${pet.progress * 100}%"></div></div>
           <p class="muted small">noch ${pet.toNext} ✦ bis zur nächsten Glitzer-Stufe</p>
         </div>`}
+      ${notice}
       ${mistakes.length ? `<h3>${esc(mistakesTitle ?? 'Diese Wörter üben wir weiter:')}</h3>
         <ul class="word-list">${mistakes.map(([q, a]) => `<li><span>${esc(q)}</span><strong>${esc(a)}</strong></li>`).join('')}</ul>` : '<p>Keine Fehler – super!</p>'}
       <div class="actions">

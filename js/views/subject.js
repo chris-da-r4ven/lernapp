@@ -3,7 +3,7 @@
 
 import { getSubject, getLesson } from '../content.js';
 import { mastery, starsFor } from '../srs.js';
-import { lessonMedal, MEDAL_RULE } from '../medal.js';
+import { lessonMedal, MEDAL_RULE, testReady } from '../medal.js';
 import { esc, stars } from '../util.js';
 
 export function subjectView(el, sid) {
@@ -28,6 +28,7 @@ export function subjectView(el, sid) {
         <div class="grow">
           <strong>${esc(l.title)}</strong> <span class="muted small">${lesson.items.length} ${lesson.grammar ? 'Sätze' : 'Wörter'}</span>
           <div class="meter small"><div style="width:${m * 100}%"></div></div>
+          ${testReady(sid, lesson) ? '<div class="small ready-hint">📝 Bereit für den Test!</div>' : ''}
           ${!medal.medal && medal.started ? `<div class="muted small medal-hint">🏅 ${esc(medal.hint)}</div>` : ''}
         </div>
         ${stars(starsFor(m))}

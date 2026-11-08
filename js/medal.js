@@ -3,8 +3,9 @@
 // Grammatik (kein Test-Modus): mindestens 90 % der Sätze sitzen sicher.
 // Eine Medaille geht nicht wieder verloren.
 
-import { medalStatus, MEDAL_PCT, MEDAL_DAYS } from './store.js';
-import { mastery } from './srs.js';
+import { medalStatus, testedToday, itemState, MEDAL_PCT, MEDAL_DAYS } from './store.js';
+import { mastery, itemKey } from './srs.js';
+import { englishSide } from './speech.js';
 
 export function lessonMedal(sid, lesson) {
   if (lesson.grammar) {
@@ -26,3 +27,20 @@ export function lessonMedal(sid, lesson) {
 }
 
 export const MEDAL_RULE = `🏅 Medaille: ${MEDAL_DAYS}× mindestens ${MEDAL_PCT} % im Test-Modus, an verschiedenen Tagen`;
+
+// „Teste dich doch mal!“: genug geübt für einen Test?
+// Mindestens 80 % der Wörter wurden schon zweimal richtig auf Englisch geschrieben
+// (Deutsch → Englisch – genau das fragt der Test ab), noch keine Medaille,
+// und heute gab es für diese Lektion noch keinen Test.
+export const READY_SHARE = 0.8;
+export const READY_RIGHT = 2;
+
+export function testReady(sid, lesson) {
+  if (!lesson || lesson.grammar || !lesson.items?.length) return false;
+  const key = `${sid}/${lesson.id}`;
+  const s = medalStatus(key);
+  if (s.medal || testedToday(key)) return false;
+  const dir = englishSide(lesson) === 'a' ? 'ba' : 'ab';
+  const ok = lesson.items.filter((it) => itemState(itemKey(sid, lesson.id, it, dir)).right >= READY_RIGHT).length;
+  return ok / lesson.items.length >= READY_SHARE;
+}

@@ -9,6 +9,7 @@ import { getState, addTestResult, medalStatus, save } from '../store.js';
 import { levelFor } from '../pet.js';
 import { roundSummary } from './summary.js';
 import { questionFor } from './questions.js';
+import { testReady } from '../medal.js';
 
 const RETRY_GAP = 3;
 
@@ -92,6 +93,19 @@ export function runRound(el, { tasks, test = false, onAgain, onBack, backLabel }
     return newMedals;
   }
 
+  // Nach einer normalen Runde: Lektionen vorschlagen, die bereit für den Test sind.
+  function readyNotice() {
+    const seen = new Map();
+    for (const t of tasks) seen.set(`${t.sid}/${t.lesson.id}`, t);
+    const ready = [...seen.values()].filter((t) => testReady(t.sid, t.lesson)).slice(0, 2);
+    return ready.map((t) => `
+      <div class="test-ready">
+        <span class="test-ready-icon" aria-hidden="true">📝</span>
+        <span>„${esc(t.lesson.title)}“ kannst du schon ziemlich gut – <strong>teste dich doch mal!</strong></span>
+        <a class="btn primary small" href="#/test/${encodeURIComponent(t.sid)}/${encodeURIComponent(t.lesson.id)}">Zum Test</a>
+      </div>`).join('');
+  }
+
   function summary() {
     const list = [...mistakes.values()];
     const pct = Math.round((firstTry / total) * 100);
@@ -103,6 +117,7 @@ export function runRound(el, { tasks, test = false, onAgain, onBack, backLabel }
       total, firstTry, points, startLevel,
       bonus: roundBonus(tasks.map((t) => t.dir)),
       intro: test ? `<p class="big">${firstTry} von ${total} richtig (${pct} %)</p>${medalHtml}` : null,
+      notice: test ? '' : readyNotice(),
       mistakesTitle: test ? 'Diese Wörter waren noch nicht richtig:' : null,
       mistakes: list.map(({ task, typed }) => {
         const [q, a] = questionFor(task.dir).pair(task);

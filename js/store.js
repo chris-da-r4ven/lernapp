@@ -80,6 +80,8 @@ export function addTestResult(lessonKey, pct) {
   state.tests[lessonKey] = list.slice(-20);
 }
 
+export const testedToday = (lessonKey) => (state.tests?.[lessonKey] ?? []).some((r) => r.day === dayKey());
+
 export function medalStatus(lessonKey) {
   const list = state.tests?.[lessonKey] ?? [];
   const goodDays = new Set(list.filter((r) => r.pct >= MEDAL_PCT).map((r) => r.day));

@@ -9,7 +9,8 @@ import { runRound } from '../exercises/round.js';
 import { esc, shuffle } from '../util.js';
 import { lessonMedal } from '../medal.js';
 
-export function testView(el, sid) {
+// preselect: Lektion, die schon angehakt ist (z. B. aus „Teste dich doch mal!“).
+export function testView(el, sid, preselect) {
   const subject = getSubject(sid);
   if (!subject) { location.hash = '#/'; return; }
   const lessons = subject.lessons.map((l) => getLesson(sid, l.id)).filter((l) => l && englishSide(l) && !l.grammar);
@@ -28,7 +29,7 @@ export function testView(el, sid) {
           const prev = i ? subject.lessons.find((x) => x.id === lessons[i - 1].id) ?? {} : {};
           const head = meta.group && meta.group !== prev.group ? `<h3 class="test-group">${esc(meta.group)}</h3>` : '';
           return `${head}
-          <label class="check"><input type="checkbox" name="lesson" value="${esc(l.id)}">
+          <label class="check"><input type="checkbox" name="lesson" value="${esc(l.id)}"${l.id === preselect ? ' checked' : ''}>
             ${lessonMedal(sid, l).medal ? '🏅 ' : ''}${esc(meta.title ?? l.title)} <span class="muted small">(${l.items.length} Wörter)</span></label>`;
         }).join('')}
         <p class="test-count muted small"></p>
