@@ -4,7 +4,6 @@
   "group": "Grammatik",
   "order": 80,
   "kind": "grammatik",
-  "type": "pairs",
   "sides": {
     "a": "Deutsch",
     "b": "Englisch"

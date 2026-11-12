@@ -2,7 +2,8 @@ import { getSubject, getLesson } from '../content.js';
 import { itemState } from '../store.js';
 import { itemKey, status } from '../srs.js';
 import { modesFor, modeGroups, usableFor } from '../exercises/registry.js';
-import { masteryOf, unitWord, kindInfo, kindOf, levelInfo, hasLevels, LEVELS } from '../lessons.js';
+import { masteryOf, unitWord, kindInfo } from '../lessons.js';
+import { levelInfo, hasLevels, LEVELS } from '../levels.js';
 import { esc } from '../util.js';
 import { lessonMedal, testReady } from '../medal.js';
 
@@ -17,7 +18,7 @@ export function lessonView(el, sid, lid) {
   const modes = modesFor(lesson);
   const medal = lessonMedal(sid, lesson);
   const ready = testReady(sid, lesson);
-  const math = kindOf(lesson) === 'mathe';   // Lösungen nicht in der Liste verraten
+  const showAnswers = kindInfo(lesson).showAnswers;   // Mathe: Lösungen nicht verraten
 
   el.innerHTML = `
     <a class="back" href="#/fach/${encodeURIComponent(sid)}">← ${esc(subject.name)}</a>
@@ -46,7 +47,7 @@ export function lessonView(el, sid, lid) {
         ${lesson.items.map((it) => `
           <li>
             <span>${it.level ? `<span title="${esc(levelInfo(it).name)}">${levelInfo(it).icon}</span> ` : ''}${esc(it.a)}</span>
-            ${math ? '' : `<strong>${esc(it.b)}${it.hard ? ' <span class="hard" title="schwieriges Wort">✗</span>' : ''}</strong>`}
+            ${!showAnswers ? '' : `<strong>${esc(it.b)}${it.hard ? ' <span class="hard" title="schwieriges Wort">✗</span>' : ''}</strong>`}
             <span class="pills">${modes.filter((m) => usableFor(m, it)).map((m) => {
               const st = status(itemState(itemKey(sid, lid, it, m.id)));
               return `<span class="pill ${st}" title="${esc(m.label(lesson))}: ${STATUS_LABEL[st]}">${esc(m.short(lesson))}</span>`;

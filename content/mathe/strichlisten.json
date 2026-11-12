@@ -4,15 +4,6 @@
   "group": "Daten",
   "order": 10,
   "kind": "mathe",
-  "type": "pairs",
-  "sides": {
-    "a": "Aufgabe",
-    "b": "Lösung"
-  },
-  "langs": {
-    "a": "de-DE",
-    "b": "de-DE"
-  },
   "items": [
     {
       "id": "tally-katze",

@@ -9,7 +9,7 @@
 import { allLessons, contentVersion } from './content.js';
 import { itemState, revision } from './store.js';
 import { modesFor, tasksFor, learnOrderOf } from './exercises/registry.js';
-import { levelOf, WARMUP } from './lessons.js';
+import { isBasic, withWarmup, WARMUP } from './levels.js';
 import { shuffle } from './util.js';
 
 export const ROUND_SIZE = 12;
@@ -53,17 +53,14 @@ export function dueSummary() {
 export function buildNowRound({ anyway = false } = {}) {
   const now = Date.now();
   const tasks = allTasks();
+  // Kandidaten in Wunsch-Reihenfolge sammeln (jedes Wort nur einmal), dann mit Aufwärmen auswählen.
   const used = new Set();
-  const round = [];
-  let basics = 0;   // Basis-Aufgaben: nur ein paar zum Aufwärmen
+  const candidates = [];
   const take = (list) => {
     for (const t of list) {
-      if (round.length >= ROUND_SIZE) return;
       if (used.has(t.word)) continue;
-      if (levelOf(t.item) === 1 && basics >= WARMUP) continue;
-      if (levelOf(t.item) === 1) basics++;
       used.add(t.word);
-      round.push(t);
+      candidates.push(t);
     }
   };
 
@@ -84,9 +81,10 @@ export function buildNowRound({ anyway = false } = {}) {
   take(fresh);
 
   // 3. nichts fällig, nichts neu: auf Wunsch die, die als Nächstes dran wären
-  if (anyway && !round.length) take([...tasks].sort((a, b) => a.st.due - b.st.due));
+  if (anyway && !candidates.length) take([...tasks].sort((a, b) => a.st.due - b.st.due));
 
-  // Aufwärm-Aufgaben (Basis) zuerst, der Rest gemischt.
-  const warm = round.filter((t) => levelOf(t.item) === 1);
-  return [...warm, ...shuffle(round.filter((t) => levelOf(t.item) !== 1))];
+  // Höchstens WARMUP Basis-Aufgaben vorneweg, der Rest gemischt.
+  const round = withWarmup(candidates, ROUND_SIZE);
+  const warm = round.filter((t) => isBasic(t.item)).slice(0, WARMUP);
+  return [...warm, ...shuffle(round.filter((t) => !warm.includes(t)))];
 }

@@ -94,8 +94,8 @@ function streakMessage(s) {
 function nowCard() {
   const { due, fresh, steps } = dueSummary();
   const parts = [];
-  // Einheit: „Wörter“, solange es nur Vokabeln gibt – mit Mathe & Co. „Aufgaben“.
-  const unit = unitOf(allLessons().map((x) => x.lesson).filter((l) => l.kind !== 'grammatik'));
+  // Einheit: „Wörter“, solange es nur Englisch gibt – mit Mathe & Co. „Aufgaben“.
+  const unit = unitOf(allLessons().map((x) => x.lesson));
   if (due) parts.push(`${countWord(unit, due)} zum Wiederholen`);
   if (fresh) parts.push(`${fresh} neue ${unit[fresh === 1 ? 0 : 1]}`);
   if (!due && !fresh && steps) parts.push(`neue Übungen mit bekannten ${unit[1] === 'Wörter' ? 'Wörtern' : 'Aufgaben'}`);

@@ -4,7 +4,8 @@
 
 import { streakInfo, mood, DAY_GOAL } from '../js/streak.js';
 import { mergeStates } from '../js/merge.js';
-import { check, parseGap, mathNorm } from '../js/exercises/questions.js';
+import { check, parseGap } from '../js/exercises/questions.js';
+import { mathNorm } from '../js/exercises/math.js';
 import { levelFor, glitterFor } from '../js/pet.js';
 import { record, roundBonus, buildRound } from '../js/srs.js';
 import { getState, replaceState, migrateLessons, addTestResult, itemState, addPoints, addDayStat, profileId } from '../js/store.js';
@@ -220,8 +221,8 @@ try {
     eq(k, ['e/neu/v|ab', 'e/neu/w|ab']); eq(getState().items['e/neu/w|ab'].box, 3);
   });
 
-  await test('Bilanz-Einheit: Wörter, Sätze oder gemischt Aufgaben', () => {
-    eq([unitOf([{ kind: 'vokabeln' }]), unitOf([{ kind: 'grammatik' }]), unitOf([{ kind: 'vokabeln' }, { kind: 'grammatik' }])],
+  await test('Bilanz-Einheit: Wörter, Sätze oder (mit Mathe gemischt) Aufgaben', () => {
+    eq([unitOf([{ kind: 'vokabeln' }]), unitOf([{ kind: 'grammatik' }]), unitOf([{ kind: 'mathe' }, { kind: 'grammatik' }])],
       [['Wort', 'Wörter'], ['Satz', 'Sätze'], ['Aufgabe', 'Aufgaben']]);
     eq(lessonKey('englisch', { id: 'u1' }), 'englisch/u1');
   });
@@ -266,6 +267,11 @@ try {
   await test('Mathe: Leerzeichen, Tausenderpunkte und Groß/klein egal', () => {
     eq([check('48000', '48 000', [], mathNorm).ok, check('48.000', '48 000', [], mathNorm).ok, check('xliv', 'XLIV', [], mathNorm).ok,
       check('4800', '48 000', [], mathNorm).ok], [true, true, true, false]);
+  });
+  await test('Lektionsarten: alle Besonderheiten stehen in KINDS', () => {
+    eq([masteryMode({ kind: 'grammatik', items: [] }), masteryMode({ kind: 'vokabeln', sides: { a: 'Deutsch', b: 'Englisch' }, items: [] })], ['form', 'ab']);
+    eq([KINDS.vokabeln.showAnswers, KINDS.mathe.showAnswers], [true, false]);
+    eq([unitOf([{ kind: 'vokabeln' }, { kind: 'grammatik' }]), unitOf([{ kind: 'vokabeln' }, { kind: 'mathe' }])], [['Wort', 'Wörter'], ['Aufgabe', 'Aufgaben']]);
   });
   await test('Mathe: Test und Medaille fragen „Aufgaben lösen“ ab', () =>
     eq([masteryMode({ kind: 'mathe', items: [] }), KINDS.mathe.testable], ['rechnen', true]));

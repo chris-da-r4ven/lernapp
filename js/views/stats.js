@@ -7,7 +7,7 @@ import { deviceId } from '../device.js';
 import { parentsSection, bindParents } from './parents.js';
 import { modesFor, tasksFor } from '../exercises/registry.js';
 import { status, itemKey } from '../srs.js';
-import { kindOf, masteryMode } from '../lessons.js';
+import { masteryMode, coreItems, unitOf, countWord } from '../lessons.js';
 import { esc, dayKey, addDays } from '../util.js';
 import { DAY_GOAL } from '../streak.js';
 
@@ -18,7 +18,8 @@ export function statsView(el, openParents = false) {
   const st = getState();
   const serie = streak();
   const rows = collectItems();
-  const counts = wordCounts();
+  const subjects = subjectCounts();
+  const unit = unitOf(allLessons().map((x) => x.lesson));
   const practiceDays = Object.keys(st.days).length;
   const totalRight = Object.values(st.days).reduce((n, d) => n + d.right, 0);
   const totalWrong = Object.values(st.days).reduce((n, d) => n + d.wrong, 0);
@@ -32,12 +33,24 @@ export function statsView(el, openParents = false) {
     ${syncWarning() ? `<p class="card warn-banner">⚠️ ${esc(syncWarning())}</p>` : ''}
 
     <section class="kpis">
-      <div class="card kpi"><strong>${counts.sicher}</strong><span>Wörter sicher</span></div>
-      <div class="card kpi"><strong>${counts.wackelt}</strong><span>wackeln noch</span></div>
       <div class="card kpi"><strong>${serie.count}</strong><span>Tage am Stück</span></div>
       <div class="card kpi"><strong>${practiceDays}</strong><span>Übungstage</span></div>
       <div class="card kpi"><strong>${pct(totalRight, totalRight + totalWrong)}</strong><span>Trefferquote</span></div>
       <div class="card kpi"><strong>${Number(st.points) || 0} ✦</strong><span>Sternchen</span></div>
+    </section>
+
+    <section class="card">
+      <h2>Fächer</h2>
+      ${subjects.map((s) => `
+        <div class="lesson-line">
+          <div class="lesson-name"><strong>${esc(s.icon ?? '📘')} ${esc(s.name)}</strong></div>
+          <div class="stack" role="img" aria-label="${s.sicher} sicher, ${s.wackelt} wackeln, ${s.neu} neu">
+            <div class="sicher" style="width:${(s.sicher / (s.total || 1)) * 100}%"></div>
+            <div class="wackelt" style="width:${(s.wackelt / (s.total || 1)) * 100}%"></div>
+            <div class="neu" style="width:${(s.neu / (s.total || 1)) * 100}%"></div>
+          </div>
+          <span class="small muted">${countWord(s.unit, s.sicher)} sicher · ${s.wackelt} wackeln · ${s.neu} neu</span>
+        </div>`).join('') || '<p class="muted">Noch keine Fächer.</p>'}
     </section>
 
     <section class="card">
@@ -51,7 +64,7 @@ export function statsView(el, openParents = false) {
     </section>
 
     <section class="card">
-      <h2>Schwere Wörter</h2>
+      <h2>Schwere ${esc(unit[1])}</h2>
       ${hard.length ? `
         <div class="table-wrap"><table class="table">
           <thead><tr><th>Gefragt</th><th>Richtig</th><th>Übung</th><th>Fehler</th><th>Zuletzt falsch</th></tr></thead>
@@ -78,16 +91,18 @@ export function statsView(el, openParents = false) {
   });
 }
 
-// „Wörter sicher / wackeln noch“: jedes Vokabel-Wort einmal, gemessen an der Richtung,
-// die auch der Test abfragt (Deutsch → Englisch) – wie die Sterne der Lektion.
-function wordCounts() {
-  const counts = { neu: 0, wackelt: 0, sicher: 0 };
-  for (const { sid, lesson } of allLessons()) {
-    if (kindOf(lesson) !== 'vokabeln') continue;
+// Pro Fach: wie viele Einträge sicher sitzen, wackeln, neu sind – jeder Eintrag einmal, gemessen an
+// der Übungsart, die auch Test und Sterne zählen (masteryMode), ohne Experten-Aufgaben.
+function subjectCounts() {
+  const bySubject = new Map();
+  for (const { sid, subject, lesson } of allLessons()) {
+    const s = bySubject.get(sid) ?? { name: subject.name, icon: subject.icon, neu: 0, wackelt: 0, sicher: 0, total: 0, lessons: [] };
     const mode = masteryMode(lesson);
-    for (const it of lesson.items) counts[status(itemState(itemKey(sid, lesson.id, it, mode)))]++;
+    for (const it of coreItems(lesson)) { s[status(itemState(itemKey(sid, lesson.id, it, mode)))]++; s.total++; }
+    s.lessons.push(lesson);
+    bySubject.set(sid, s);
   }
-  return counts;
+  return [...bySubject.values()].map((s) => ({ ...s, unit: unitOf(s.lessons) }));
 }
 
 // Ein Eintrag pro Wort und Übungsart.
@@ -144,7 +159,7 @@ function historyChart(days, rescued) {
   }
   const max = Math.max(1, ...list.map((x) => x.right + x.wrong));
   return `
-    <div class="bars" role="img" aria-label="Geübte Wörter pro Tag">
+    <div class="bars" role="img" aria-label="Geübte Aufgaben pro Tag">
       ${list.map((x) => `
         <div class="bar${x.rescued ? ' rescued' : ''}" title="${x.d.toLocaleDateString('de-DE')}: ${x.right} richtig, ${x.wrong} falsch${x.rescued ? ' – am Tag danach gerettet' : ''}">
           <div class="bar-stack" style="height:${((x.right + x.wrong) / max) * 100}%">
@@ -155,7 +170,7 @@ function historyChart(days, rescued) {
         </div>`).join('')}
     </div>
     <div class="legend small"><span class="dot right"></span>richtig <span class="dot wrong"></span>falsch</div>
-    <p class="muted small">Ein Tag zählt für die Serie ab ${DAY_GOAL} Aufgaben. Schreiben und Diktat zählen voll, Lückensätze fast, Antippen nur ein Fünftel. 🛟 = verpasst, aber am Tag danach gerettet.</p>`;
+    <p class="muted small">Ein Tag zählt für die Serie ab ${DAY_GOAL} Aufgaben. Schreiben und Diktat zählen voll, Lückensätze fast, Antippen nur ein Fünftel. In Mathe zählen Basis-Aufgaben halb, Experten-Aufgaben anderthalbfach. 🛟 = verpasst, aber am Tag danach gerettet.</p>`;
 }
 
 // Für die Eltern: Stand von App, Inhalten und Sicherung auf einen Blick.

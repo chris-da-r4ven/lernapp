@@ -4,7 +4,7 @@
 
 import { itemState, setItemState, addDayStat, addPoints, save } from './store.js';
 import { shuffle } from './util.js';
-import { levelOf, WARMUP } from './levels.js';
+import { levelOf, isBasic, withWarmup, WARMUP } from './levels.js';
 
 const DAY = 24 * 60 * 60 * 1000;
 const INTERVAL_DAYS = { 1: 1, 2: 2, 3: 4, 4: 7, 5: 14 };
@@ -77,15 +77,11 @@ export function buildRound(entries, all = false) {
   const byBox = (a, b) => rank(a) - rank(b) || Boolean(b.item.hard) - Boolean(a.item.hard);
   const due = withState.filter((e) => e.st.box === 0 || e.st.due <= now).sort(byBox);
   const rest = withState.filter((e) => !due.includes(e)).sort((a, b) => byBox(a, b) || a.st.due - b.st.due);
-  const ordered = due.concat(rest);
-  const basic = (e) => levelOf(e.item) === 1;
-  const warm = ordered.filter(basic).slice(0, WARMUP);
   // Rundengröße nach den fälligen anspruchsvolleren Aufgaben (+ Aufwärmen) – fällige Basis-Aufgaben
   // dürfen die Runde nicht aufblähen.
-  const size = Math.min(MAX_ROUND, Math.max(MIN_ROUND, due.filter((e) => !basic(e)).length + warm.length));
-  const round = [...warm, ...ordered.filter((e) => !basic(e))].slice(0, size);
-  if (round.length < size) round.push(...ordered.filter((e) => basic(e) && !warm.includes(e)).slice(0, size - round.length));
-  return round;
+  const basics = withState.filter((e) => isBasic(e.item)).length;
+  const size = Math.min(MAX_ROUND, Math.max(MIN_ROUND, due.filter((e) => !isBasic(e.item)).length + Math.min(WARMUP, basics)));
+  return withWarmup(due.concat(rest), size);
 }
 
 export function starsFor(m) {

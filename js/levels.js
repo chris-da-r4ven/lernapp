@@ -14,3 +14,15 @@ export const WARMUP = 2;
 export const levelOf = (item) => (LEVELS[item?.level] ? item.level : 2);
 export const levelInfo = (item) => LEVELS[levelOf(item)];
 export const hasLevels = (lesson) => Boolean(lesson?.items?.some((it) => it.level));
+export const isBasic = (item) => levelOf(item) === 1;
+
+// Runde mit Aufwärmen: höchstens WARMUP Basis-Aufgaben vorneweg, dann die anspruchsvolleren.
+// Basis füllt nur auf, wenn sonst zu wenig da ist. Für Lektions-Runden (srs.js) und „Jetzt üben“.
+// ordered: Kandidaten in Wunsch-Reihenfolge (jeweils mit .item), size: gewünschte Rundengröße.
+export function withWarmup(ordered, size) {
+  const basic = (e) => isBasic(e.item);
+  const warm = ordered.filter(basic).slice(0, WARMUP);
+  const round = [...warm, ...ordered.filter((e) => !basic(e))].slice(0, size);
+  if (round.length < size) round.push(...ordered.filter((e) => basic(e) && !warm.includes(e)).slice(0, size - round.length));
+  return round;
+}

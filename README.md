@@ -9,7 +9,7 @@ Beim Start und per Knopf „Neue Inhalte suchen“ holt sie neue Lektionen.
 Siehe **[INHALTE.md](INHALTE.md)** – Vorlage, Tabellen-Entwurf, `tools/inhalte.py neu|pruefen|bauen`.
 `content/index.json` wird von `python3 tools/inhalte.py bauen` erzeugt, nicht von Hand ändern.
 
-### Format einer Lektion (`type: "pairs"`)
+### Format einer Lektion (Vokabeln)
 
 ```json
 {
@@ -17,9 +17,8 @@ Siehe **[INHALTE.md](INHALTE.md)** – Vorlage, Tabellen-Entwurf, `tools/inhalte
   "title": "Unit 1",
   "group": "Schule & ich",
   "order": 10,
-  "type": "pairs",
+  "kind": "vokabeln",
   "sides": { "a": "Deutsch", "b": "Englisch" },
-  "exercises": ["write"],
   "items": [
     { "id": "friend", "a": "der Freund / die Freundin", "b": "friend" },
     { "id": "to go", "a": "gehen", "b": "to go", "bAlt": ["go"] }
@@ -27,7 +26,7 @@ Siehe **[INHALTE.md](INHALTE.md)** – Vorlage, Tabellen-Entwurf, `tools/inhalte
 }
 ```
 
-- `a` / `b`: die beiden Seiten. Abgefragt wird in beide Richtungen.
+- `a` / `b`: die beiden Seiten. Abgefragt wird in beide Richtungen. Mathe-Lektionen: siehe INHALTE.md.
 - `aAlt` / `bAlt`: weitere Schreibweisen, die als richtig zählen.
 - Enthält eine Seite `/` (z. B. „Freund / Freundin“), zählt auch jeder Teil einzeln.
 - `id` pro Wort: feste Kennung für den Lernstand. **Nie ändern** – auch wenn `a`/`b` korrigiert werden.

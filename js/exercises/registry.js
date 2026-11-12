@@ -7,7 +7,8 @@
 
 import { itemKey } from '../srs.js';
 import { canSpeak } from '../speech.js';
-import { kindOf, levelInfo } from '../lessons.js';
+import { kindOf } from '../lessons.js';
+import { levelInfo } from '../levels.js';
 import { MODES } from './modes.js';
 
 const byId = new Map(MODES.map((m) => [m.id, m]));

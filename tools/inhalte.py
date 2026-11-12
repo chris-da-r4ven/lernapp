@@ -30,9 +30,6 @@ ROOT = Path(__file__).resolve().parent.parent
 CONTENT = ROOT / 'content'
 INDEX = CONTENT / 'index.json'
 
-LESSON_TYPES = {'pairs'}
-
-
 def _from_app(path, pattern):
     """Gültige Namen direkt aus dem App-Code lesen – so laufen App und Werkzeug nie auseinander.
     Abgesichert doppelt: Findet das Muster nichts, bricht das Werkzeug ab. Und die gefundenen Namen
@@ -46,7 +43,18 @@ def _from_app(path, pattern):
 
 
 KNOWN_MODES = _from_app('js/exercises/modes.js', r"^\s+id: '([a-z-]+)',")
-KNOWN_KINDS = _from_app('js/lessons.js', r"^\s+([a-z]+): \{ unit:")
+def _kinds_from_app():
+    """Schlüssel der obersten Ebene im Block `export const KINDS = { … };` in js/lessons.js."""
+    text = (ROOT / 'js' / 'lessons.js').read_text(encoding='utf-8')
+    block = text[text.index('export const KINDS = {'):]
+    block = block[:block.index('\n};')]
+    found = set(re.findall(r'^  ([a-z]+): \{', block, re.M))
+    if not found:
+        sys.exit('js/lessons.js: keine Lektionsarten in KINDS gefunden – tools/inhalte.py anpassen')
+    return found
+
+
+KNOWN_KINDS = _kinds_from_app()
 DE_ARTICLE = re.compile(r'^(der|die|das|ein|eine) ', re.I)
 GAP = re.compile(r'^(.*?)\{([^}]+)\}(.*)$')
 
@@ -106,6 +114,7 @@ def parse_gap(ex):
 # --- Prüfen ------------------------------------------------------------------
 
 def check(subjects):
+    """Alle Fächer prüfen. Gemeinsames hier, Besonderes pro Lektionsart (KIND_CHECKS)."""
     errors, warnings = [], []
     for fach, lessons in subjects:
         sid = fach.get('id')
@@ -125,73 +134,13 @@ def check(subjects):
             if lid in lesson_ids:
                 errors.append(f'{where}: Lektion "{lid}" gibt es zweimal')
             lesson_ids.add(lid)
-            if not l.get('title'):
-                errors.append(f'{where}: "title" fehlt')
-            if l.get('type') not in LESSON_TYPES:
-                errors.append(f'{where}: unbekannter type "{l.get("type")}"')
-            sides = l.get('sides') or {}
-            if not sides.get('a') or not sides.get('b'):
-                errors.append(f'{where}: "sides" braucht a und b')
-            for old in ('exercises', 'grammar'):
-                if old in l:
-                    errors.append(f'{where}: "{old}" gibt es nicht mehr – stattdessen "kind" (und ggf. "modes")')
-            if l.get('kind') not in KNOWN_KINDS:
-                errors.append(f'{where}: "kind" muss eins von {sorted(KNOWN_KINDS)} sein')
-            for mode in l.get('modes', []):
-                if mode not in KNOWN_MODES:
-                    errors.append(f'{where}: unbekannte Übungsart "{mode}" (bekannt: {sorted(KNOWN_MODES)})')
-            items = l.get('items') or []
-            if not items:
-                errors.append(f'{where}: keine Wörter ("items")')
-            grammar = l.get('kind') == 'grammatik'
-            math = l.get('kind') == 'mathe'
-            ids, prompts = set(), {}
-            for n, it in enumerate(items, 1):
-                at = f'{where} Wort {n}' + (f' ({it.get("b")})' if it.get('b') else '')
-                for side in ('a', 'b'):
-                    if not isinstance(it.get(side), str) or not it[side].strip():
-                        errors.append(f'{at}: "{side}" fehlt oder ist leer')
-                for alt in ('aAlt', 'bAlt'):
-                    if alt in it and not (isinstance(it[alt], list) and all(isinstance(x, str) for x in it[alt])):
-                        errors.append(f'{at}: "{alt}" muss eine Liste von Texten sein')
-                iid = it.get('id')
-                if iid is None:
-                    warnings.append(f'{at}: keine "id" – "bauen" ergänzt sie')
-                elif iid in ids:
-                    errors.append(f'{at}: id "{iid}" gibt es in der Lektion zweimal')
-                ids.add(iid)
-                if 'ex' in it:
-                    g = parse_gap(it['ex'])
-                    if not g:
-                        errors.append(f'{at}: Beispielsatz braucht genau eine {{Lücke}}: "{it["ex"]}"')
-                    if not it.get('exDe'):
-                        warnings.append(f'{at}: Beispielsatz ohne Übersetzung ("exDe")')
-                if grammar:
-                    g = parse_gap(it.get('ex'))
-                    choices = it.get('choices')
-                    if not isinstance(choices, list) or len(choices) < 2:
-                        errors.append(f'{at}: Grammatik-Satz braucht "choices" (mind. 2)')
-                    elif g and g['answer'].lower() not in [c.lower() for c in choices]:
-                        errors.append(f'{at}: Lösung "{g["answer"]}" steht nicht in "choices"')
-                if it.get('a') and not math:   # Mathe: gleiche Frage, andere Zahlen/Zahlenstrahl
-                    prompts.setdefault(it['a'].strip().lower(), []).append(it.get('b'))
-                if math:
-                    errors += check_math(at, it)
-                if 'level' in it and it['level'] not in (1, 2, 3):
-                    errors.append(f'{at}: "level" muss 1 (Basis), 2 (Fortgeschritten) oder 3 (Experte) sein')
-                if it.get('b') and l.get('kind') == 'vokabeln':
-                    english_seen.setdefault(it['b'].strip().lower(), []).append(lid)
-            frames = {}
-            for it in items:
-                g = GAP.match(it.get('ex') or '')
-                if g:
-                    frames.setdefault((g.group(1) + '…' + g.group(3)).lower(), []).append(it.get('b'))
-            for f, bs in frames.items():
-                if len(bs) > 1:
-                    warnings.append(f'{where}: gleicher Lückensatz „{f}“ für {", ".join(map(str, bs))} – Satz abwandeln')
-            for p, bs in prompts.items():
-                if len(bs) > 1:
-                    warnings.append(f'{where}: gleiches deutsches Wort "{p}" für {", ".join(map(str, bs))} – beim Abfragen mehrdeutig')
+            e, w = check_lesson(where, l)
+            errors += e
+            warnings += w
+            if l.get('kind') == 'vokabeln':
+                for it in l.get('items') or []:
+                    if it.get('b'):
+                        english_seen.setdefault(it['b'].strip().lower(), []).append(lid)
         for b, lids in english_seen.items():
             if len(lids) > 1:
                 warnings.append(f'Fach {sid}: "{b}" steht in mehreren Lektionen ({", ".join(lids)})')
@@ -203,6 +152,103 @@ def check(subjects):
     warnings += removed_ids(subjects)
     errors += removed_moves(subjects)
     return errors, warnings
+
+
+def item_label(where, n, it):
+    return f'{where} Eintrag {n}' + (f' ({it.get("b")})' if it.get('b') else '')
+
+
+def check_lesson(where, l):
+    """Was für jede Lektion gilt – dann die Prüfung ihrer Art."""
+    errors, warnings = [], []
+    if not l.get('title'):
+        errors.append(f'{where}: "title" fehlt')
+    for old in ('exercises', 'grammar'):
+        if old in l:
+            errors.append(f'{where}: "{old}" gibt es nicht mehr – stattdessen "kind" (und ggf. "modes")')
+    kind = l.get('kind')
+    if kind not in KNOWN_KINDS:
+        errors.append(f'{where}: "kind" muss eins von {sorted(KNOWN_KINDS)} sein')
+    for mode in l.get('modes', []):
+        if mode not in KNOWN_MODES:
+            errors.append(f'{where}: unbekannte Übungsart "{mode}" (bekannt: {sorted(KNOWN_MODES)})')
+    items = l.get('items') or []
+    if not items:
+        errors.append(f'{where}: keine Einträge ("items")')
+    ids = set()
+    for n, it in enumerate(items, 1):
+        at = item_label(where, n, it)
+        for side in ('a', 'b'):
+            if not isinstance(it.get(side), str) or not it[side].strip():
+                errors.append(f'{at}: "{side}" fehlt oder ist leer')
+        for alt in ('aAlt', 'bAlt'):
+            if alt in it and not (isinstance(it[alt], list) and all(isinstance(x, str) for x in it[alt])):
+                errors.append(f'{at}: "{alt}" muss eine Liste von Texten sein')
+        if 'level' in it and it['level'] not in (1, 2, 3):
+            errors.append(f'{at}: "level" muss 1 (Basis), 2 (Fortgeschritten) oder 3 (Experte) sein')
+        iid = it.get('id')
+        if iid is not None and iid in ids:
+            errors.append(f'{at}: id "{iid}" gibt es in der Lektion zweimal')
+        ids.add(iid)
+    e, w = KIND_CHECKS.get(kind, lambda *_: ([], []))(where, l, items)
+    return errors + e, warnings + w
+
+
+def check_language(where, l, items):
+    """Vokabeln und Grammatik: zwei Sprachseiten, Beispielsätze mit Lücke."""
+    errors, warnings = [], []
+    sides = l.get('sides') or {}
+    if not sides.get('a') or not sides.get('b'):
+        errors.append(f'{where}: "sides" braucht a und b')
+    frames, prompts = {}, {}
+    for n, it in enumerate(items, 1):
+        at = item_label(where, n, it)
+        if it.get('id') is None:
+            warnings.append(f'{at}: keine "id" – "bauen" ergänzt sie')
+        if 'ex' in it:
+            if not parse_gap(it['ex']):
+                errors.append(f'{at}: Beispielsatz braucht genau eine {{Lücke}}: "{it["ex"]}"')
+            if not it.get('exDe'):
+                warnings.append(f'{at}: Beispielsatz ohne Übersetzung ("exDe")')
+            g = GAP.match(it['ex'])
+            if g:
+                frames.setdefault((g.group(1) + '…' + g.group(3)).lower(), []).append(it.get('b'))
+        if it.get('a'):
+            prompts.setdefault(it['a'].strip().lower(), []).append(it.get('b'))
+    for f, bs in frames.items():
+        if len(bs) > 1:
+            warnings.append(f'{where}: gleicher Lückensatz „{f}“ für {", ".join(map(str, bs))} – Satz abwandeln')
+    for p, bs in prompts.items():
+        if len(bs) > 1:
+            warnings.append(f'{where}: gleiches deutsches Wort "{p}" für {", ".join(map(str, bs))} – beim Abfragen mehrdeutig')
+    return errors, warnings
+
+
+def check_grammar(where, l, items):
+    errors, warnings = check_language(where, l, items)
+    for n, it in enumerate(items, 1):
+        at = item_label(where, n, it)
+        g = parse_gap(it.get('ex'))
+        choices = it.get('choices')
+        if not isinstance(choices, list) or len(choices) < 2:
+            errors.append(f'{at}: Grammatik-Satz braucht "choices" (mind. 2)')
+        elif g and g['answer'].lower() not in [c.lower() for c in choices]:
+            errors.append(f'{at}: Lösung "{g["answer"]}" steht nicht in "choices"')
+    return errors, warnings
+
+
+def check_math_lesson(where, l, items):
+    """Mathe: feste ids (die Lösung ist nicht eindeutig), Knöpfe und Grafiken stimmig."""
+    errors = []
+    for n, it in enumerate(items, 1):
+        at = item_label(where, n, it)
+        if it.get('id') is None:
+            errors.append(f'{at}: Mathe-Aufgaben brauchen eine feste "id"')
+        errors += check_math(at, it)
+    return errors, []
+
+
+KIND_CHECKS = {'vokabeln': check_language, 'grammatik': check_grammar, 'mathe': check_math_lesson}
 
 
 def check_math(at, it):
@@ -425,7 +471,7 @@ def new_lesson(args):
         lesson['group'] = args.gruppe
     lesson['order'] = (max(orders) if orders else 0) + 10
     lesson['kind'] = 'grammatik' if args.grammatik else 'vokabeln'
-    lesson.update({'type': 'pairs', 'sides': {'a': 'Deutsch', 'b': 'Englisch'}})
+    lesson.update({'sides': {'a': 'Deutsch', 'b': 'Englisch'}})
     lesson['items'] = items
     write_json(path, fill(lesson))
     print(f'{rel(path)} angelegt: {len(items)} Einträge. Jetzt "bauen" ausführen.')

@@ -3,7 +3,7 @@
 
 import { getSubject, getLesson } from '../content.js';
 import { starsFor } from '../srs.js';
-import { masteryOf, unitWord, kindOf } from '../lessons.js';
+import { masteryOf, unitWord, kindInfo } from '../lessons.js';
 import { lessonMedal, MEDAL_RULE, testReady } from '../medal.js';
 import { esc, stars } from '../util.js';
 
@@ -20,6 +20,8 @@ export function subjectView(el, sid) {
     if (!groups.has(g)) groups.set(g, []);
     groups.get(g).push({ l, lesson, medal: lessonMedal(sid, lesson) });
   }
+
+  const testLabel = [...groups.values()].flat().map((x) => kindInfo(x.lesson)).find((k) => k.testable)?.testLabel;
 
   const tile = ({ l, lesson, medal }) => {
     const m = masteryOf(sid, lesson);
@@ -55,6 +57,6 @@ export function subjectView(el, sid) {
         </section>`;
     }).join('')}
     <div class="actions">
-      <a class="btn" href="#/test/${encodeURIComponent(sid)}">📝 Test-Modus – ${[...groups.values()].flat().some((x) => kindOf(x.lesson) === 'mathe') ? 'wie eine Klassenarbeit' : 'wie im Vokabeltest'}</a>
+      <a class="btn" href="#/test/${encodeURIComponent(sid)}">📝 Test-Modus${testLabel ? ` – ${esc(testLabel)}` : ''}</a>
     </div>`;
 }

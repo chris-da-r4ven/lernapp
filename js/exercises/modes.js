@@ -3,7 +3,7 @@
 // Reihenfolge in „Jetzt üben“, Markierungen und Fortschrittsseite.
 //
 // Neue Übungsart (z. B. ein Quiz oder Spiel):
-//   1. Fragetyp in questions.js schreiben (describe, pair, render – siehe dort).
+//   1. Fragetyp schreiben (describe, pair, render – siehe questions.js bzw. math.js).
 //   2. Hier einen Eintrag ergänzen. Die id nie wieder ändern – an ihr hängt der Lernstand.
 //   3. Passt sie zu einer neuen Lektionsart, diese in lessons.js (KINDS) ergänzen.
 //   4. Neue Dateien in sw.js (SHELL) eintragen. tools/inhalte.py liest die ids aus dieser Datei.
@@ -21,8 +21,14 @@
 //   optIn      nur auf Wunsch (eigener Knopf) – nicht in „Jetzt üben“
 //   question   Fragetyp aus questions.js
 
-import { writeQuestion, chooseQuestion, gapQuestion, formQuestion, mathQuestion, parseGap } from './questions.js';
-import { targetSide, levelOf } from '../lessons.js';
+import { writeQuestion, chooseQuestion, gapQuestion, formQuestion, parseGap } from './questions.js';
+import { mathQuestion } from './math.js';
+import { targetSide } from '../lessons.js';
+import { levelOf } from '../levels.js';
+
+// Mathe: „Aufgaben lösen“ und „Experten-Aufgaben“ unterscheiden sich nur in der Stufe der Einträge.
+// Antippen (z. B. < oder >) zählt weniger als Eintippen; Basis/Experte verrechnet die Stufe (levels.js).
+const MATH = { kinds: ['mathe'], weight: 1, itemWeight: (item) => (item.choices ? 0.3 : 1), question: mathQuestion };
 
 const CODES = { Deutsch: 'DE', Englisch: 'EN', Französisch: 'FR', Spanisch: 'ES', Latein: 'LA' };
 const code = (side) => CODES[side] ?? String(side).slice(0, 2).toUpperCase();
@@ -95,28 +101,22 @@ export const MODES = [
     question: formQuestion,
   },
   {
+    ...MATH,
     id: 'rechnen',
-    kinds: ['mathe'],
     group: 'rechnen',
     label: () => '✏️ Aufgaben lösen',
     short: () => '✏️ Lösen',
-    weight: 1,
-    itemWeight: (item) => (item.choices ? 0.3 : 1),   // Antippen (z. B. < oder >) zählt weniger als Eintippen
     learnOrder: 7,
     usable: (item) => levelOf(item) !== 3,
-    question: mathQuestion,
   },
   {
+    ...MATH,
     id: 'experte',
-    kinds: ['mathe'],
     group: 'experte',
     label: () => '🟣 Experten-Aufgaben',
     short: () => '🟣 Experte',
-    weight: 1,                                         // × 1,5 durch die Stufe (lessons.LEVELS)
-    itemWeight: (item) => (item.choices ? 0.3 : 1),
     learnOrder: 8,
-    optIn: true,
+    optIn: true,                                       // nur über den eigenen Knopf
     usable: (item) => levelOf(item) === 3,
-    question: mathQuestion,
   },
 ];

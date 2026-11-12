@@ -53,7 +53,7 @@ python3 tools/inhalte.py bauen
 
 ## Mathe-Lektionen
 
-Lektionsart `"kind": "mathe"`, Seiten `"sides": {"a": "Aufgabe", "b": "Lösung"}`. Jeder Eintrag braucht
+Lektionsart `"kind": "mathe"` (ohne `sides`): `a` ist die Aufgabe, `b` die Lösung. Jeder Eintrag braucht
 eine feste `id` (die Lösung allein ist nicht eindeutig). Aufgaben selbst schreiben – nicht aus dem Buch
 abschreiben, nur das Thema und die Art der Aufgabe übernehmen.
 
