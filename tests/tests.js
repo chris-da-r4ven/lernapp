@@ -127,7 +127,7 @@ try {
     replaceState(empty());
     eq(record('t/a/x|ab', { correct: true, firstTry: true, weight: 1 }), 5);
     eq(record('t/a/y|ab', { correct: true, firstTry: false, weight: 1 }), 3);
-    eq(record('t/a/z|hoeren-wahl', { correct: true, firstTry: true, weight: 0.2 }), 1);
+    eq(record('t/a/z|hoeren-wahl', { correct: true, firstTry: true, weight: 0.225 }), 1);
   });
   await test('Tagesziel: Schreiben zählt 1, Antippen 0,2, auch falsche Antworten', () => {
     replaceState(empty());
@@ -242,23 +242,25 @@ try {
   await test('ids eindeutig, Pflichtfelder vorhanden', () => {
     eq(new Set(MODES.map((m) => m.id)).size, MODES.length, 'eindeutige ids');
     for (const m of MODES) {
-      for (const f of ['kinds', 'group', 'label', 'short', 'weight', 'learnOrder', 'question']) ok(m[f] != null, `${m.id}: ${f} fehlt`);
+      for (const f of ['kinds', 'group', 'label', 'short', 'answer', 'think', 'learnOrder', 'question']) ok(m[f] != null, `${m.id}: ${f} fehlt`);
       for (const f of ['describe', 'pair', 'render']) ok(typeof m.question[f] === 'function', `${m.id}: question.${f} fehlt`);
       for (const k of m.kinds) ok(KINDS[k], `${m.id}: unbekannte Lektionsart ${k}`);
-      ok(m.weight > 0, `${m.id}: Gewicht`);
+      ok(weightFor(m.id) > 0, `${m.id}: Schwere`);
     }
   });
   await test('Lern-Reihenfolge eindeutig', () => eq(new Set(MODES.map((m) => m.learnOrder)).size, MODES.length));
   await test('vereinbarte Gewichte (Sternchen und Tagesziel)', () => eq(
-    Object.fromEntries(MODES.map((m) => [m.id, m.weight])),
-    { ab: 1, ba: 1, hoeren: 1.2, 'hoeren-wahl': 0.2, satz: 0.8, form: 0.3, rechnen: 1, experte: 1 },
+    Object.fromEntries(MODES.map((m) => [m.id, Math.round(weightFor(m.id, m.id === 'experte' ? { level: 3 } : {}) * 100) / 100])),
+    { ab: 1, ba: 1, hoeren: 1.2, 'hoeren-wahl': 0.22, satz: 0.8, form: 0.33, rechnen: 1, experte: 1.5 },
   ));
   await test('Lernstand-Kennungen unverändert (ab, ba, hoeren, hoeren-wahl, satz, form, rechnen, experte)', () =>
     ok(['ab', 'ba', 'hoeren', 'hoeren-wahl', 'satz', 'form', 'rechnen', 'experte'].every((id) => modeById(id)), 'Kennung fehlt'));
-  await test('Mathe: Antippen (z. B. < oder >) zählt 0,3, Eintippen 1', () =>
-    eq([weightFor('rechnen', { choices: ['<', '>'] }), weightFor('rechnen', { b: '12' }), weightFor('ab')], [0.3, 1, 1]));
-  await test('Stufen: Basis ×0,5, Experte ×1,5 – auch beim Antippen', () =>
-    eq([weightFor('rechnen', { level: 1 }), weightFor('rechnen', { level: 2 }), weightFor('experte', { level: 3 }), weightFor('rechnen', { level: 1, choices: ['a', 'b'] })], [0.5, 1, 1.5, 0.15]));
+  await test('Schwere = Antwortform × Denkaufwand (Mathe)', () => {
+    const r = (x) => Math.round(x * 100) / 100;
+    eq([weightFor('rechnen', { b: '12' }), r(weightFor('rechnen', { choices: ['a', 'b', 'c'] })), weightFor('rechnen', { choices: ['<', '>'] }),
+      weightFor('rechnen', { level: 1 }), r(weightFor('rechnen', { level: 1, choices: ['a', 'b', 'c'] })), weightFor('experte', { level: 3 }),
+      weightFor('rechnen', { denken: 2 })], [1, 0.67, 0.5, 0.5, 0.33, 1.5, 2]);
+  });
   await test('Runde: höchstens 2 Basis-Aufgaben, und zwar vorneweg', () => {
     replaceState(empty());
     const lesson = { id: 'stufen' };

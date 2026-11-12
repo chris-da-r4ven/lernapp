@@ -57,6 +57,19 @@ def _kinds_from_app():
 
 
 KNOWN_KINDS = _kinds_from_app()
+
+
+def _think_from_app():
+    """Erlaubte Werte für "denken" aus js/weights.js (THINK = { name: wert, … })."""
+    text = (ROOT / 'js' / 'weights.js').read_text(encoding='utf-8')
+    block = text[text.index('export const THINK = {'):]
+    found = {float(x) for x in re.findall(r':\s*([0-9.]+)', block[:block.index('}')])}
+    if not found:
+        sys.exit('js/weights.js: keine Werte in THINK gefunden – tools/inhalte.py anpassen')
+    return found
+
+
+THINK_VALUES = _think_from_app()
 DE_ARTICLE = re.compile(r'^(der|die|das|ein|eine) ', re.I)
 GAP = re.compile(r'^(.*?)\{([^}]+)\}(.*)$')
 
@@ -186,6 +199,8 @@ def check_lesson(where, l):
         for alt in ('aAlt', 'bAlt'):
             if alt in it and not (isinstance(it[alt], list) and all(isinstance(x, str) for x in it[alt])):
                 errors.append(f'{at}: "{alt}" muss eine Liste von Texten sein')
+        if 'denken' in it and (not is_num(it['denken']) or it['denken'] not in THINK_VALUES):
+            errors.append(f'{at}: "denken" muss einer der Werte {sorted(THINK_VALUES)} sein (js/weights.js)')
         if 'level' in it and (isinstance(it['level'], bool) or it['level'] not in (1, 2, 3)):
             errors.append(f'{at}: "level" muss 1 (Basis), 2 (Fortgeschritten) oder 3 (Experte) sein')
         iid = it.get('id')

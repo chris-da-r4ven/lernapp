@@ -61,7 +61,7 @@ export const writeQuestion = {
 
 // --- Hören und Bedeutung antippen --------------------------------------------
 
-const OPTIONS = 4;
+export const CHOICE_OPTIONS = 4;   // Antippen: so viele Bedeutungen stehen zur Wahl
 
 export const chooseQuestion = {
   describe: () => '🔊 Hören → Bedeutung',
@@ -82,7 +82,7 @@ export const chooseQuestion = {
       .filter((it) => !sameSound(it))
       .map((it) => it[de])
       .filter((m) => m !== item[de] && !alsoRight(m)))]);
-    const opts = shuffle([item[de], ...others.slice(0, OPTIONS - 1)]);
+    const opts = shuffle([item[de], ...others.slice(0, CHOICE_OPTIONS - 1)]);
     card.innerHTML = `
       ${speechControls()}
       <p class="muted small">Was bedeutet das Wort?</p>

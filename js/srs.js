@@ -10,7 +10,7 @@ const DAY = 24 * 60 * 60 * 1000;
 const INTERVAL_DAYS = { 1: 1, 2: 2, 3: 4, 4: 7, 5: 14 };
 export const SAFE_BOX = 3;
 // Sternchen ✦: Durchhalten zählt am meisten, Sorgfalt merkbar, aber nicht stark.
-// Werte gelten fürs Schreiben; andere Übungsarten werden nach Schwierigkeit gewichtet (weight in modes.js).
+// Werte gelten fürs Schreiben; andere Aufgaben nach ihrer Schwere (weights.js: Antwortform × Denkaufwand).
 // Eine Schreib-Runde mit 12 Wörtern bringt 96–110 ✦, eine Antipp-Runde etwa 22 ✦.
 export const ROUND_BONUS = 50;       // für jede zu Ende gespielte Runde
 export const POINTS_FIRST_TRY = 5;   // Wort beim ersten Versuch richtig

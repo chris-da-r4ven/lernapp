@@ -14,7 +14,8 @@
 //   group      Übungsarten mit gleicher group stehen in der Lektion in einer Zeile
 //              (Reihenfolge der Liste = Reihenfolge der Knöpfe und Markierungen)
 //   label      Knopftext (Funktion der Lektion), short – Kurzform für Markierungen
-//   weight     Sternchen im Verhältnis zum Schreiben (1); itemWeight(item) – abweichend für einzelne Einträge
+//   answer     Antwortform (item) → Faktor, think – Denkaufwand (item) → Faktor; Schwere = answer × think
+//              (Sternchen und Tagesziel, siehe weights.js)
 //   learnOrder Reihenfolge, in der „Jetzt üben“ ein neues Wort durch die Übungsarten führt
 //   speech     braucht Sprachausgabe; minItems – mindestens so viele Einträge in der Lektion
 //   usable     welche Einträge sich eignen (z. B. nur mit Beispielsatz)
@@ -22,14 +23,19 @@
 //   storeAs    Lernstand unter dieser Übungsart ablegen (statt der eigenen id)
 //   question   Fragetyp aus questions.js
 
-import { writeQuestion, chooseQuestion, gapQuestion, formQuestion, parseGap } from './questions.js';
+import { writeQuestion, chooseQuestion, gapQuestion, formQuestion, parseGap, CHOICE_OPTIONS } from './questions.js';
+import { ANSWER, THINK, choiceFactor } from '../weights.js';
 import { mathQuestion } from './math.js';
 import { targetSide } from '../lessons.js';
-import { levelOf } from '../levels.js';
+import { levelOf, levelInfo } from '../levels.js';
 
 // Mathe: „Aufgaben lösen“ und „Experten-Aufgaben“ unterscheiden sich nur in der Stufe der Einträge.
-// Antippen (z. B. < oder >) zählt weniger als Eintippen; Basis/Experte verrechnet die Stufe (levels.js).
-const MATH = { kinds: ['mathe'], weight: 1, itemWeight: (item) => (item.choices ? 0.3 : 1), question: mathQuestion };
+const MATH = {
+  kinds: ['mathe'],
+  answer: (item) => (item.choices ? choiceFactor(item.choices.length) : ANSWER.tippen),
+  think: (item) => item.denken ?? levelInfo(item).factor,   // Stufe gibt den Denkaufwand vor
+  question: mathQuestion,
+};
 
 const CODES = { Deutsch: 'DE', Englisch: 'EN', Französisch: 'FR', Spanisch: 'ES', Latein: 'LA' };
 const code = (side) => CODES[side] ?? String(side).slice(0, 2).toUpperCase();
@@ -42,7 +48,8 @@ export const MODES = [
     group: 'schreiben',
     label: (l) => `Schreiben: ${l.sides.a} → ${l.sides.b}`,
     short: (l) => `✍️ ${code(l.sides.a)}→${code(l.sides.b)}`,
-    weight: 1,
+    answer: () => ANSWER.tippen,
+    think: () => THINK.abrufen,
     learnOrder: 3,
     question: writeQuestion,
   },
@@ -52,7 +59,8 @@ export const MODES = [
     group: 'schreiben',
     label: (l) => `Schreiben: ${l.sides.b} → ${l.sides.a}`,
     short: (l) => `✍️ ${code(l.sides.b)}→${code(l.sides.a)}`,
-    weight: 1,
+    answer: () => ANSWER.tippen,
+    think: () => THINK.abrufen,
     learnOrder: 4,
     question: writeQuestion,
   },
@@ -62,7 +70,8 @@ export const MODES = [
     group: 'hoeren',
     label: (l) => `🔊 Hören → ${lang(l)} schreiben`,
     short: () => '🔊 Diktat',
-    weight: 1.2,
+    answer: () => ANSWER.diktat,
+    think: () => THINK.abrufen,
     learnOrder: 5,
     speech: true,
     question: writeQuestion,
@@ -73,7 +82,8 @@ export const MODES = [
     group: 'hoeren',
     label: () => '🔊 Hören → Bedeutung antippen',
     short: () => '🔊 Antippen',
-    weight: 0.2,
+    answer: () => choiceFactor(CHOICE_OPTIONS),
+    think: () => THINK.erkennen,
     learnOrder: 1,
     speech: true,
     minItems: 4,
@@ -85,7 +95,8 @@ export const MODES = [
     group: 'satz',
     label: () => '📝 Lückensätze',
     short: () => '📝 Satz',
-    weight: 0.8,
+    answer: () => ANSWER.tippen,
+    think: () => THINK.kontext,
     learnOrder: 6,
     usable: (item) => Boolean(parseGap(item.ex)),
     question: gapQuestion,
@@ -96,7 +107,8 @@ export const MODES = [
     group: 'form',
     label: () => '✏️ Richtige Form antippen',
     short: () => '✏️ Form',
-    weight: 0.3,
+    answer: (item) => choiceFactor(item.choices?.length ?? 3),
+    think: () => THINK.routine,
     learnOrder: 2,
     usable: (item) => Boolean(parseGap(item.ex) && item.choices?.length),
     question: formQuestion,

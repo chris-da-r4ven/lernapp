@@ -52,7 +52,7 @@ export function roundSummary(el, { unit = ['Wort', 'Wörter'], goalBefore = null
 }
 
 // 🎯 Tagesziel: was die Runde gebracht hat und wie viel heute noch fehlt. Eintippen zählt mehr als
-// Antippen, Basis weniger, Experte mehr (registry.weightFor) – deshalb steht hier keine Aufgabenzahl.
+// Antippen, je nach Denkaufwand weniger oder mehr (weights.js) – deshalb steht hier keine Aufgabenzahl.
 function goalLine(before) {
   const s = streak();
   const gained = Math.max(0, s.todayWords - before);

@@ -171,7 +171,7 @@ function historyChart(days, rescued) {
         </div>`).join('')}
     </div>
     <div class="legend small"><span class="dot right"></span>richtig <span class="dot wrong"></span>falsch</div>
-    <p class="muted small">Ein Tag zählt für die Serie ab ${DAY_GOAL} Aufgaben. Schreiben und Diktat zählen voll, Lückensätze fast, Antippen nur ein Fünftel. In Mathe zählen Basis-Aufgaben halb, Experten-Aufgaben anderthalbfach. 🛟 = verpasst, aber am Tag danach gerettet.</p>`;
+    <p class="muted small">Ein Tag zählt für die Serie ab ${DAY_GOAL} 🎯. Jede Aufgabe zählt nach ihrer Schwere: Antwortform (Eintippen 1, Antippen weniger – Raten ist herausgerechnet) mal Denkaufwand (Wiedererkennen 0,3 bis Knobeln 2). Wörter schreiben zählt 1. 🛟 = verpasst, aber am Tag danach gerettet.</p>`;
 }
 
 // Für die Eltern: Stand von App, Inhalten und Sicherung auf einen Blick.

@@ -4,7 +4,8 @@
 //   2 Fortgeschritten – das Niveau der Lektion
 //   3 Experte – über das Buch hinaus, nur auf Wunsch (eigene Übungsart „experte“),
 //     zählt nicht für Test, Medaille und „sicher“
-// factor: Sternchen und Tagesziel im Verhältnis zu Stufe 2.
+// factor: Denkaufwand der Stufe (weights.js) – Grundlage für Sternchen und Tagesziel, wenn die Aufgabe
+// keinen eigenen "denken"-Wert hat.
 export const LEVELS = {
   1: { name: 'Basis', icon: '🟢', factor: 0.5 },
   2: { name: 'Fortgeschritten', icon: '🔵', factor: 1 },
