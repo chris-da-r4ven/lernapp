@@ -7,7 +7,7 @@
 
 import { itemKey } from '../srs.js';
 import { canSpeak } from '../speech.js';
-import { kindOf } from '../lessons.js';
+import { kindOf, levelInfo } from '../lessons.js';
 import { MODES } from './modes.js';
 
 const byId = new Map(MODES.map((m) => [m.id, m]));
@@ -43,9 +43,11 @@ export function tasksFor(sid, lesson, modeId) {
     .map((item) => ({ sid, lesson, item, dir: modeId, key: itemKey(sid, lesson.id, item, modeId) }));
 }
 
+// Gewicht einer Aufgabe: Übungsart (ggf. je Eintrag, z. B. Antippen) × Schwierigkeitsstufe.
 export const weightFor = (modeId, item = null) => {
   const m = modeById(modeId);
-  return (item && m?.itemWeight?.(item)) ?? m?.weight ?? 1;
+  const base = (item && m?.itemWeight?.(item)) ?? m?.weight ?? 1;
+  return item ? Math.round(base * levelInfo(item).factor * 100) / 100 : base;
 };
 export const learnOrderOf = (modeId) => modeById(modeId)?.learnOrder ?? 99;
 export const questionFor = (modeId) => modeById(modeId)?.question;

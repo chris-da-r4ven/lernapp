@@ -15,7 +15,7 @@ import { MODES } from '../js/exercises/modes.js';
 import { modesFor, tasksFor, modeById, weightFor } from '../js/exercises/registry.js';
 import { numberLine } from '../js/exercises/numberline.js';
 import { chart, tallyTable } from '../js/exercises/charts.js';
-import { kindOf, targetSide, towardTarget, langOf, KINDS, isSupported, masteryMode } from '../js/lessons.js';
+import { kindOf, targetSide, towardTarget, langOf, KINDS, isSupported, masteryMode, coreItems } from '../js/lessons.js';
 import { APP_VERSION } from '../js/version.js';
 import { dayKey } from '../js/util.js';
 import { sanitizeState, SCHEMA, LEGACY_DEVICE } from '../js/validate.js';
@@ -240,12 +240,29 @@ try {
   await test('Lern-Reihenfolge eindeutig', () => eq(new Set(MODES.map((m) => m.learnOrder)).size, MODES.length));
   await test('vereinbarte Gewichte (Sternchen und Tagesziel)', () => eq(
     Object.fromEntries(MODES.map((m) => [m.id, m.weight])),
-    { ab: 1, ba: 1, hoeren: 1.2, 'hoeren-wahl': 0.2, satz: 0.8, form: 0.3, rechnen: 1 },
+    { ab: 1, ba: 1, hoeren: 1.2, 'hoeren-wahl': 0.2, satz: 0.8, form: 0.3, rechnen: 1, experte: 1 },
   ));
-  await test('Lernstand-Kennungen unverändert (ab, ba, hoeren, hoeren-wahl, satz, form, rechnen)', () =>
-    ok(['ab', 'ba', 'hoeren', 'hoeren-wahl', 'satz', 'form', 'rechnen'].every((id) => modeById(id)), 'Kennung fehlt'));
+  await test('Lernstand-Kennungen unverändert (ab, ba, hoeren, hoeren-wahl, satz, form, rechnen, experte)', () =>
+    ok(['ab', 'ba', 'hoeren', 'hoeren-wahl', 'satz', 'form', 'rechnen', 'experte'].every((id) => modeById(id)), 'Kennung fehlt'));
   await test('Mathe: Antippen (z. B. < oder >) zählt 0,3, Eintippen 1', () =>
     eq([weightFor('rechnen', { choices: ['<', '>'] }), weightFor('rechnen', { b: '12' }), weightFor('ab')], [0.3, 1, 1]));
+  await test('Stufen: Basis ×0,5, Experte ×1,5 – auch beim Antippen', () =>
+    eq([weightFor('rechnen', { level: 1 }), weightFor('rechnen', { level: 2 }), weightFor('experte', { level: 3 }), weightFor('rechnen', { level: 1, choices: ['a', 'b'] })], [0.5, 1, 1.5, 0.15]));
+  await test('Runde: höchstens 2 Basis-Aufgaben, und zwar vorneweg', () => {
+    replaceState(empty());
+    const lesson = { id: 'stufen' };
+    const mk = (i, level) => ({ key: `t/stufen/${i}|rechnen`, item: { id: String(i), level }, lesson });
+    const entries = [...Array.from({ length: 8 }, (_, i) => mk(i, 1)), ...Array.from({ length: 10 }, (_, i) => mk(100 + i, 2))];
+    const r = buildRound(entries);
+    const lv = r.map((e) => e.item.level);
+    eq([lv.filter((x) => x === 1).length, lv.slice(0, 2), r.length], [2, [1, 1], 12]);
+    eq(buildRound(entries.slice(0, 8)).length, 8, 'nur Basis da → Basis füllt auf');
+  });
+  await test('Experten-Aufgaben: eigene Übungsart, nicht in „Aufgaben lösen“, Test und „sicher“', () => {
+    const lesson = { id: 'x', kind: 'mathe', items: [{ id: 'a', a: '1', b: '1', level: 1 }, { id: 'b', a: '2', b: '2' }, { id: 'c', a: '3', b: '3', level: 3 }] };
+    eq([tasksFor('t', lesson, 'rechnen').map((t) => t.item.id), tasksFor('t', lesson, 'experte').map((t) => t.item.id), coreItems(lesson).length,
+      modeById('experte').optIn], [['a', 'b'], ['c'], 2, true]);
+  });
   await test('Mathe: Leerzeichen, Tausenderpunkte und Groß/klein egal', () => {
     eq([check('48000', '48 000', [], mathNorm).ok, check('48.000', '48 000', [], mathNorm).ok, check('xliv', 'XLIV', [], mathNorm).ok,
       check('4800', '48 000', [], mathNorm).ok], [true, true, true, false]);

@@ -18,10 +18,11 @@
 //   learnOrder Reihenfolge, in der „Jetzt üben“ ein neues Wort durch die Übungsarten führt
 //   speech     braucht Sprachausgabe; minItems – mindestens so viele Einträge in der Lektion
 //   usable     welche Einträge sich eignen (z. B. nur mit Beispielsatz)
+//   optIn      nur auf Wunsch (eigener Knopf) – nicht in „Jetzt üben“
 //   question   Fragetyp aus questions.js
 
 import { writeQuestion, chooseQuestion, gapQuestion, formQuestion, mathQuestion, parseGap } from './questions.js';
-import { targetSide } from '../lessons.js';
+import { targetSide, levelOf } from '../lessons.js';
 
 const CODES = { Deutsch: 'DE', Englisch: 'EN', Französisch: 'FR', Spanisch: 'ES', Latein: 'LA' };
 const code = (side) => CODES[side] ?? String(side).slice(0, 2).toUpperCase();
@@ -102,6 +103,20 @@ export const MODES = [
     weight: 1,
     itemWeight: (item) => (item.choices ? 0.3 : 1),   // Antippen (z. B. < oder >) zählt weniger als Eintippen
     learnOrder: 7,
+    usable: (item) => levelOf(item) !== 3,
+    question: mathQuestion,
+  },
+  {
+    id: 'experte',
+    kinds: ['mathe'],
+    group: 'experte',
+    label: () => '🟣 Experten-Aufgaben',
+    short: () => '🟣 Experte',
+    weight: 1,                                         // × 1,5 durch die Stufe (lessons.LEVELS)
+    itemWeight: (item) => (item.choices ? 0.3 : 1),
+    learnOrder: 8,
+    optIn: true,
+    usable: (item) => levelOf(item) === 3,
     question: mathQuestion,
   },
 ];

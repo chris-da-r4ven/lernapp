@@ -6,7 +6,7 @@
 import { testResults, addTestResult, itemState, save } from './store.js';
 import { itemKey } from './srs.js';
 import { dayKey } from './util.js';
-import { kindInfo, masteryOf, masteryMode, lessonKey } from './lessons.js';
+import { kindInfo, masteryOf, masteryMode, lessonKey, coreItems } from './lessons.js';
 
 export const MEDAL_PCT = 90;
 export const MEDAL_DAYS = 2;
@@ -75,11 +75,12 @@ export const READY_SHARE = 0.8;
 export const READY_RIGHT = 2;
 
 export function testReady(sid, lesson) {
-  if (!lesson || !kindInfo(lesson).testable || !lesson.items?.length) return false;
+  const items = coreItems(lesson);
+  if (!lesson || !kindInfo(lesson).testable || !items.length) return false;
   const key = lessonKey(sid, lesson);
   const s = medalStatus(key);
   if (s.medal || testedToday(key)) return false;
   const dir = masteryMode(lesson);
-  const ok = lesson.items.filter((it) => itemState(itemKey(sid, lesson.id, it, dir)).right >= READY_RIGHT).length;
-  return ok / lesson.items.length >= READY_SHARE;
+  const ok = items.filter((it) => itemState(itemKey(sid, lesson.id, it, dir)).right >= READY_RIGHT).length;
+  return ok / items.length >= READY_SHARE;
 }

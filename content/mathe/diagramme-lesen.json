@@ -36,7 +36,8 @@
         ],
         "step": 2,
         "axis": "Anzahl Kinder"
-      }
+      },
+      "level": 2
     },
     {
       "id": "a-meiste",
@@ -66,7 +67,8 @@
         "Auto",
         "Fahrrad",
         "zu Fuß"
-      ]
+      ],
+      "level": 1
     },
     {
       "id": "a-summe",
@@ -90,7 +92,8 @@
         ],
         "step": 2,
         "axis": "Anzahl Kinder"
-      }
+      },
+      "level": 2
     },
     {
       "id": "b-bananen",
@@ -114,7 +117,8 @@
         ],
         "step": 5,
         "axis": "Anzahl Kinder"
-      }
+      },
+      "level": 1
     },
     {
       "id": "b-diff",
@@ -138,7 +142,8 @@
         ],
         "step": 5,
         "axis": "Anzahl Kinder"
-      }
+      },
+      "level": 2
     },
     {
       "id": "b-wenigste",
@@ -168,7 +173,8 @@
         "Bananen",
         "Kiwis",
         "Pflaumen"
-      ]
+      ],
+      "level": 1
     },
     {
       "id": "c-gruen",
@@ -193,7 +199,8 @@
         "symbol": "🐻",
         "per": 1,
         "axis": "Gummibärchen"
-      }
+      },
+      "level": 1
     },
     {
       "id": "c-doppelt",
@@ -223,7 +230,8 @@
         "Rot",
         "Gelb",
         "Weiß"
-      ]
+      ],
+      "level": 2
     },
     {
       "id": "d-tom",
@@ -246,7 +254,8 @@
         "symbol": "📕",
         "per": 2,
         "axis": "Bücher"
-      }
+      },
+      "level": 2
     },
     {
       "id": "d-summe",
@@ -269,7 +278,8 @@
         "symbol": "📕",
         "per": 2,
         "axis": "Bücher"
-      }
+      },
+      "level": 2
     },
     {
       "id": "e-autos",
@@ -292,7 +302,8 @@
         "symbol": "🚗",
         "per": 10,
         "axis": "Fahrzeuge"
-      }
+      },
+      "level": 1
     },
     {
       "id": "e-lkw",
@@ -315,7 +326,8 @@
         "symbol": "🚗",
         "per": 10,
         "axis": "Fahrzeuge"
-      }
+      },
+      "level": 2
     },
     {
       "id": "f-mittwoch",
@@ -346,7 +358,8 @@
         "step": 2,
         "max": 10,
         "axis": "Stunden"
-      }
+      },
+      "level": 1
     },
     {
       "id": "f-wenigste",
@@ -383,7 +396,8 @@
         "Di",
         "Do",
         "Fr"
-      ]
+      ],
+      "level": 1
     },
     {
       "id": "f-wochenende",
@@ -414,7 +428,8 @@
         "step": 2,
         "max": 10,
         "axis": "Stunden"
-      }
+      },
+      "level": 2
     },
     {
       "id": "g-auto",
@@ -438,7 +453,8 @@
         ],
         "step": 50,
         "axis": "km"
-      }
+      },
+      "level": 1
     },
     {
       "id": "g-meiste",
@@ -468,7 +484,8 @@
         "Bahn",
         "Auto",
         "Fahrrad"
-      ]
+      ],
+      "level": 1
     },
     {
       "id": "g-skala",
@@ -492,7 +509,8 @@
         ],
         "step": 50,
         "axis": "km"
-      }
+      },
+      "level": 2
     },
     {
       "id": "h-mittwoch",
@@ -516,7 +534,8 @@
         ],
         "step": 100,
         "axis": "Besucher"
-      }
+      },
+      "level": 1
     },
     {
       "id": "h-skala",
@@ -540,7 +559,8 @@
         ],
         "step": 100,
         "axis": "Besucher"
-      }
+      },
+      "level": 2
     },
     {
       "id": "typ-saeulen",
@@ -569,7 +589,8 @@
         "Säulendiagramm",
         "Balkendiagramm",
         "Bilddiagramm"
-      ]
+      ],
+      "level": 1
     },
     {
       "id": "typ-balken",
@@ -598,7 +619,8 @@
         "Säulendiagramm",
         "Balkendiagramm",
         "Bilddiagramm"
-      ]
+      ],
+      "level": 1
     },
     {
       "id": "typ-bild",
@@ -628,7 +650,310 @@
         "Säulendiagramm",
         "Balkendiagramm",
         "Bilddiagramm"
-      ]
+      ],
+      "level": 1
+    },
+    {
+      "id": "f-woche",
+      "a": "Wie viele Sonnenstunden waren es in der ganzen Woche?",
+      "b": "41",
+      "why": "6 + 4 + 8 + 2 + 5 + 9 + 7 = 41.",
+      "level": 2,
+      "chart": {
+        "type": "saeulen",
+        "title": "Sonnenstunden",
+        "labels": [
+          "Mo",
+          "Di",
+          "Mi",
+          "Do",
+          "Fr",
+          "Sa",
+          "So"
+        ],
+        "values": [
+          6,
+          4,
+          8,
+          2,
+          5,
+          9,
+          7
+        ],
+        "step": 2,
+        "max": 10,
+        "axis": "Stunden"
+      }
+    },
+    {
+      "id": "b-summe",
+      "a": "Wie viele Kinder wurden insgesamt befragt?",
+      "b": "50",
+      "why": "15 + 10 + 5 + 20 = 50.",
+      "level": 2,
+      "chart": {
+        "type": "balken",
+        "title": "Lieblingsobst",
+        "labels": [
+          "Äpfel",
+          "Bananen",
+          "Kiwis",
+          "Pflaumen"
+        ],
+        "values": [
+          15,
+          10,
+          5,
+          20
+        ],
+        "step": 5,
+        "axis": "Anzahl Kinder"
+      }
+    },
+    {
+      "id": "g-fahrrad",
+      "a": "Wie viele Kilometer wurden mit dem Fahrrad gefahren?",
+      "b": "75",
+      "why": "Der Balken endet genau zwischen 50 und 100.",
+      "level": 2,
+      "chart": {
+        "type": "balken",
+        "title": "Gefahrene Kilometer",
+        "labels": [
+          "Bus",
+          "Bahn",
+          "Auto",
+          "Fahrrad"
+        ],
+        "values": [
+          50,
+          350,
+          150,
+          75
+        ],
+        "step": 50,
+        "axis": "km"
+      }
+    },
+    {
+      "id": "h-mehr250",
+      "a": "An wie vielen Tagen kamen mehr als 250 Besucher?",
+      "b": "3",
+      "why": "Mo (300), Mi (500) und Do (400) – Di hatte nur 200.",
+      "level": 2,
+      "chart": {
+        "type": "saeulen",
+        "title": "Besucher im Freibad",
+        "labels": [
+          "Mo",
+          "Di",
+          "Mi",
+          "Do"
+        ],
+        "values": [
+          300,
+          200,
+          500,
+          400
+        ],
+        "step": 100,
+        "axis": "Besucher"
+      }
+    },
+    {
+      "id": "kino-diff",
+      "a": "Wie viele Besucher kamen am Samstag mehr als am Freitag?",
+      "b": "75",
+      "why": "200 − 125 = 75. Die Skala geht in 25er-Schritten.",
+      "level": 2,
+      "chart": {
+        "type": "saeulen",
+        "title": "Kinobesucher am Wochenende",
+        "labels": [
+          "Freitag",
+          "Samstag",
+          "Sonntag"
+        ],
+        "values": [
+          125,
+          200,
+          175
+        ],
+        "step": 25,
+        "axis": "Besucher"
+      }
+    },
+    {
+      "id": "a-gleich",
+      "a": "Wie viele Kinder müssten noch aufs Fahrrad umsteigen, damit Fahrrad genauso beliebt ist wie der Bus?",
+      "b": "5",
+      "why": "Bus 12, Fahrrad 7: 12 − 7 = 5.",
+      "level": 3,
+      "chart": {
+        "type": "saeulen",
+        "title": "Wie kommst du zur Schule?",
+        "labels": [
+          "Bus",
+          "Auto",
+          "Fahrrad",
+          "zu Fuß"
+        ],
+        "values": [
+          12,
+          4,
+          7,
+          9
+        ],
+        "step": 2,
+        "axis": "Anzahl Kinder"
+      }
+    },
+    {
+      "id": "e-stunde",
+      "a": "Die Zählung dauerte 15 Minuten. Wie viele Fahrzeuge wären es in einer ganzen Stunde, wenn es so weitergeht?",
+      "b": "300",
+      "why": "In 15 Minuten: 40 + 15 + 20 = 75. Eine Stunde hat 4 · 15 Minuten: 75 · 4 = 300.",
+      "level": 3,
+      "chart": {
+        "type": "bild",
+        "title": "Fahrzeuge in 15 Minuten",
+        "labels": [
+          "Autos",
+          "Lkw",
+          "Fahrräder"
+        ],
+        "values": [
+          40,
+          15,
+          20
+        ],
+        "symbol": "🚗",
+        "per": 10,
+        "axis": "Fahrzeuge"
+      }
+    },
+    {
+      "id": "d-lena",
+      "a": "Lena will so viele Bücher lesen wie Tom und Ali zusammen. Wie viele Bücher fehlen ihr noch?",
+      "b": "3",
+      "why": "Tom 5 + Ali 6 = 11. Lena hat 8: 11 − 8 = 3.",
+      "level": 3,
+      "chart": {
+        "type": "bild",
+        "title": "Gelesene Bücher",
+        "labels": [
+          "Lena",
+          "Tom",
+          "Ali"
+        ],
+        "values": [
+          8,
+          5,
+          6
+        ],
+        "symbol": "📕",
+        "per": 2,
+        "axis": "Bücher"
+      }
+    },
+    {
+      "id": "f-schnitt",
+      "a": "Wie viele Stunden schien die Sonne von Montag bis Freitag durchschnittlich pro Tag?",
+      "b": "5",
+      "why": "Durchschnitt: alles zusammenzählen und durch die Anzahl der Tage teilen. 6 + 4 + 8 + 2 + 5 = 25, 25 : 5 = 5.",
+      "level": 3,
+      "chart": {
+        "type": "saeulen",
+        "title": "Sonnenstunden",
+        "labels": [
+          "Mo",
+          "Di",
+          "Mi",
+          "Do",
+          "Fr",
+          "Sa",
+          "So"
+        ],
+        "values": [
+          6,
+          4,
+          8,
+          2,
+          5,
+          9,
+          7
+        ],
+        "step": 2,
+        "max": 10,
+        "axis": "Stunden"
+      }
+    },
+    {
+      "id": "fuss-maedchen",
+      "a": "Ein ⚽ steht für 4 Kinder. Wie viele Mädchen sind im Verein?",
+      "b": "12",
+      "why": "3 ganze Bälle · 4 = 12.",
+      "level": 2,
+      "chart": {
+        "type": "bild",
+        "title": "Kinder im Fußballverein",
+        "labels": [
+          "Jungen",
+          "Mädchen"
+        ],
+        "values": [
+          14,
+          12
+        ],
+        "symbol": "⚽",
+        "per": 4,
+        "axis": "Kinder"
+      }
+    },
+    {
+      "id": "fuss-jungen",
+      "a": "Ein ⚽ steht für 4 Kinder. Wie viele Jungen sind im Verein?",
+      "b": "14",
+      "why": "3 ganze Bälle = 12, ein halber Ball = 2. Zusammen 14.",
+      "level": 3,
+      "chart": {
+        "type": "bild",
+        "title": "Kinder im Fußballverein",
+        "labels": [
+          "Jungen",
+          "Mädchen"
+        ],
+        "values": [
+          14,
+          12
+        ],
+        "symbol": "⚽",
+        "per": 4,
+        "axis": "Kinder"
+      }
+    },
+    {
+      "id": "kino-woche",
+      "a": "Am Montag kamen halb so viele Besucher wie am Samstag. Wie viele Besucher waren es von Freitag bis Montag zusammen?",
+      "b": "600",
+      "why": "Montag: 200 : 2 = 100. Zusammen: 125 + 200 + 175 + 100 = 600.",
+      "level": 3,
+      "chart": {
+        "type": "saeulen",
+        "title": "Kinobesucher am Wochenende",
+        "labels": [
+          "Freitag",
+          "Samstag",
+          "Sonntag"
+        ],
+        "values": [
+          125,
+          200,
+          175
+        ],
+        "step": 25,
+        "axis": "Besucher"
+      }
     }
   ]
 }

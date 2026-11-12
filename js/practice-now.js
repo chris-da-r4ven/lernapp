@@ -9,6 +9,7 @@
 import { allLessons, contentVersion } from './content.js';
 import { itemState, revision } from './store.js';
 import { modesFor, tasksFor, learnOrderOf } from './exercises/registry.js';
+import { levelOf, WARMUP } from './lessons.js';
 import { shuffle } from './util.js';
 
 export const ROUND_SIZE = 12;
@@ -21,7 +22,7 @@ function allTasks() {
   if (cache.key === key) return cache.tasks;
   const tasks = [];
   for (const { sid, lesson } of allLessons()) {
-    for (const m of modesFor(lesson)) {
+    for (const m of modesFor(lesson).filter((x) => !x.optIn)) {   // Experten-Aufgaben nur auf Wunsch
       for (const t of tasksFor(sid, lesson, m.id)) {
         tasks.push({ ...t, st: itemState(t.key), word: `${sid}/${lesson.id}/${t.item.id}` });
       }
@@ -54,10 +55,13 @@ export function buildNowRound({ anyway = false } = {}) {
   const tasks = allTasks();
   const used = new Set();
   const round = [];
+  let basics = 0;   // Basis-Aufgaben: nur ein paar zum Aufwärmen
   const take = (list) => {
     for (const t of list) {
       if (round.length >= ROUND_SIZE) return;
       if (used.has(t.word)) continue;
+      if (levelOf(t.item) === 1 && basics >= WARMUP) continue;
+      if (levelOf(t.item) === 1) basics++;
       used.add(t.word);
       round.push(t);
     }
@@ -82,5 +86,7 @@ export function buildNowRound({ anyway = false } = {}) {
   // 3. nichts fällig, nichts neu: auf Wunsch die, die als Nächstes dran wären
   if (anyway && !round.length) take([...tasks].sort((a, b) => a.st.due - b.st.due));
 
-  return shuffle(round);
+  // Aufwärm-Aufgaben (Basis) zuerst, der Rest gemischt.
+  const warm = round.filter((t) => levelOf(t.item) === 1);
+  return [...warm, ...shuffle(round.filter((t) => levelOf(t.item) !== 1))];
 }

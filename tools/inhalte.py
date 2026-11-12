@@ -177,6 +177,8 @@ def check(subjects):
                     prompts.setdefault(it['a'].strip().lower(), []).append(it.get('b'))
                 if math:
                     errors += check_math(at, it)
+                if 'level' in it and it['level'] not in (1, 2, 3):
+                    errors.append(f'{at}: "level" muss 1 (Basis), 2 (Fortgeschritten) oder 3 (Experte) sein')
                 if it.get('b') and l.get('kind') == 'vokabeln':
                     english_seen.setdefault(it['b'].strip().lower(), []).append(lid)
             frames = {}

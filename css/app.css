@@ -423,3 +423,9 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
 .tally-table td { text-align: left; padding: 4px 0; }
 .tally { margin-right: 10px; vertical-align: middle; }
 .tally line { stroke: var(--text); stroke-width: 2.5; stroke-linecap: round; }
+
+/* Mathe: Schwierigkeitsstufe als Schild über der Aufgabe */
+.level-tag { display: inline-block; font-size: 0.85rem; font-weight: 700; padding: 3px 12px; border-radius: 999px; margin-bottom: 10px; border: 1.5px solid currentColor; }
+.level-tag.lv1 { color: var(--good); }
+.level-tag.lv2 { color: var(--primary); }
+.level-tag.lv3 { color: #8e5cd9; }

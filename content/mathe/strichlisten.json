@@ -32,7 +32,8 @@
           "Hamster",
           3
         ]
-      ]
+      ],
+      "level": 1
     },
     {
       "id": "tally-nudeln",
@@ -52,7 +53,8 @@
           "Salat",
           4
         ]
-      ]
+      ],
+      "level": 1
     },
     {
       "id": "tally-summe",
@@ -72,7 +74,8 @@
           "Tennis",
           5
         ]
-      ]
+      ],
+      "level": 2
     },
     {
       "id": "tally-farbe",
@@ -97,7 +100,8 @@
         "rot",
         "blau",
         "grün"
-      ]
+      ],
+      "level": 1
     },
     {
       "id": "tally-bus",
@@ -117,7 +121,8 @@
           "zu Fuß",
           10
         ]
-      ]
+      ],
+      "level": 1
     },
     {
       "id": "tally-wahl",
@@ -142,7 +147,8 @@
         "Kevin",
         "Lara",
         "Tim"
-      ]
+      ],
+      "level": 1
     },
     {
       "id": "tally-diff",
@@ -158,7 +164,8 @@
           "nein",
           6
         ]
-      ]
+      ],
+      "level": 2
     },
     {
       "id": "tally-20",
@@ -170,25 +177,29 @@
           "Äpfel",
           20
         ]
-      ]
+      ],
+      "level": 1
     },
     {
       "id": "buendel",
       "a": "Wie viele Striche hat ein volles Bündel in einer Strichliste?",
       "b": "5",
-      "why": "4 Striche und der fünfte quer darüber."
+      "why": "4 Striche und der fünfte quer darüber.",
+      "level": 1
     },
     {
       "id": "buendel-23",
       "a": "Wie viele volle Fünferbündel brauchst du für die Zahl 23?",
       "b": "4",
-      "why": "4 · 5 = 20, dazu kommen noch 3 einzelne Striche."
+      "why": "4 · 5 = 20, dazu kommen noch 3 einzelne Striche.",
+      "level": 2
     },
     {
       "id": "rest-23",
       "a": "Wie viele einzelne Striche stehen bei 23 neben den Fünferbündeln?",
       "b": "3",
-      "why": "23 = 4 · 5 + 3."
+      "why": "23 = 4 · 5 + 3.",
+      "level": 2
     },
     {
       "id": "haeufigkeitstabelle",
@@ -199,25 +210,29 @@
         "Häufigkeitstabelle",
         "Säulendiagramm",
         "Fragebogen"
-      ]
+      ],
+      "level": 1
     },
     {
       "id": "liste-mia",
       "a": "Abstimmung: Mia, Ben, Mia, Ole, Mia, Ben, Mia, Ole, Ben, Mia. Wie viele Stimmen hat Mia?",
       "b": "5",
-      "why": "Mia kommt 5-mal vor."
+      "why": "Mia kommt 5-mal vor.",
+      "level": 1
     },
     {
       "id": "liste-summe",
       "a": "Abstimmung: Jan, Eda, Eda, Paul, Jan, Eda, Paul, Eda, Jan. Wie viele Stimmen wurden insgesamt abgegeben?",
       "b": "9",
-      "why": "Jede Nennung ist eine Stimme: 9 Namen."
+      "why": "Jede Nennung ist eine Stimme: 9 Namen.",
+      "level": 1
     },
     {
       "id": "liste-km",
       "a": "Schulweg in km: 2, 1, 3, 2, 2, 4, 1, 2, 3, 2. Wie oft wurde „2 km“ genannt?",
       "b": "5",
-      "why": "Die 2 kommt 5-mal vor."
+      "why": "Die 2 kommt 5-mal vor.",
+      "level": 2
     },
     {
       "id": "liste-geld",
@@ -229,31 +244,138 @@
         "10 €",
         "15 €",
         "20 €"
-      ]
+      ],
+      "level": 2
     },
     {
       "id": "liste-wuerfel",
       "a": "Gewürfelt: 3, 6, 1, 6, 2, 6, 4, 3, 6, 5. Wie oft kam eine 6?",
       "b": "4",
-      "why": "Die 6 kommt 4-mal vor."
+      "why": "Die 6 kommt 4-mal vor.",
+      "level": 1
     },
     {
       "id": "tab-jungen",
       "a": "In der Klasse 5a sind 26 Kinder, 14 davon sind Mädchen. Wie viele Jungen sind es?",
       "b": "12",
-      "why": "26 − 14 = 12."
+      "why": "26 − 14 = 12.",
+      "level": 2
     },
     {
       "id": "tab-rest",
       "a": "28 Kinder wurden befragt: 12 mögen Hunde am liebsten, 9 Katzen, die anderen Pferde. Wie viele mögen Pferde am liebsten?",
       "b": "7",
-      "why": "28 − 12 − 9 = 7."
+      "why": "28 − 12 − 9 = 7.",
+      "level": 2
     },
     {
       "id": "tab-summe",
       "a": "Häufigkeitstabelle: Pizza 9, Döner 6, Salat 4. Wie viele Kinder wurden befragt?",
       "b": "19",
-      "why": "9 + 6 + 4 = 19."
+      "why": "9 + 6 + 4 = 19.",
+      "level": 1
+    },
+    {
+      "id": "tally-vier",
+      "a": "Wie viele Kinder wurden insgesamt befragt?",
+      "b": "39",
+      "why": "13 + 9 + 11 + 6 = 39.",
+      "level": 2,
+      "tally": [
+        [
+          "Hund",
+          13
+        ],
+        [
+          "Katze",
+          9
+        ],
+        [
+          "Pferd",
+          11
+        ],
+        [
+          "Hase",
+          6
+        ]
+      ]
+    },
+    {
+      "id": "buendel-34",
+      "a": "In einer Strichliste stehen 6 volle Fünferbündel und 4 einzelne Striche. Welche Zahl ist das?",
+      "b": "34",
+      "why": "6 · 5 = 30, dazu 4 = 34.",
+      "level": 2
+    },
+    {
+      "id": "fehler-13",
+      "a": "Bei „Tennis“ stehen 2 Fünferbündel und 3 Striche. In der Häufigkeitstabelle steht 12. Welche Zahl ist richtig?",
+      "b": "13",
+      "why": "2 · 5 + 3 = 13 – in der Tabelle wurde falsch gezählt.",
+      "level": 2
+    },
+    {
+      "id": "mensa-di",
+      "a": "Von Montag bis Mittwoch wollten 25 Kinder Pasta. Am Montag waren es 7, am Mittwoch 10. Wie viele am Dienstag?",
+      "b": "8",
+      "why": "25 − 7 − 10 = 8.",
+      "level": 2
+    },
+    {
+      "id": "nein-10",
+      "a": "Bei einer Umfrage sagten 7 Kinder „ja“. Das waren 3 weniger als „nein“. Wie viele sagten „nein“?",
+      "b": "10",
+      "why": "„3 weniger als nein“ heißt: nein = 7 + 3 = 10.",
+      "level": 2
+    },
+    {
+      "id": "querstriche-47",
+      "a": "Wie viele Querstriche (volle Fünferbündel) hat die Strichliste für 47?",
+      "b": "9",
+      "why": "47 = 9 · 5 + 2.",
+      "level": 2
+    },
+    {
+      "id": "striche-47",
+      "a": "Wie viele Striche zeichnest du insgesamt für die Zahl 47 – die Querstriche mitgezählt?",
+      "b": "47",
+      "why": "Jeder Strich zählt 1, auch der Querstrich ist der fünfte Strich eines Bündels.",
+      "level": 3
+    },
+    {
+      "id": "wuerfel-60",
+      "a": "Es wurde 60-mal gewürfelt. Jede Augenzahl kam gleich oft. Wie oft kam die 6?",
+      "b": "10",
+      "why": "Ein Würfel hat 6 Augenzahlen: 60 : 6 = 10.",
+      "level": 3
+    },
+    {
+      "id": "ali-6",
+      "a": "Lina, Ben und Ali haben zusammen 30 Stimmen. Ben hat doppelt so viele wie Ali, Lina 6 mehr als Ali. Wie viele Stimmen hat Ali?",
+      "b": "6",
+      "why": "Ali = 1 Teil, Ben = 2 Teile, Lina = 1 Teil + 6. Also 4 Teile + 6 = 30, 4 Teile = 24, 1 Teil = 6.",
+      "level": 3
+    },
+    {
+      "id": "zoo-13",
+      "a": "29 Kinder stimmen ab: Der Zoo bekommt 4 Stimmen mehr als das Kino, das Freibad 2 weniger als das Kino. Wie viele Stimmen bekommt der Zoo?",
+      "b": "13",
+      "why": "Kino = K: (K + 4) + K + (K − 2) = 29, also 3 · K + 2 = 29, K = 9. Zoo = 9 + 4 = 13.",
+      "level": 3
+    },
+    {
+      "id": "muenze-56",
+      "a": "Eine Münze wurde 100-mal geworfen. „Kopf“ kam 12-mal öfter als „Zahl“. Wie oft kam „Kopf“?",
+      "b": "56",
+      "why": "Ohne die 12 zusätzlichen bleiben 88, die teilen sich gleich auf: 44 und 44. Kopf = 44 + 12 = 56.",
+      "level": 3
+    },
+    {
+      "id": "runden-15",
+      "a": "Mia läuft 4 Runden mehr als Tom, Tom 2 Runden mehr als Eda. Zusammen laufen sie 35 Runden. Wie viele Runden läuft Mia?",
+      "b": "15",
+      "why": "Eda = E, Tom = E + 2, Mia = E + 6. 3 · E + 8 = 35, E = 9. Mia = 9 + 6 = 15.",
+      "level": 3
     }
   ]
 }

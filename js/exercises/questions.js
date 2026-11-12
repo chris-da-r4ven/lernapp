@@ -15,7 +15,7 @@
 import { esc, shuffle } from '../util.js';
 import { renderDiff, distance } from '../diff.js';
 import { speak, speechControls, bindSpeechControls } from '../speech.js';
-import { targetSide, otherSide, langOf } from '../lessons.js';
+import { targetSide, otherSide, langOf, levelInfo } from '../lessons.js';
 import { numberLine } from './numberline.js';
 import { chart, tallyTable } from './charts.js';
 
@@ -342,12 +342,15 @@ export const mathNorm = (s) => String(s).normalize('NFC').replace(/[\s.\u202f]/g
 const isNumber = (s) => /^[\d\s.]+$/.test(s);
 
 export const mathQuestion = {
-  describe: () => '✏️ Aufgabe',
+  // Stufe sichtbar machen: 🟢 Basis · 🔵 Fortgeschritten · 🟣 Experte
+  describe: (task) => (task.item.level ? `${levelInfo(task.item).icon} ${levelInfo(task.item).name}` : '✏️ Aufgabe'),
   pair: (task) => [task.item.a, task.item.b],
   render(card, task, api, { test }) {
     const item = task.item;
     const why = () => (item.why ? `<p class="meaning muted">💡 ${esc(item.why)}</p>` : '');
+    const lv = item.level ? levelInfo(item) : null;
     card.innerHTML = `
+      ${lv ? `<div class="level-tag lv${item.level}">${lv.icon} ${esc(lv.name)}</div>` : ''}
       <div class="prompt math-q">${esc(item.a)}</div>
       ${item.line ? numberLine(item.line) : ''}
       ${item.chart ? chart(item.chart) : ''}

@@ -73,6 +73,10 @@ abschreiben, nur das Thema und die Art der Aufgabe übernehmen.
 - `chart` – Diagramm: `{"type": "saeulen" | "balken" | "bild", "title": "…", "labels": [...], "values": [...],
   "step": 2, "axis": "Anzahl Kinder"}`; beim Bilddiagramm `"symbol": "🚗", "per": 10` (ein Symbol = 10,
   halbe Symbole werden halb gezeichnet).
+- `level` – Schwierigkeit: `1` Basis (🟢, zum Aufwärmen, höchstens 2 pro Runde, Sternchen ×0,5),
+  `2` Fortgeschritten (🔵, Standard, Niveau E), `3` Experte (🟣, über das Buch hinaus, eigener Knopf
+  „Experten-Aufgaben“, nicht in „Jetzt üben“, Test und Medaille, Sternchen ×1,5). Pro Lektion grob:
+  wenige Basis, viele Fortgeschritten, ein paar Experte.
 - `tally` – Strichliste: `[["Hund", 7], ["Katze", 12]]`, gezeichnet in Fünferbündeln.
 
 ## Ändern, zusammenlegen, umbenennen

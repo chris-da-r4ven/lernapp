@@ -23,7 +23,8 @@
         "eine Überschrift",
         "ein Datum",
         "dein Name"
-      ]
+      ],
+      "level": 1
     },
     {
       "id": "achsen",
@@ -34,7 +35,8 @@
         "eine Beschriftung",
         "eine Farbe",
         "ein Pfeil"
-      ]
+      ],
+      "level": 1
     },
     {
       "id": "skala",
@@ -45,7 +47,8 @@
         "gleichmäßig",
         "immer in Einerschritten",
         "egal"
-      ]
+      ],
+      "level": 1
     },
     {
       "id": "saeulen-richtung",
@@ -55,7 +58,8 @@
       "choices": [
         "senkrecht",
         "waagerecht"
-      ]
+      ],
+      "level": 1
     },
     {
       "id": "balken-richtung",
@@ -65,7 +69,8 @@
       "choices": [
         "senkrecht",
         "waagerecht"
-      ]
+      ],
+      "level": 1
     },
     {
       "id": "skala-9",
@@ -76,7 +81,8 @@
         "Einerschritte bis 10",
         "Zehnerschritte bis 100",
         "Hunderterschritte bis 1 000"
-      ]
+      ],
+      "level": 2
     },
     {
       "id": "skala-350",
@@ -87,7 +93,8 @@
         "1",
         "50",
         "1 000"
-      ]
+      ],
+      "level": 2
     },
     {
       "id": "skala-9700",
@@ -98,13 +105,15 @@
         "10",
         "1 000",
         "100 000"
-      ]
+      ],
+      "level": 2
     },
     {
       "id": "bild-20",
       "a": "Im Bilddiagramm steht ein ⚽ für 5 Kinder. Wie viele ⚽ zeichnest du für 20 Kinder?",
       "b": "4",
-      "why": "20 : 5 = 4."
+      "why": "20 : 5 = 4.",
+      "level": 2
     },
     {
       "id": "bild-35",
@@ -115,13 +124,15 @@
         "3 ganze",
         "3 ganze und ein halbes",
         "4 ganze"
-      ]
+      ],
+      "level": 2
     },
     {
       "id": "cm-50",
       "a": "Die höchste Säule soll 10 cm hoch werden. Der höchste Wert ist 50. Wie viel steht dann für 1 cm?",
       "b": "5",
-      "why": "50 : 10 = 5."
+      "why": "50 : 10 = 5.",
+      "level": 2
     },
     {
       "id": "tabellenkalkulation",
@@ -132,7 +143,8 @@
         "Diagramme erstellen",
         "Fotos bearbeiten",
         "Musik hören"
-      ]
+      ],
+      "level": 1
     },
     {
       "id": "kreis",
@@ -143,6 +155,63 @@
         "Kreisdiagramm",
         "Säulendiagramm",
         "Balkendiagramm"
+      ],
+      "level": 1
+    },
+    {
+      "id": "cm-48",
+      "a": "Der höchste Wert ist 48. Die Säule soll möglichst groß, aber höchstens 10 cm hoch werden. Wie viel lässt du für 1 cm stehen?",
+      "b": "5",
+      "why": "Mit 1 pro cm würde die Säule 48 cm hoch, mit 10 pro cm nur knapp 5 cm. Mit 5 pro cm wird sie 9,6 cm – passt.",
+      "level": 2,
+      "choices": [
+        "1",
+        "5",
+        "10"
+      ]
+    },
+    {
+      "id": "bild-12",
+      "a": "Ein 🙂 steht für 3 Kinder. Wie viele 🙂 zeichnest du für 12 Kinder?",
+      "b": "4",
+      "why": "12 : 3 = 4.",
+      "level": 2
+    },
+    {
+      "id": "cm-9700",
+      "a": "1 cm soll für 1 000 Zuschauer stehen. Wie hoch wird die Säule für 9 700 Zuschauer – auf ganze cm gerundet?",
+      "b": "10",
+      "why": "9 700 : 1 000 = 9,7 cm, gerundet 10 cm.",
+      "level": 3
+    },
+    {
+      "id": "cm-120",
+      "a": "Der längste Balken soll 12 cm lang werden und steht für 120 Millionen. Wie viele Millionen stehen für 1 cm?",
+      "b": "10",
+      "why": "120 : 12 = 10.",
+      "level": 3
+    },
+    {
+      "id": "skala-800",
+      "a": "Eine Skala beginnt nicht bei 0, sondern bei 800. Die Säule für 1 000 sieht doppelt so hoch aus wie die für 900. Ist 1 000 wirklich doppelt so viel wie 900?",
+      "b": "nein",
+      "why": "Ab 800 gemessen sind die Säulen 100 und 200 hoch – das sieht doppelt aus. Wirklich ist 1 000 nur 100 mehr als 900.",
+      "level": 3,
+      "choices": [
+        "ja",
+        "nein"
+      ]
+    },
+    {
+      "id": "stern-18",
+      "a": "Ein ⭐ steht für 4. Wie zeichnest du 18?",
+      "b": "4 ganze und ein halber",
+      "why": "4 · 4 = 16, die übrigen 2 sind ein halber Stern.",
+      "level": 3,
+      "choices": [
+        "4 ganze",
+        "4 ganze und ein halber",
+        "5 ganze"
       ]
     }
   ]

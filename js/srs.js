@@ -4,6 +4,7 @@
 
 import { itemState, setItemState, addDayStat, addPoints, save } from './store.js';
 import { shuffle } from './util.js';
+import { levelOf, WARMUP } from './levels.js';
 
 const DAY = 24 * 60 * 60 * 1000;
 const INTERVAL_DAYS = { 1: 1, 2: 2, 3: 4, 4: 7, 5: 14 };
@@ -60,22 +61,31 @@ export function record(key, { correct, firstTry, typed, weight = 1, effort = 1 }
 
 // Reihenfolge für eine Übungsrunde.
 // Normal: fällige und neue Karten zuerst, aufgefüllt bis MIN_ROUND, höchstens MAX_ROUND.
-// all=true: die ganze Lektion (z. B. am Tag vor dem Test).
+// all=true: die ganze Lektion (z. B. am Tag vor dem Test), von leicht nach schwer.
+// Aufgaben mit Stufen (lessons.LEVELS): höchstens WARMUP Basis-Aufgaben zum Aufwärmen vorneweg,
+// dann die anspruchsvolleren – Basis füllt nur auf, wenn sonst nichts mehr da ist.
 const MIN_ROUND = 10;
 const MAX_ROUND = 15;
 
 export function buildRound(entries, all = false) {
   const now = Date.now();
   const withState = shuffle(entries).map((e) => ({ ...e, st: itemState(e.key) }));
-  if (all) return withState;
+  if (all) return withState.sort((a, b) => levelOf(a.item) - levelOf(b.item));
   // Reihenfolge: niedrige Fächer (zuletzt falsch) zuerst, neue Wörter danach –
   // außer als schwierig markierte ("hard": true), die zählen wie Fach 1.
   const rank = (e) => (e.st.box === 0 ? (e.item.hard ? 1 : 6) : e.st.box);
   const byBox = (a, b) => rank(a) - rank(b) || Boolean(b.item.hard) - Boolean(a.item.hard);
   const due = withState.filter((e) => e.st.box === 0 || e.st.due <= now).sort(byBox);
   const rest = withState.filter((e) => !due.includes(e)).sort((a, b) => byBox(a, b) || a.st.due - b.st.due);
-  const round = due.concat(rest.slice(0, Math.max(0, MIN_ROUND - due.length)));
-  return round.slice(0, MAX_ROUND);
+  const ordered = due.concat(rest);
+  const basic = (e) => levelOf(e.item) === 1;
+  const warm = ordered.filter(basic).slice(0, WARMUP);
+  // Rundengröße nach den fälligen anspruchsvolleren Aufgaben (+ Aufwärmen) – fällige Basis-Aufgaben
+  // dürfen die Runde nicht aufblähen.
+  const size = Math.min(MAX_ROUND, Math.max(MIN_ROUND, due.filter((e) => !basic(e)).length + warm.length));
+  const round = [...warm, ...ordered.filter((e) => !basic(e))].slice(0, size);
+  if (round.length < size) round.push(...ordered.filter((e) => basic(e) && !warm.includes(e)).slice(0, size - round.length));
+  return round;
 }
 
 export function starsFor(m) {

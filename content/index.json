@@ -1,12 +1,13 @@
 {
-  "version": 16,
+  "version": 18,
   "updated": "2026-11-12",
-  "hash": "ba5299be36467ca9",
-  "minApp": 2,
+  "hash": "409f31072be8b33b",
+  "minApp": 3,
   "app": {
     "modes": [
       "ab",
       "ba",
+      "experte",
       "form",
       "hoeren",
       "hoeren-wahl",

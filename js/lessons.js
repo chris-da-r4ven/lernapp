@@ -11,6 +11,9 @@
 
 import { itemState } from './store.js';
 import { itemKey, SAFE_BOX } from './srs.js';
+import { levelOf } from './levels.js';
+
+export { LEVELS, WARMUP, levelOf, levelInfo, hasLevels } from './levels.js';
 
 export const KINDS = {
   vokabeln: { unit: ['Wort', 'Wörter'], testable: true,
@@ -64,9 +67,14 @@ export const towardTarget = (lesson) => (targetSide(lesson) === 'b' ? 'ab' : 'ba
 const MASTERY = { grammatik: 'form', mathe: 'rechnen' };
 export const masteryMode = (lesson) => MASTERY[kindOf(lesson)] ?? towardTarget(lesson);
 
+// Schwierigkeitsstufen: levels.js
+// Einträge, die für Test, Medaille und „sicher“ zählen (ohne Experten-Aufgaben).
+export const coreItems = (lesson) => (lesson?.items ?? []).filter((it) => levelOf(it) !== 3);
+
 // Anteil sicherer Einträge einer Lektion (0..1).
 export function masteryOf(sid, lesson, mode = masteryMode(lesson)) {
-  if (!lesson?.items?.length) return 0;
-  const safe = lesson.items.filter((it) => itemState(itemKey(sid, lesson.id, it, mode)).box >= SAFE_BOX).length;
-  return safe / lesson.items.length;
+  const items = coreItems(lesson);
+  if (!items.length) return 0;
+  const safe = items.filter((it) => itemState(itemKey(sid, lesson.id, it, mode)).box >= SAFE_BOX).length;
+  return safe / items.length;
 }
