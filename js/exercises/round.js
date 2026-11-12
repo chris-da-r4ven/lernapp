@@ -7,7 +7,7 @@
 import { esc } from '../util.js';
 import { record, roundBonus, MASTERED_FACTOR, MEDAL_BONUS } from '../srs.js';
 import { weightFor, questionFor, modeById } from './registry.js';
-import { getState, addPoints, save } from '../store.js';
+import { getState, addPoints, save, streak } from '../store.js';
 import { levelFor } from '../pet.js';
 import { roundSummary } from './summary.js';
 import { lessonMedal, saveTest } from '../medal.js';
@@ -26,6 +26,7 @@ export function runRound(el, { tasks, test = false, chosen = true, onAgain, onBa
   let firstTry = 0;
   let points = 0;
   const startLevel = levelFor(getState().points);
+  const goalBefore = streak().todayWords;   // Tagesziel-Stand vor der Runde (für die Bilanz)
   const mistakes = new Map(); // key → { task, typed }
 
   // Medaillen vor der Runde – für Bonus bei neuen Medaillen und den Faktor bei alten.
@@ -101,7 +102,7 @@ export function runRound(el, { tasks, test = false, chosen = true, onAgain, onBa
     const mastered = tasks.some(penalized);
     roundSummary(el, {
       unit,
-      total, firstTry, points, startLevel,
+      total, firstTry, points, startLevel, goalBefore,
       bonus: roundBonus(tasks.map(weight)),
       extraPoints: MEDAL_BONUS * newMedals.length,
       intro: test ? `<p class="big">${firstTry} von ${total} richtig (${pct} %)</p>` : null,

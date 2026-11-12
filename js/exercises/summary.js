@@ -1,7 +1,7 @@
 // Rundenbilanz – gleich für alle Übungsarten.
 // Den Grundbetrag gibt es nur für eine zu Ende gespielte Runde.
 
-import { esc } from '../util.js';
+import { esc, fmt1 } from '../util.js';
 import { getState, addPoints, save, streak } from '../store.js';
 import { petStatus, MAX_GLITTER_LEVEL } from '../pet.js';
 import { mood } from '../streak.js';
@@ -11,7 +11,8 @@ import { portrait } from '../views/portrait.js';
 // mistakes: Liste von [gefragt, Antwort]
 // intro: eigene Zeile statt „X Wörter geübt …“ (z. B. Testergebnis)
 // notice: zusätzlicher Hinweis unter den Sternchen (z. B. „Teste dich doch mal!“)
-export function roundSummary(el, { unit = ['Wort', 'Wörter'], total, firstTry, points, bonus, extraPoints = 0, startLevel, mistakes, intro, mistakesTitle, notice = '', onAgain, onBack, backLabel = 'Zur Lektion' }) {
+// goalBefore: Tagesziel-Stand vor der Runde – die Bilanz zeigt, wie viel die Runde dafür gebracht hat
+export function roundSummary(el, { unit = ['Wort', 'Wörter'], goalBefore = null, total, firstTry, points, bonus, extraPoints = 0, startLevel, mistakes, intro, mistakesTitle, notice = '', onAgain, onBack, backLabel = 'Zur Lektion' }) {
   addPoints(bonus);
   save();
   const pet = petStatus(getState().points, mood(streak()));
@@ -37,6 +38,7 @@ export function roundSummary(el, { unit = ['Wort', 'Wörter'], total, firstTry, 
           <div class="meter"><div style="width:${pet.progress * 100}%"></div></div>
           <p class="muted small">noch ${pet.toNext} ✦ bis zur nächsten Glitzer-Stufe</p>
         </div>`}
+      ${goalBefore === null ? '' : goalLine(goalBefore)}
       ${notice}
       ${mistakes.length ? `<h3>${esc(mistakesTitle)}</h3>
         <ul class="word-list">${mistakes.map(([q, a]) => `<li><span>${esc(q)}</span><strong>${esc(a)}</strong></li>`).join('')}</ul>` : '<p>Keine Fehler – super!</p>'}
@@ -47,4 +49,21 @@ export function roundSummary(el, { unit = ['Wort', 'Wörter'], total, firstTry, 
     </div>`;
   el.querySelector('[data-act=again]').addEventListener('click', onAgain);
   el.querySelector('[data-act=back]').addEventListener('click', onBack);
+}
+
+// 🎯 Tagesziel: was die Runde gebracht hat und wie viel heute noch fehlt. Eintippen zählt mehr als
+// Antippen, Basis weniger, Experte mehr (registry.weightFor) – deshalb steht hier keine Aufgabenzahl.
+function goalLine(before) {
+  const s = streak();
+  const gained = Math.max(0, s.todayWords - before);
+  const now = Math.min(s.todayWords, s.need);
+  if (s.todayDone) {
+    return `<div class="goal-line done"><p>🎯 <strong>Tagesziel geschafft!</strong>${gained ? ` Diese Runde: +${fmt1(gained)}` : ''}</p></div>`;
+  }
+  return `
+    <div class="goal-line">
+      <p>🎯 Tagesziel: <strong>+${fmt1(gained)}</strong> → heute ${fmt1(now)} von ${s.need}</p>
+      <div class="meter"><div style="width:${(now / s.need) * 100}%"></div></div>
+      <p class="muted small">Eintippen zählt mehr als Antippen.</p>
+    </div>`;
 }

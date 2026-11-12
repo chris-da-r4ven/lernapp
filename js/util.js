@@ -38,3 +38,6 @@ export function stars(n, max = 3) {
   return `<span class="stars" aria-label="${n} von ${max} Sternen">` +
     `<span class="on">${'★'.repeat(n)}</span><span class="off">${'★'.repeat(max - n)}</span></span>`;
 }
+
+// Zahl mit höchstens einer Nachkommastelle, deutsch: 5.55 → „5,6“, 10 → „10“.
+export const fmt1 = (x) => (Math.round(x * 10) / 10).toLocaleString('de-DE');
