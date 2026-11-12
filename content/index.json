@@ -1,7 +1,7 @@
 {
-  "version": 12,
-  "updated": "2026-11-08",
-  "hash": "d06043774a1782c2",
+  "version": 14,
+  "updated": "2026-11-12",
+  "hash": "6584bcb26acb4448",
   "minApp": 2,
   "app": {
     "modes": [
@@ -10,10 +10,12 @@
       "form",
       "hoeren",
       "hoeren-wahl",
+      "rechnen",
       "satz"
     ],
     "kinds": [
       "grammatik",
+      "mathe",
       "vokabeln"
     ]
   },
@@ -78,6 +80,25 @@
           "title": "am, is oder are?",
           "file": "englisch/be-formen.json",
           "group": "Grammatik"
+        }
+      ]
+    },
+    {
+      "id": "mathe",
+      "name": "Mathe",
+      "icon": "🔢",
+      "lessons": [
+        {
+          "id": "natuerliche-zahlen",
+          "title": "Zahlen ordnen & Zahlenstrahl",
+          "file": "mathe/natuerliche-zahlen.json",
+          "group": "Natürliche Zahlen"
+        },
+        {
+          "id": "zahlenfolgen",
+          "title": "Zahlenfolgen & Muster",
+          "file": "mathe/zahlenfolgen.json",
+          "group": "Natürliche Zahlen"
         }
       ]
     }

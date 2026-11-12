@@ -34,7 +34,7 @@ export function runRound(el, { tasks, test = false, chosen = true, onAgain, onBa
     const k = lessonKey(t.sid, t.lesson);
     if (!lessons.has(k)) lessons.set(k, { sid: t.sid, lesson: t.lesson, hadMedal: lessonMedal(t.sid, t.lesson).medal });
   }
-  const weight = (t) => weightFor(t.dir) * (chosen && lessons.get(lessonKey(t.sid, t.lesson)).hadMedal ? MASTERED_FACTOR : 1);
+  const weight = (t) => weightFor(t.dir, t.item) * (chosen && lessons.get(lessonKey(t.sid, t.lesson)).hadMedal ? MASTERED_FACTOR : 1);
   const unit = unitOf([...lessons.values()].map((x) => x.lesson));
 
   if (!total) {
@@ -51,7 +51,7 @@ export function runRound(el, { tasks, test = false, chosen = true, onAgain, onBa
     right() {
       const task = queue[0];
       const isFirst = task.attempts === 0;
-      points += record(task.key, { correct: true, firstTry: isFirst, weight: weight(task), effort: weightFor(task.dir) });
+      points += record(task.key, { correct: true, firstTry: isFirst, weight: weight(task), effort: weightFor(task.dir, task.item) });
       if (isFirst) firstTry++;
       queue.shift();
       done++;
@@ -60,7 +60,7 @@ export function runRound(el, { tasks, test = false, chosen = true, onAgain, onBa
     // Fehler eintragen – die Frage zeigt danach selbst die Lösung (und ggf. Abschreiben).
     wrong(typed) {
       const task = queue[0];
-      record(task.key, { correct: false, typed: typed?.trim(), effort: weightFor(task.dir) });
+      record(task.key, { correct: false, typed: typed?.trim(), effort: weightFor(task.dir, task.item) });
       task.attempts++;
       mistakes.set(task.key, { task, typed });
     },

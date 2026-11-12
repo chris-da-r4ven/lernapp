@@ -6,7 +6,7 @@
 import { testResults, addTestResult, itemState, save } from './store.js';
 import { itemKey } from './srs.js';
 import { dayKey } from './util.js';
-import { kindInfo, masteryOf, towardTarget, lessonKey } from './lessons.js';
+import { kindInfo, masteryOf, masteryMode, lessonKey } from './lessons.js';
 
 export const MEDAL_PCT = 90;
 export const MEDAL_DAYS = 2;
@@ -68,8 +68,8 @@ export function saveTest(results) {
 }
 
 // „Teste dich doch mal!“: genug geübt für einen Test?
-// Mindestens 80 % der Wörter wurden schon zweimal richtig auf Englisch geschrieben
-// (Deutsch → Englisch – genau das fragt der Test ab), noch keine Medaille,
+// Mindestens 80 % der Einträge wurden schon zweimal richtig gelöst – in der Übungsart, die der
+// Test abfragt (Vokabeln: Deutsch → Englisch, Mathe: Aufgaben lösen), noch keine Medaille,
 // und heute gab es für diese Lektion noch keinen Test.
 export const READY_SHARE = 0.8;
 export const READY_RIGHT = 2;
@@ -79,7 +79,7 @@ export function testReady(sid, lesson) {
   const key = lessonKey(sid, lesson);
   const s = medalStatus(key);
   if (s.medal || testedToday(key)) return false;
-  const dir = towardTarget(lesson);
+  const dir = masteryMode(lesson);
   const ok = lesson.items.filter((it) => itemState(itemKey(sid, lesson.id, it, dir)).right >= READY_RIGHT).length;
   return ok / lesson.items.length >= READY_SHARE;
 }

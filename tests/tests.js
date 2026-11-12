@@ -4,7 +4,7 @@
 
 import { streakInfo, mood, DAY_GOAL } from '../js/streak.js';
 import { mergeStates } from '../js/merge.js';
-import { check, parseGap } from '../js/exercises/questions.js';
+import { check, parseGap, mathNorm } from '../js/exercises/questions.js';
 import { levelFor, glitterFor } from '../js/pet.js';
 import { record, roundBonus, buildRound } from '../js/srs.js';
 import { getState, replaceState, migrateLessons, addTestResult, itemState, addPoints, addDayStat, profileId } from '../js/store.js';
@@ -12,8 +12,9 @@ import { medalStatus } from '../js/medal.js';
 import { unitOf, lessonKey } from '../js/lessons.js';
 import { deviceId } from '../js/device.js';
 import { MODES } from '../js/exercises/modes.js';
-import { modesFor, tasksFor, modeById } from '../js/exercises/registry.js';
-import { kindOf, targetSide, towardTarget, langOf, KINDS, isSupported } from '../js/lessons.js';
+import { modesFor, tasksFor, modeById, weightFor } from '../js/exercises/registry.js';
+import { numberLine } from '../js/exercises/numberline.js';
+import { kindOf, targetSide, towardTarget, langOf, KINDS, isSupported, masteryMode } from '../js/lessons.js';
 import { APP_VERSION } from '../js/version.js';
 import { dayKey } from '../js/util.js';
 import { sanitizeState, SCHEMA, LEGACY_DEVICE } from '../js/validate.js';
@@ -238,10 +239,23 @@ try {
   await test('Lern-Reihenfolge eindeutig', () => eq(new Set(MODES.map((m) => m.learnOrder)).size, MODES.length));
   await test('vereinbarte Gewichte (Sternchen und Tagesziel)', () => eq(
     Object.fromEntries(MODES.map((m) => [m.id, m.weight])),
-    { ab: 1, ba: 1, hoeren: 1.2, 'hoeren-wahl': 0.2, satz: 0.8, form: 0.3 },
+    { ab: 1, ba: 1, hoeren: 1.2, 'hoeren-wahl': 0.2, satz: 0.8, form: 0.3, rechnen: 1 },
   ));
-  await test('Lernstand-Kennungen unverändert (ab, ba, hoeren, hoeren-wahl, satz, form)', () =>
-    ok(['ab', 'ba', 'hoeren', 'hoeren-wahl', 'satz', 'form'].every((id) => modeById(id)), 'Kennung fehlt'));
+  await test('Lernstand-Kennungen unverändert (ab, ba, hoeren, hoeren-wahl, satz, form, rechnen)', () =>
+    ok(['ab', 'ba', 'hoeren', 'hoeren-wahl', 'satz', 'form', 'rechnen'].every((id) => modeById(id)), 'Kennung fehlt'));
+  await test('Mathe: Antippen (z. B. < oder >) zählt 0,3, Eintippen 1', () =>
+    eq([weightFor('rechnen', { choices: ['<', '>'] }), weightFor('rechnen', { b: '12' }), weightFor('ab')], [0.3, 1, 1]));
+  await test('Mathe: Leerzeichen, Tausenderpunkte und Groß/klein egal', () => {
+    eq([check('48000', '48 000', [], mathNorm).ok, check('48.000', '48 000', [], mathNorm).ok, check('xliv', 'XLIV', [], mathNorm).ok,
+      check('4800', '48 000', [], mathNorm).ok], [true, true, true, false]);
+  });
+  await test('Mathe: Test und Medaille fragen „Aufgaben lösen“ ab', () =>
+    eq([masteryMode({ kind: 'mathe', items: [] }), KINDS.mathe.testable], ['rechnen', true]));
+  await test('Zahlenstrahl: Striche, Beschriftung, Pfeil', () => {
+    const svg = numberLine({ from: 0, to: 40, step: 2, label: 10, arrow: 8 });
+    eq([(svg.match(/nl-tick/g) ?? []).length, (svg.match(/class="nl-num"/g) ?? []).length, svg.includes('nl-arrow')], [21, 5, true]);
+    eq(numberLine({ from: 0, to: 10, step: 0, label: 5 }), '', 'unsinnige Angaben → nichts');
+  });
 
   await test('unbekannte Lektionsart wird ausgeblendet, alte Lektionen ohne kind gehen weiter', () => {
     eq([isSupported({ kind: 'quiz', items: [] }), isSupported({ items: [] }), isSupported({ kind: 'grammatik', items: [] })], [false, true, true]);
@@ -275,7 +289,11 @@ try {
             if (m.id === 'satz' || m.id === 'form') ok(parseGap(t.item.ex), `${m.id}/${t.item.id}: Lücke`);
           }
         }
-        if (KINDS[kindOf(lesson)].testable) ok(['ab', 'ba'].includes(towardTarget(lesson)), 'Testrichtung');
+        if (KINDS[kindOf(lesson)].testable) ok(modes.some((m) => m.id === masteryMode(lesson)), 'Test-Übungsart fehlt in der Lektion');
+        for (const it of lesson.items) {
+          if (it.choices) ok(it.choices.some((c) => mathNorm(c) === mathNorm(it.b)) || kindOf(lesson) !== 'mathe', `${it.id}: Lösung nicht unter den Knöpfen`);
+          if (it.line) ok(numberLine(it.line), `${it.id}: Zahlenstrahl leer`);
+        }
       });
     }
   }

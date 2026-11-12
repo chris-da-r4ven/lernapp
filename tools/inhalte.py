@@ -144,6 +144,7 @@ def check(subjects):
             if not items:
                 errors.append(f'{where}: keine Wörter ("items")')
             grammar = l.get('kind') == 'grammatik'
+            math = l.get('kind') == 'mathe'
             ids, prompts = set(), {}
             for n, it in enumerate(items, 1):
                 at = f'{where} Wort {n}' + (f' ({it.get("b")})' if it.get('b') else '')
@@ -172,9 +173,11 @@ def check(subjects):
                         errors.append(f'{at}: Grammatik-Satz braucht "choices" (mind. 2)')
                     elif g and g['answer'].lower() not in [c.lower() for c in choices]:
                         errors.append(f'{at}: Lösung "{g["answer"]}" steht nicht in "choices"')
-                if it.get('a'):
+                if it.get('a') and not math:   # Mathe: gleiche Frage, andere Zahlen/Zahlenstrahl
                     prompts.setdefault(it['a'].strip().lower(), []).append(it.get('b'))
-                if it.get('b') and not grammar:
+                if math:
+                    errors += check_math(at, it)
+                if it.get('b') and l.get('kind') == 'vokabeln':
                     english_seen.setdefault(it['b'].strip().lower(), []).append(lid)
             frames = {}
             for it in items:
@@ -198,6 +201,33 @@ def check(subjects):
     warnings += removed_ids(subjects)
     errors += removed_moves(subjects)
     return errors, warnings
+
+
+def check_math(at, it):
+    """Mathe-Aufgabe: Antwort-Knöpfe enthalten die Lösung, Zahlenstrahl ist vollständig."""
+    out = []
+    norm = lambda s: re.sub(r'[\s.]', '', str(s)).upper()
+    choices = it.get('choices')
+    if choices is not None:
+        if not isinstance(choices, list) or len(choices) < 2:
+            out.append(f'{at}: "choices" braucht mindestens 2 Antworten')
+        elif norm(it.get('b', '')) not in [norm(c) for c in choices]:
+            out.append(f'{at}: Lösung "{it.get("b")}" steht nicht in "choices"')
+    line = it.get('line')
+    if line is not None:
+        nums = {k: line.get(k) for k in ('from', 'to', 'step')}
+        if not all(isinstance(v, (int, float)) for v in nums.values()) or nums['step'] <= 0 or nums['to'] <= nums['from']:
+            out.append(f'{at}: "line" braucht from < to und step > 0')
+        else:
+            n = (nums['to'] - nums['from']) / nums['step']
+            if n != int(n) or n > 200:
+                out.append(f'{at}: "line": (to - from) muss ein Vielfaches von step sein (höchstens 200 Striche)')
+            arrow = line.get('arrow')
+            if arrow is not None and (not nums['from'] <= arrow <= nums['to'] or (arrow - nums['from']) % nums['step']):
+                out.append(f'{at}: "line": Pfeil {arrow} liegt nicht auf einem Strich')
+            if arrow is not None and norm(arrow) != norm(it.get('b', '')):
+                out.append(f'{at}: "line": Pfeil zeigt auf {arrow}, Lösung ist aber "{it.get("b")}"')
+    return out
 
 
 def removed_moves(subjects):
@@ -270,7 +300,7 @@ def fill(lesson):
         it = dict(it)
         if 'id' not in it:
             it = {'id': it['b'], **it}
-        if lesson.get('kind') != 'grammatik':
+        if lesson.get('kind') in (None, 'vokabeln'):
             for side, alt in (('a', 'aAlt'), ('b', 'bAlt')):
                 extra = article_free(it[side], side) - set(it.get(alt, [])) - {it[side]}
                 if extra:

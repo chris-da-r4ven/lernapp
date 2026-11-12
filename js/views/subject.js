@@ -3,7 +3,7 @@
 
 import { getSubject, getLesson } from '../content.js';
 import { starsFor } from '../srs.js';
-import { masteryOf, unitWord } from '../lessons.js';
+import { masteryOf, unitWord, kindOf } from '../lessons.js';
 import { lessonMedal, MEDAL_RULE, testReady } from '../medal.js';
 import { esc, stars } from '../util.js';
 
@@ -55,6 +55,6 @@ export function subjectView(el, sid) {
         </section>`;
     }).join('')}
     <div class="actions">
-      <a class="btn" href="#/test/${encodeURIComponent(sid)}">📝 Test-Modus – wie im Vokabeltest</a>
+      <a class="btn" href="#/test/${encodeURIComponent(sid)}">📝 Test-Modus – ${[...groups.values()].flat().some((x) => kindOf(x.lesson) === 'mathe') ? 'wie eine Klassenarbeit' : 'wie im Vokabeltest'}</a>
     </div>`;
 }

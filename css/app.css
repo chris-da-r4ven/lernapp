@@ -390,3 +390,15 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
 .warn-banner { border: 2px solid var(--warn); background: rgba(224, 161, 0, 0.12); font-weight: 600; }
 .until-form { align-items: flex-end; }
 .until-form .answer { max-width: 200px; }
+
+/* Mathe: Aufgabe als Satz (kleiner als ein Vokabel-Wort) und Zahlenstrahl */
+.prompt.math-q { font-size: 1.4rem; line-height: 1.4; }
+@media (max-width: 600px) { .prompt.math-q { font-size: 1.2rem; } }
+.numberline { display: block; width: 100%; max-width: 640px; height: auto; margin: 0 auto 16px; }
+.numberline .nl-axis { stroke: var(--text); stroke-width: 2; fill: none; }
+.numberline .nl-head { stroke-linejoin: round; }
+.numberline .nl-tick { stroke: var(--text); stroke-width: 1.5; }
+.numberline .nl-big { stroke-width: 2.5; }
+.numberline .nl-num { fill: var(--text); font-size: 17px; text-anchor: middle; font-family: inherit; }
+.numberline .nl-arrow { fill: var(--primary); }
+.numberline .nl-arrow-line { stroke: var(--primary); stroke-width: 3; }

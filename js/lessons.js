@@ -3,6 +3,7 @@
 // Lektionsarten ("kind" in der Lektionsdatei):
 //   vokabeln  – Wortpaare, alle passenden Übungsarten, Test-Modus, Medaille über Tests
 //   grammatik – Sätze mit Lücke und Auswahl, nur „Richtige Form“, Medaille über sicher sitzende Sätze
+//   mathe     – Aufgabe (a) und Lösung (b), eintippen oder antippen, ggf. mit Zahlenstrahl; Test-Modus
 // Später z. B. „lesetext“ oder „quiz“: hier eine Art ergänzen, in modes.js passende Übungsarten.
 //
 // Sprachen: Jede Lektion hat zwei Seiten (a, b). Die Lernsprache ("target") ist die Seite,
@@ -12,8 +13,11 @@ import { itemState } from './store.js';
 import { itemKey, SAFE_BOX } from './srs.js';
 
 export const KINDS = {
-  vokabeln: { unit: ['Wort', 'Wörter'], testable: true },
+  vokabeln: { unit: ['Wort', 'Wörter'], testable: true,
+    test: 'Wie im Vokabeltest: Du bekommst das deutsche Wort und schreibst es in der Fremdsprache. Jedes Wort kommt nur einmal, ohne Hilfe.' },
   grammatik: { unit: ['Satz', 'Sätze'], testable: false },
+  mathe: { unit: ['Aufgabe', 'Aufgaben'], testable: true,
+    test: 'Wie in einer Klassenarbeit: Jede Aufgabe kommt nur einmal, ohne Hilfe.' },
 };
 
 // "grammar": true war das alte Format (Inhalte bis Version 9) – noch verstehen,
@@ -56,8 +60,9 @@ export const langOf = (lesson, side = targetSide(lesson)) =>
 // Schreibrichtung „Muttersprache → Lernsprache“ – die fragt der Test ab.
 export const towardTarget = (lesson) => (targetSide(lesson) === 'b' ? 'ab' : 'ba');
 
-// Übungsart, nach der eine Lektion als „sicher“ zählt (Sterne, Prozent, Grammatik-Medaille).
-export const masteryMode = (lesson) => (kindOf(lesson) === 'grammatik' ? 'form' : towardTarget(lesson));
+// Übungsart, nach der eine Lektion als „sicher“ zählt (Sterne, Prozent, Medaille) – und die der Test abfragt.
+const MASTERY = { grammatik: 'form', mathe: 'rechnen' };
+export const masteryMode = (lesson) => MASTERY[kindOf(lesson)] ?? towardTarget(lesson);
 
 // Anteil sicherer Einträge einer Lektion (0..1).
 export function masteryOf(sid, lesson, mode = masteryMode(lesson)) {

@@ -1,0 +1,308 @@
+{
+  "id": "natuerliche-zahlen",
+  "title": "Zahlen ordnen & Zahlenstrahl",
+  "group": "Natürliche Zahlen",
+  "order": 10,
+  "kind": "mathe",
+  "type": "pairs",
+  "sides": {
+    "a": "Aufgabe",
+    "b": "Lösung"
+  },
+  "langs": {
+    "a": "de-DE",
+    "b": "de-DE"
+  },
+  "items": [
+    {
+      "id": "strahl-8",
+      "a": "Auf welche Zahl zeigt der Pfeil?",
+      "b": "8",
+      "why": "Bis zur 10 sind es 5 Striche, also Schrittlänge 10 : 5 = 2. Der Pfeil steht 4 Schritte nach der 0: 8.",
+      "line": {
+        "from": 0,
+        "to": 40,
+        "step": 2,
+        "label": 10,
+        "arrow": 8
+      }
+    },
+    {
+      "id": "strahl-35",
+      "a": "Auf welche Zahl zeigt der Pfeil?",
+      "b": "35",
+      "why": "Bis zur 50 sind es 10 Striche, also Schrittlänge 5. Der Pfeil steht 7 Schritte nach der 0: 35.",
+      "line": {
+        "from": 0,
+        "to": 100,
+        "step": 5,
+        "label": 50,
+        "arrow": 35
+      }
+    },
+    {
+      "id": "strahl-340",
+      "a": "Auf welche Zahl zeigt der Pfeil?",
+      "b": "340",
+      "why": "Von 300 bis 400 sind es 5 Striche, also Schrittlänge 20. Der Pfeil steht 2 Schritte nach 300: 340.",
+      "line": {
+        "from": 200,
+        "to": 600,
+        "step": 20,
+        "label": 100,
+        "arrow": 340
+      }
+    },
+    {
+      "id": "strahl-73",
+      "a": "Auf welche Zahl zeigt der Pfeil?",
+      "b": "73",
+      "why": "Schrittlänge 1. Der Pfeil steht 3 Schritte nach 70.",
+      "line": {
+        "from": 60,
+        "to": 90,
+        "step": 1,
+        "label": 10,
+        "arrow": 73
+      }
+    },
+    {
+      "id": "strahl-650",
+      "a": "Auf welche Zahl zeigt der Pfeil?",
+      "b": "650",
+      "why": "Von 0 bis 500 sind es 10 Striche, also Schrittlänge 50. Der Pfeil steht 3 Schritte nach 500: 650.",
+      "line": {
+        "from": 0,
+        "to": 1000,
+        "step": 50,
+        "label": 500,
+        "arrow": 650
+      }
+    },
+    {
+      "id": "strahl-380",
+      "a": "Auf welche Zahl zeigt der Pfeil?",
+      "b": "380",
+      "why": "Von 350 bis 400 sind es 5 Striche, also Schrittlänge 10. Der Pfeil steht 2 Schritte vor 400.",
+      "line": {
+        "from": 300,
+        "to": 400,
+        "step": 10,
+        "label": 50,
+        "arrow": 380
+      }
+    },
+    {
+      "id": "schritt-5",
+      "a": "Wie groß ist die Schrittlänge?",
+      "b": "5",
+      "why": "Von 0 bis 25 sind es 5 Schritte: 25 : 5 = 5.",
+      "line": {
+        "from": 0,
+        "to": 50,
+        "step": 5,
+        "label": 25
+      }
+    },
+    {
+      "id": "schritt-25",
+      "a": "Wie groß ist die Schrittlänge?",
+      "b": "25",
+      "why": "Von 100 bis 200 sind es 4 Schritte: 100 : 4 = 25.",
+      "line": {
+        "from": 100,
+        "to": 300,
+        "step": 25,
+        "label": 100
+      }
+    },
+    {
+      "id": "schritt-2",
+      "a": "Wie groß ist die Schrittlänge?",
+      "b": "2",
+      "why": "Von 0 bis 10 sind es 5 Schritte: 10 : 5 = 2.",
+      "line": {
+        "from": 0,
+        "to": 20,
+        "step": 2,
+        "label": 10
+      }
+    },
+    {
+      "id": "vor-184",
+      "a": "Wie heißt der Vorgänger von 184?",
+      "b": "183",
+      "why": "Der Vorgänger ist um 1 kleiner."
+    },
+    {
+      "id": "nach-999",
+      "a": "Wie heißt der Nachfolger von 999?",
+      "b": "1 000",
+      "why": "Der Nachfolger ist um 1 größer."
+    },
+    {
+      "id": "vor-1000",
+      "a": "Wie heißt der Vorgänger von 1 000?",
+      "b": "999",
+      "why": "Der Vorgänger ist um 1 kleiner."
+    },
+    {
+      "id": "nach-2099",
+      "a": "Wie heißt der Nachfolger von 2 099?",
+      "b": "2 100",
+      "why": "Der Nachfolger ist um 1 größer."
+    },
+    {
+      "id": "vor-5010",
+      "a": "Wie heißt der Vorgänger von 5 010?",
+      "b": "5 009",
+      "why": "Der Vorgänger ist um 1 kleiner."
+    },
+    {
+      "id": "cmp-47-74",
+      "a": "Setze < oder > ein: 47 ☐ 74",
+      "b": "<",
+      "why": "4 Zehner sind weniger als 7 Zehner: 47 < 74.",
+      "choices": [
+        "<",
+        ">"
+      ]
+    },
+    {
+      "id": "cmp-305-350",
+      "a": "Setze < oder > ein: 305 ☐ 350",
+      "b": "<",
+      "why": "Gleiche Hunderter – dann die Zehner vergleichen: 0 < 5.",
+      "choices": [
+        "<",
+        ">"
+      ]
+    },
+    {
+      "id": "cmp-1001-999",
+      "a": "Setze < oder > ein: 1 001 ☐ 999",
+      "b": ">",
+      "why": "Eine vierstellige Zahl ist größer als jede dreistellige.",
+      "choices": [
+        "<",
+        ">"
+      ]
+    },
+    {
+      "id": "cmp-6250-6205",
+      "a": "Setze < oder > ein: 6 250 ☐ 6 205",
+      "b": ">",
+      "why": "Tausender und Hunderter gleich – bei den Zehnern ist 5 > 0.",
+      "choices": [
+        "<",
+        ">"
+      ]
+    },
+    {
+      "id": "cmp-89-98",
+      "a": "Setze < oder > ein: 89 ☐ 98",
+      "b": "<",
+      "why": "8 Zehner sind weniger als 9 Zehner.",
+      "choices": [
+        "<",
+        ">"
+      ]
+    },
+    {
+      "id": "cmp-4321-4312",
+      "a": "Setze < oder > ein: 4 321 ☐ 4 312",
+      "b": ">",
+      "why": "Bis zu den Hundertern gleich – bei den Zehnern ist 2 > 1.",
+      "choices": [
+        "<",
+        ">"
+      ]
+    },
+    {
+      "id": "zw-10-20",
+      "a": "Wie viele natürliche Zahlen liegen zwischen 10 und 20?",
+      "b": "9",
+      "why": "11, 12, …, 19 – das sind 20 − 10 − 1 = 9 Zahlen."
+    },
+    {
+      "id": "zw-25-31",
+      "a": "Wie viele natürliche Zahlen liegen zwischen 25 und 31?",
+      "b": "5",
+      "why": "26, 27, 28, 29, 30 – das sind 31 − 25 − 1 = 5 Zahlen."
+    },
+    {
+      "id": "max-3980",
+      "a": "Welche Zahl ist die größte?",
+      "b": "3 980",
+      "why": "Alle haben 3 Tausender – dann zählen die Hunderter: 9 ist am meisten.",
+      "choices": [
+        "3 809",
+        "3 980",
+        "3 890",
+        "3 098"
+      ]
+    },
+    {
+      "id": "min-5065",
+      "a": "Welche Zahl ist die kleinste?",
+      "b": "5 065",
+      "why": "Alle haben 5 Tausender – bei den Hundertern hat 5 065 nur 0.",
+      "choices": [
+        "5 605",
+        "5 065",
+        "5 560",
+        "5 650"
+      ]
+    },
+    {
+      "id": "max-76543",
+      "a": "Welche Zahl ist die größte?",
+      "b": "76 543",
+      "why": "Bis zu den Tausendern sind alle gleich. Bei den Hundertern haben 76 543 und 76 534 eine 5 – dann entscheiden die Zehner: 4 > 3.",
+      "choices": [
+        "76 543",
+        "76 435",
+        "76 534",
+        "76 453"
+      ]
+    },
+    {
+      "id": "wer-999",
+      "a": "Wer bin ich? Ich bin die größte dreistellige Zahl.",
+      "b": "999",
+      "why": "Drei Stellen, jede so groß wie möglich: 9, 9, 9."
+    },
+    {
+      "id": "wer-1000",
+      "a": "Wer bin ich? Ich bin die kleinste vierstellige Zahl.",
+      "b": "1 000",
+      "why": "Vorne darf keine 0 stehen – also 1 und dann lauter Nullen."
+    },
+    {
+      "id": "wer-9998",
+      "a": "Wer bin ich? Ich bin die größte vierstellige gerade Zahl.",
+      "b": "9 998",
+      "why": "Gerade Zahlen enden auf 0, 2, 4, 6 oder 8. 9 999 ist ungerade, also 9 998."
+    },
+    {
+      "id": "gerade-4738",
+      "a": "Ist 4 738 gerade oder ungerade?",
+      "b": "gerade",
+      "why": "Die letzte Ziffer ist 8 – gerade Zahlen enden auf 0, 2, 4, 6 oder 8.",
+      "choices": [
+        "gerade",
+        "ungerade"
+      ]
+    },
+    {
+      "id": "gerade-2001",
+      "a": "Ist 2 001 gerade oder ungerade?",
+      "b": "ungerade",
+      "why": "Die letzte Ziffer ist 1 – ungerade Zahlen enden auf 1, 3, 5, 7 oder 9.",
+      "choices": [
+        "gerade",
+        "ungerade"
+      ]
+    }
+  ]
+}

@@ -7,6 +7,7 @@
 //   chooseQuestion – Wort hören, Bedeutung antippen (hoeren-wahl)
 //   gapQuestion    – Lückensatz: fehlendes Wort der Lernsprache einsetzen (satz)
 //   formQuestion   – Grammatik: richtige Form antippen, z. B. am / is / are (form)
+//   mathQuestion   – Mathe: Aufgabe lösen, Zahl eintippen oder Antwort antippen (rechnen)
 //
 // Ein Fragetyp hat: describe(task) – Zeile über der Aufgabe, pair(task) – [gefragt, Antwort]
 // für Bilanz und Fortschritt, render(card, task, api, { test }) – die Aufgabe selbst.
@@ -15,6 +16,7 @@ import { esc, shuffle } from '../util.js';
 import { renderDiff, distance } from '../diff.js';
 import { speak, speechControls, bindSpeechControls } from '../speech.js';
 import { targetSide, otherSide, langOf } from '../lessons.js';
+import { numberLine } from './numberline.js';
 
 // --- Prüfen ------------------------------------------------------------------
 
@@ -28,9 +30,10 @@ function acceptedAnswers(answer, alts = []) {
   return [...new Set([answer, ...parts, ...alts].map(normalize).filter(Boolean))];
 }
 
-export function check(typed, answer, alts) {
-  const t = normalize(typed);
-  const accepted = acceptedAnswers(answer, alts);
+// norm: eigene Vereinheitlichung (Mathe: Leerzeichen und Tausenderpunkte egal, Groß/klein egal).
+export function check(typed, answer, alts, norm = null) {
+  const t = norm ? norm(typed) : normalize(typed);
+  const accepted = norm ? [...new Set([answer, ...(alts ?? [])].map(norm))] : acceptedAnswers(answer, alts);
   if (accepted.includes(t)) return { ok: true };
   const caseOnly = accepted.some((a) => a.toLowerCase() === t.toLowerCase());
   const closest = accepted.reduce((best, a) => (distance(t, a) < distance(t, best) ? a : best), accepted[0]);
@@ -44,10 +47,10 @@ const other = otherSide;
 // Rendert Eingabefeld + Rückmeldung in `area`.
 // solution(): Zusatz-HTML, das nach dem Antworten erscheint (z. B. Bedeutung, ganzer Satz).
 // onAnswered(): wird nach dem Antworten aufgerufen (z. B. Satz vorlesen).
-function askTyped(area, { placeholder, answer, alts, api, test, again = false, solution = () => '', onAnswered = () => {} }) {
+function askTyped(area, { placeholder, answer, alts, norm = null, numeric = false, api, test, again = false, solution = () => '', onAnswered = () => {} }) {
   area.innerHTML = `
     <form class="answer-form" autocomplete="off">
-      <input class="answer" name="answer" type="text" autocomplete="off" autocorrect="off"
+      <input class="answer" name="answer" type="text" autocomplete="off" autocorrect="off"${numeric ? ' inputmode="numeric"' : ''}
              autocapitalize="off" spellcheck="false" placeholder="${esc(placeholder)}" aria-label="Antwort">
       <button class="btn primary" type="submit">Prüfen</button>
     </form>
@@ -60,7 +63,7 @@ function askTyped(area, { placeholder, answer, alts, api, test, again = false, s
   form.addEventListener('submit', (ev) => {
     ev.preventDefault();
     if (!input.value.trim()) { input.focus(); return; }
-    const res = check(input.value, answer, alts);
+    const res = check(input.value, answer, alts, norm);
     input.readOnly = true;
     form.querySelector('button').remove();
     if (res.ok) showRight(); else showWrong(input.value, res);
@@ -84,7 +87,7 @@ function askTyped(area, { placeholder, answer, alts, api, test, again = false, s
   function showWrong(typed, res) {
     api.wrong(typed);
     const diffHtml = (text, r) => {
-      const d = renderDiff(normalize(text), r.closest);
+      const d = renderDiff(norm ? norm(text) : normalize(text), r.closest);
       return `
         <div class="diff">
           <div><span class="muted small">Du:</span> <span class="word">${d.yours}</span></div>
@@ -112,7 +115,7 @@ function askTyped(area, { placeholder, answer, alts, api, test, again = false, s
       ${solution()}
       <form class="answer-form copy-form" autocomplete="off">
         <input class="answer" name="copy" type="text" autocomplete="off" autocorrect="off"
-               autocapitalize="off" spellcheck="false" placeholder="Schreib es richtig ab …" aria-label="Richtig abschreiben">
+               autocapitalize="off" spellcheck="false"${numeric ? ' inputmode="numeric"' : ''} placeholder="Schreib es richtig ab …" aria-label="Richtig abschreiben">
         <button class="btn primary" type="submit">OK</button>
       </form>`;
     const copy = fb.querySelector('.copy-form');
@@ -120,7 +123,7 @@ function askTyped(area, { placeholder, answer, alts, api, test, again = false, s
     copy.addEventListener('submit', (ev) => {
       ev.preventDefault();
       if (!copy.copy.value.trim()) { copy.copy.focus(); return; }
-      const r = check(copy.copy.value, answer, alts);
+      const r = check(copy.copy.value, answer, alts, norm);
       if (r.ok) { api.retry(); return; }
       // Abschreiben zählt nicht als neuer Fehler – nur zeigen, wo es noch hakt.
       fb.querySelector('.result').textContent = message(r, 'Beim Abschreiben hat sich noch ein Fehler eingeschlichen. Schau genau hin:');
@@ -320,6 +323,61 @@ export const formQuestion = {
         <p class="result ${right ? 'good' : 'bad'}">${right ? (task.attempts ? 'Jetzt sitzt es! 👍' : 'Richtig! 🎉') : (test ? 'Leider falsch.' : 'Noch nicht ganz.')}</p>
         <div class="actions"><button class="btn primary" data-act="next">Weiter</button></div>`;
       speak(g.full, langOf(task.lesson));
+      const nextBtn = fb.querySelector('[data-act=next]');
+      nextBtn.focus();
+      nextBtn.addEventListener('click', () => (right ? api.right() : api.retry()));
+    });
+  },
+};
+
+// --- Mathe: Aufgabe lösen ------------------------------------------------------
+// Eintrag: "a" Aufgabe, "b" Lösung, optional "bAlt" (weitere richtige Schreibweisen),
+// "choices" (Antwort antippen statt eintippen, z. B. ["<", ">"]), "line" (Zahlenstrahl,
+// siehe numberline.js) und "why" (Erklärung, erscheint nach dem Antworten).
+
+// 48 000 = 48000 = 48.000; xliv = XLIV
+export const mathNorm = (s) => String(s).normalize('NFC').replace(/[\s.\u202f]/g, '').toUpperCase();
+const isNumber = (s) => /^[\d\s.]+$/.test(s);
+
+export const mathQuestion = {
+  describe: () => '✏️ Aufgabe',
+  pair: (task) => [task.item.a, task.item.b],
+  render(card, task, api, { test }) {
+    const item = task.item;
+    const why = () => (item.why ? `<p class="meaning muted">💡 ${esc(item.why)}</p>` : '');
+    card.innerHTML = `
+      <div class="prompt math-q">${esc(item.a)}</div>
+      ${item.line ? numberLine(item.line) : ''}
+      <div class="answer-area"></div>`;
+    const area = card.querySelector('.answer-area');
+    if (!item.choices) {
+      askTyped(area, {
+        placeholder: 'Lösung …', answer: item.b, alts: item.bAlt, norm: mathNorm, numeric: isNumber(item.b),
+        api, test, again: task.attempts > 0, solution: why,
+      });
+      return;
+    }
+    area.innerHTML = `
+      <div class="choices${item.choices.length <= 3 ? ' form-choices' : ''}">
+        ${item.choices.map((c, i) => `<button class="btn choice" type="button" data-i="${i}">${esc(c)}</button>`).join('')}
+      </div>
+      <div class="feedback"></div>`;
+    area.querySelector('.choices').addEventListener('click', (ev) => {
+      const b = ev.target.closest('.choice');
+      if (!b || card.dataset.answered) return;
+      card.dataset.answered = '1';
+      const picked = item.choices[Number(b.dataset.i)];
+      const right = mathNorm(picked) === mathNorm(item.b);
+      area.querySelectorAll('.choice').forEach((x) => {
+        x.disabled = true;
+        if (mathNorm(item.choices[Number(x.dataset.i)]) === mathNorm(item.b)) x.classList.add('right');
+      });
+      if (!right) { b.classList.add('wrong'); api.wrong(picked); }
+      const fb = area.querySelector('.feedback');
+      fb.innerHTML = `
+        <p class="result ${right ? 'good' : 'bad'}">${right ? (task.attempts ? 'Jetzt sitzt es! 👍' : 'Richtig! 🎉') : (test ? 'Leider falsch.' : 'Noch nicht ganz.')}</p>
+        ${why()}
+        <div class="actions"><button class="btn primary" data-act="next">Weiter</button></div>`;
       const nextBtn = fb.querySelector('[data-act=next]');
       nextBtn.focus();
       nextBtn.addEventListener('click', () => (right ? api.right() : api.retry()));

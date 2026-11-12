@@ -51,6 +51,26 @@ python3 tools/inhalte.py bauen
 - Committen und pushen. Das Tablet holt die neuen Inhalte beim nächsten Start
   (oder per „Neue Inhalte suchen“).
 
+## Mathe-Lektionen
+
+Lektionsart `"kind": "mathe"`, Seiten `"sides": {"a": "Aufgabe", "b": "Lösung"}`. Jeder Eintrag braucht
+eine feste `id` (die Lösung allein ist nicht eindeutig). Aufgaben selbst schreiben – nicht aus dem Buch
+abschreiben, nur das Thema und die Art der Aufgabe übernehmen.
+
+```json
+{ "id": "vor-184", "a": "Wie heißt der Vorgänger von 184?", "b": "183", "why": "Der Vorgänger ist um 1 kleiner." }
+{ "id": "cmp-47-74", "a": "Setze < oder > ein: 47 ☐ 74", "b": "<", "choices": ["<", ">"] }
+{ "id": "strahl-8", "a": "Auf welche Zahl zeigt der Pfeil?", "b": "8",
+  "line": { "from": 0, "to": 40, "step": 2, "label": 10, "arrow": 8 } }
+```
+
+- `why` – Erklärung, erscheint nach dem Antworten (vor allem bei Fehlern hilfreich).
+- `choices` – Antwort antippen statt eintippen (zählt 0,3 statt 1 fürs Tagesziel).
+- `line` – Zahlenstrahl: Ausschnitt `from`–`to`, Striche im Abstand `step`, beschriftet sind
+  die Vielfachen von `label`, `arrow` (optional) zeigt auf eine Zahl. Das Werkzeug prüft, dass der
+  Pfeil auf einem Strich liegt und zur Lösung passt.
+- Beim Eintippen sind Leerzeichen, Tausenderpunkte und Groß/klein egal (48 000 = 48000, xliv = XLIV).
+
 ## Ändern, zusammenlegen, umbenennen
 
 - **Wörter korrigieren:** `a`, `b`, Sätze dürfen geändert werden. Die `id` eines Worts **nie** ändern –

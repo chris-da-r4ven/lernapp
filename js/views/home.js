@@ -1,4 +1,5 @@
-import { getSubjects, hasContent } from '../content.js';
+import { getSubjects, hasContent, allLessons } from '../content.js';
+import { unitOf, countWord } from '../lessons.js';
 import { getState, streak } from '../store.js';
 import { mood, DAY_GOAL } from '../streak.js';
 import { petStatus, PET } from '../pet.js';
@@ -93,9 +94,11 @@ function streakMessage(s) {
 function nowCard() {
   const { due, fresh, steps } = dueSummary();
   const parts = [];
-  if (due) parts.push(`${due} ${due === 1 ? 'Wort' : 'Wörter'} zum Wiederholen`);
-  if (fresh) parts.push(`${fresh} neue ${fresh === 1 ? 'Wort' : 'Wörter'}`);
-  if (!due && !fresh && steps) parts.push('neue Übungen mit bekannten Wörtern');
+  // Einheit: „Wörter“, solange es nur Vokabeln gibt – mit Mathe & Co. „Aufgaben“.
+  const unit = unitOf(allLessons().map((x) => x.lesson).filter((l) => l.kind !== 'grammatik'));
+  if (due) parts.push(`${countWord(unit, due)} zum Wiederholen`);
+  if (fresh) parts.push(`${fresh} neue ${unit[fresh === 1 ? 0 : 1]}`);
+  if (!due && !fresh && steps) parts.push(`neue Übungen mit bekannten ${unit[1] === 'Wörter' ? 'Wörtern' : 'Aufgaben'}`);
   return `
     <a class="card now-card" href="#/jetzt">
       <span class="now-play" aria-hidden="true">▶</span>

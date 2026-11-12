@@ -14,13 +14,13 @@
 //   group      Übungsarten mit gleicher group stehen in der Lektion in einer Zeile
 //              (Reihenfolge der Liste = Reihenfolge der Knöpfe und Markierungen)
 //   label      Knopftext (Funktion der Lektion), short – Kurzform für Markierungen
-//   weight     Sternchen im Verhältnis zum Schreiben (1)
+//   weight     Sternchen im Verhältnis zum Schreiben (1); itemWeight(item) – abweichend für einzelne Einträge
 //   learnOrder Reihenfolge, in der „Jetzt üben“ ein neues Wort durch die Übungsarten führt
 //   speech     braucht Sprachausgabe; minItems – mindestens so viele Einträge in der Lektion
 //   usable     welche Einträge sich eignen (z. B. nur mit Beispielsatz)
 //   question   Fragetyp aus questions.js
 
-import { writeQuestion, chooseQuestion, gapQuestion, formQuestion, parseGap } from './questions.js';
+import { writeQuestion, chooseQuestion, gapQuestion, formQuestion, mathQuestion, parseGap } from './questions.js';
 import { targetSide } from '../lessons.js';
 
 const CODES = { Deutsch: 'DE', Englisch: 'EN', Französisch: 'FR', Spanisch: 'ES', Latein: 'LA' };
@@ -92,5 +92,16 @@ export const MODES = [
     learnOrder: 2,
     usable: (item) => Boolean(parseGap(item.ex) && item.choices?.length),
     question: formQuestion,
+  },
+  {
+    id: 'rechnen',
+    kinds: ['mathe'],
+    group: 'rechnen',
+    label: () => '✏️ Aufgaben lösen',
+    short: () => '✏️ Lösen',
+    weight: 1,
+    itemWeight: (item) => (item.choices ? 0.3 : 1),   // Antippen (z. B. < oder >) zählt weniger als Eintippen
+    learnOrder: 7,
+    question: mathQuestion,
   },
 ];

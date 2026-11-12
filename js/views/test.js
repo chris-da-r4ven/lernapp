@@ -1,9 +1,10 @@
-// Test-Modus: wie ein Vokabeltest in der Schule.
-// Lektionen auswählen, dann alle Wörter Deutsch → Englisch, gemischt,
-// jedes nur einmal, ohne Abschreiben und Spicken. Am Ende: Ergebnis in Prozent.
+// Test-Modus: wie ein Vokabeltest oder eine Klassenarbeit in der Schule.
+// Lektionen auswählen, dann alle Einträge in der Übungsart der Lektion (masteryMode: Vokabeln
+// Deutsch → Englisch, Mathe: Aufgaben lösen), gemischt, jeder nur einmal, ohne Abschreiben und
+// Spicken. Am Ende: Ergebnis in Prozent.
 
 import { getSubject, getLesson } from '../content.js';
-import { kindInfo, towardTarget, unitWord } from '../lessons.js';
+import { kindInfo, masteryMode, unitWord, unitOf, countWord } from '../lessons.js';
 import { tasksFor } from '../exercises/registry.js';
 import { runRound } from '../exercises/round.js';
 import { esc, shuffle } from '../util.js';
@@ -20,8 +21,7 @@ export function testView(el, sid, preselect) {
     <a class="back" href="${back}">← ${esc(subject.name)}</a>
     <h1>📝 Test-Modus</h1>
     <section class="card">
-      <p>Wie im Vokabeltest: Du bekommst das deutsche Wort und schreibst es auf Englisch.
-         Jedes Wort kommt nur einmal, ohne Hilfe. Am Ende siehst du, wie viel du richtig hattest.</p>
+      <p>${esc(kindInfo(lessons[0] ?? {}).test ?? '')} Am Ende siehst du, wie viel du richtig hattest.</p>
       <h2>Welche Lektionen?</h2>
       <form class="test-form">
         ${lessons.map((l, i) => {
@@ -41,7 +41,7 @@ export function testView(el, sid, preselect) {
   const chosen = () => [...form.querySelectorAll('input[name=lesson]:checked')].map((i) => lessons.find((l) => l.id === i.value));
   const updateCount = () => {
     const n = chosen().reduce((sum, l) => sum + l.items.length, 0);
-    form.querySelector('.test-count').textContent = n ? `${n} Wörter im Test` : 'Hake die Lektionen an, die im Test drankommen.';
+    form.querySelector('.test-count').textContent = n ? `${countWord(unitOf(chosen()), n)} im Test` : 'Hake die Lektionen an, die im Test drankommen.';
     form.querySelector('button').disabled = !n;
   };
   form.addEventListener('change', updateCount);
@@ -53,8 +53,7 @@ export function testView(el, sid, preselect) {
   });
 
   function start(selected) {
-    // Muttersprache → Lernsprache, wie im Vokabeltest.
-    const tasks = shuffle(selected.flatMap((l) => tasksFor(sid, l, towardTarget(l))));
+    const tasks = shuffle(selected.flatMap((l) => tasksFor(sid, l, masteryMode(l))));
     el.innerHTML = `<a class="back" href="${back}">← ${esc(subject.name)}</a><div class="exercise"></div>`;
     runRound(el.querySelector('.exercise'), {
       tasks,

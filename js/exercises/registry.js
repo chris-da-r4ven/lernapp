@@ -43,6 +43,9 @@ export function tasksFor(sid, lesson, modeId) {
     .map((item) => ({ sid, lesson, item, dir: modeId, key: itemKey(sid, lesson.id, item, modeId) }));
 }
 
-export const weightFor = (modeId) => modeById(modeId)?.weight ?? 1;
+export const weightFor = (modeId, item = null) => {
+  const m = modeById(modeId);
+  return (item && m?.itemWeight?.(item)) ?? m?.weight ?? 1;
+};
 export const learnOrderOf = (modeId) => modeById(modeId)?.learnOrder ?? 99;
 export const questionFor = (modeId) => modeById(modeId)?.question;
