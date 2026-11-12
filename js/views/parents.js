@@ -1,7 +1,9 @@
 // Bereich „Für Eltern“ auf der Fortschrittsseite: zum Ausklappen,
-// mit Statistik zurücksetzen, Sicherung des Spielstands und Geräte-Tests.
+// mit Rückmeldungen des Kindes, Statistik zurücksetzen, Sicherung des Spielstands und Geräte-Tests.
 
-import { resetProgress } from '../store.js';
+import { resetProgress, getState } from '../store.js';
+import { modeById } from '../exercises/registry.js';
+import { RATINGS } from '../exercises/summary.js';
 import { syncStatus, connect, disconnect, syncNow, setTokenUntil, DEFAULT_REPO } from '../sync.js';
 import { esc, toast } from '../util.js';
 
@@ -9,6 +11,9 @@ export function parentsSection(open = false) {
   return `
     <details class="card parents"${open ? ' open' : ''}>
       <summary><h2>Für Eltern</h2></summary>
+
+      <h3>Rückmeldungen</h3>
+      ${feedbackBlock()}
 
       <h3>Statistik zurücksetzen</h3>
       <p class="muted small">Setzt Sternchen, Serie und den ganzen Lernstand auf null. Die Lektionen bleiben da.</p>
@@ -141,4 +146,42 @@ export function bindParents(el, rerender) {
     toast('Sicherung getrennt. Der Spielstand bleibt auf dem Gerät.');
     rerender(true);
   });
+}
+
+// Was das Kind nach den Runden angetippt hat: Spaß und „weitergebracht“, je 1–5.
+const FEEDBACK_ROWS = 15;
+const avg = (list) => (list.length ? (list.reduce((n, x) => n + x, 0) / list.length).toLocaleString('de-DE', { maximumFractionDigits: 1 }) : '–');
+const modeNames = (mode) => [...new Set(String(mode).split(',').map((id) => modeById(id)?.name ?? id))].join(', ');
+
+function feedbackBlock() {
+  const list = getState().feedback ?? [];
+  if (!list.length) return '<p class="muted small">Noch keine Rückmeldungen. Nach jeder Runde kann sie antippen, wie viel Spaß sie hatte und wie viel es ihr gebracht hat.</p>';
+  // Durchschnitt pro Übungsart – zeigt, was gut ankommt und was sie als nützlich empfindet.
+  const byMode = new Map();
+  for (const f of list) {
+    const k = modeNames(f.mode) + (f.test ? ' (Test)' : '');
+    const m = byMode.get(k) ?? { fun: [], learn: [] };
+    if (f.fun) m.fun.push(f.fun);
+    if (f.learn) m.learn.push(f.learn);
+    byMode.set(k, m);
+  }
+  const icon = (q, v) => (v ? RATINGS[q].icons[v - 1] : '–');
+  const when = (at) => new Date(at).toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short' });
+  return `
+    <div class="table-wrap"><table class="table">
+      <thead><tr><th>Übung</th><th>Runden</th><th>${RATINGS.fun.icons[4]} Spaß</th><th>${RATINGS.learn.icons[4]} gebracht</th></tr></thead>
+      <tbody>${[...byMode].map(([k, m]) => `
+        <tr><td>${esc(k)}</td><td>${Math.max(m.fun.length, m.learn.length)}</td><td>${avg(m.fun)}</td><td>${avg(m.learn)}</td></tr>`).join('')}
+      </tbody>
+    </table></div>
+    <details class="small"><summary>Letzte ${Math.min(FEEDBACK_ROWS, list.length)} Runden</summary>
+      <div class="table-wrap"><table class="table">
+        <thead><tr><th>Wann</th><th>Was</th><th>Spaß</th><th>Gebracht</th></tr></thead>
+        <tbody>${list.slice(-FEEDBACK_ROWS).reverse().map((f) => `
+          <tr><td class="muted">${esc(when(f.at))}</td><td>${esc(f.what)}<br><span class="muted">${esc(modeNames(f.mode))}${f.test ? ' · Test' : ''} · ${f.right}/${f.n} sofort richtig</span></td>
+            <td>${icon('fun', f.fun)}</td><td>${icon('learn', f.learn)}</td></tr>`).join('')}
+        </tbody>
+      </table></div>
+    </details>
+    <p class="muted small">Werte 1–5. Spaß: ${RATINGS.fun.icons.join(' ')} · gebracht: ${RATINGS.learn.icons.join(' ')}</p>`;
 }

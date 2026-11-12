@@ -13,6 +13,7 @@
 //   kinds      zu welchen Lektionsarten sie passt
 //   group      Übungsarten mit gleicher group stehen in der Lektion in einer Zeile
 //              (Reihenfolge der Liste = Reihenfolge der Knöpfe und Markierungen)
+//   name       Klartext (z. B. für die Eltern-Übersicht)
 //   label      Knopftext (Funktion der Lektion), short – Kurzform für Markierungen
 //   answer     Antwortform (item) → Faktor, think – Denkaufwand (item) → Faktor; Schwere = answer × think
 //              (Sternchen und Tagesziel, siehe weights.js)
@@ -44,6 +45,7 @@ const lang = (l) => l.sides[targetSide(l)];
 export const MODES = [
   {
     id: 'ab',
+    name: 'Schreiben',
     kinds: ['vokabeln'],
     group: 'schreiben',
     label: (l) => `Schreiben: ${l.sides.a} → ${l.sides.b}`,
@@ -55,6 +57,7 @@ export const MODES = [
   },
   {
     id: 'ba',
+    name: 'Schreiben',
     kinds: ['vokabeln'],
     group: 'schreiben',
     label: (l) => `Schreiben: ${l.sides.b} → ${l.sides.a}`,
@@ -66,6 +69,7 @@ export const MODES = [
   },
   {
     id: 'hoeren',
+    name: 'Diktat',
     kinds: ['vokabeln'],
     group: 'hoeren',
     label: (l) => `🔊 Hören → ${lang(l)} schreiben`,
@@ -78,6 +82,7 @@ export const MODES = [
   },
   {
     id: 'hoeren-wahl',
+    name: 'Hören & antippen',
     kinds: ['vokabeln'],
     group: 'hoeren',
     label: () => '🔊 Hören → Bedeutung antippen',
@@ -91,6 +96,7 @@ export const MODES = [
   },
   {
     id: 'satz',
+    name: 'Lückensatz',
     kinds: ['vokabeln'],
     group: 'satz',
     label: () => '📝 Lückensätze',
@@ -103,6 +109,7 @@ export const MODES = [
   },
   {
     id: 'form',
+    name: 'Richtige Form',
     kinds: ['grammatik'],
     group: 'form',
     label: () => '✏️ Richtige Form antippen',
@@ -116,6 +123,7 @@ export const MODES = [
   {
     ...MATH,
     id: 'rechnen',
+    name: 'Mathe',
     group: 'rechnen',
     label: () => '✏️ Aufgaben lösen',
     short: () => '✏️ Lösen',
@@ -125,6 +133,7 @@ export const MODES = [
   {
     ...MATH,
     id: 'experte',
+    name: 'Mathe Experte',
     group: 'experte',
     label: () => '🟣 Experten-Aufgaben',
     short: () => '🟣 Experte',

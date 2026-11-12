@@ -2,7 +2,7 @@
 // Den Grundbetrag gibt es nur für eine zu Ende gespielte Runde.
 
 import { esc, fmt1 } from '../util.js';
-import { getState, addPoints, save, streak } from '../store.js';
+import { getState, addPoints, save, streak, addFeedback, feedbackId } from '../store.js';
 import { petStatus, MAX_GLITTER_LEVEL } from '../pet.js';
 import { mood } from '../streak.js';
 import { portrait } from '../views/portrait.js';
@@ -12,7 +12,8 @@ import { portrait } from '../views/portrait.js';
 // intro: eigene Zeile statt „X Wörter geübt …“ (z. B. Testergebnis)
 // notice: zusätzlicher Hinweis unter den Sternchen (z. B. „Teste dich doch mal!“)
 // goalBefore: Tagesziel-Stand vor der Runde – die Bilanz zeigt, wie viel die Runde dafür gebracht hat
-export function roundSummary(el, { unit = ['Wort', 'Wörter'], goalBefore = null, total, firstTry, points, bonus, extraPoints = 0, startLevel, mistakes, intro, mistakesTitle, notice = '', onAgain, onBack, backLabel = 'Zur Lektion' }) {
+// feedback: { what, mode, test } – dann fragt die Bilanz „Spaß?“ und „weitergebracht?“ (je 1–5)
+export function roundSummary(el, { unit = ['Wort', 'Wörter'], goalBefore = null, feedback = null, total, firstTry, points, bonus, extraPoints = 0, startLevel, mistakes, intro, mistakesTitle, notice = '', onAgain, onBack, backLabel = 'Zur Lektion' }) {
   addPoints(bonus);
   save();
   const pet = petStatus(getState().points, mood(streak()));
@@ -39,6 +40,7 @@ export function roundSummary(el, { unit = ['Wort', 'Wörter'], goalBefore = null
           <p class="muted small">noch ${pet.toNext} ✦ bis zur nächsten Glitzer-Stufe</p>
         </div>`}
       ${goalBefore === null ? '' : goalLine(goalBefore)}
+      ${feedback ? RATING_HTML : ''}
       ${notice}
       ${mistakes.length ? `<h3>${esc(mistakesTitle)}</h3>
         <ul class="word-list">${mistakes.map(([q, a]) => `<li><span>${esc(q)}</span><strong>${esc(a)}</strong></li>`).join('')}</ul>` : '<p>Keine Fehler – super!</p>'}
@@ -47,6 +49,7 @@ export function roundSummary(el, { unit = ['Wort', 'Wörter'], goalBefore = null
         <button class="btn" data-act="back">${esc(backLabel)}</button>
       </div>
     </div>`;
+  if (feedback) bindRating(el, { ...feedback, n: total, right: firstTry });
   el.querySelector('[data-act=again]').addEventListener('click', onAgain);
   el.querySelector('[data-act=back]').addEventListener('click', onBack);
 }
@@ -66,4 +69,38 @@ function goalLine(before) {
       <div class="meter"><div style="width:${(now / s.need) * 100}%"></div></div>
       <p class="muted small">Eintippen zählt mehr als Antippen.</p>
     </div>`;
+}
+
+// --- Rückmeldung: Wie war die Runde? -------------------------------------------
+// Zwei kurze Fragen, je ein Tipp, freiwillig. Die Antworten landen im Spielstand (store.addFeedback)
+// und sind für die Eltern unter Fortschritt → Für Eltern sichtbar.
+export const RATINGS = {
+  fun: { question: 'Wie viel Spaß hat dir die Runde gemacht?', icons: ['😫', '😕', '😐', '🙂', '🤩'] },
+  learn: { question: 'Wie viel hat sie dich weitergebracht?', icons: ['🐢', '🚶', '🚲', '🚗', '🚀'] },
+};
+
+const RATING_HTML = `
+  <div class="rating-ask">
+    ${Object.entries(RATINGS).map(([q, r]) => `
+      <p>${esc(r.question)}</p>
+      <div class="rate" data-q="${q}" role="group" aria-label="${esc(r.question)}">
+        ${r.icons.map((icon, i) => `<button type="button" class="rate-btn" data-v="${i + 1}" aria-label="${i + 1} von 5">${icon}</button>`).join('')}
+      </div>`).join('')}
+    <p class="muted small rate-thanks" hidden>Danke! 💜</p>
+  </div>`;
+
+function bindRating(el, info) {
+  const id = feedbackId();
+  const picked = {};
+  el.querySelectorAll('.rate').forEach((group) => {
+    group.addEventListener('click', (ev) => {
+      const b = ev.target.closest('.rate-btn');
+      if (!b) return;
+      picked[group.dataset.q] = Number(b.dataset.v);
+      group.querySelectorAll('.rate-btn').forEach((x) => x.classList.toggle('picked', x === b));
+      group.classList.add('answered');
+      addFeedback({ id, ...info, ...picked });   // jede Wahl gleich speichern – Ändern ist erlaubt
+      if (picked.fun && picked.learn) el.querySelector('.rate-thanks').hidden = false;
+    });
+  });
 }

@@ -8,7 +8,7 @@ import { check, parseGap } from '../js/exercises/questions.js';
 import { mathNorm } from '../js/exercises/math.js';
 import { levelFor, glitterFor } from '../js/pet.js';
 import { record, roundBonus, buildRound } from '../js/srs.js';
-import { getState, replaceState, migrateLessons, addTestResult, itemState, addPoints, addDayStat, profileId } from '../js/store.js';
+import { getState, replaceState, migrateLessons, addTestResult, itemState, addPoints, addDayStat, profileId, resetProgress } from '../js/store.js';
 import { medalStatus } from '../js/medal.js';
 import { unitOf, lessonKey } from '../js/lessons.js';
 import { deviceId } from '../js/device.js';
@@ -201,6 +201,17 @@ try {
   await test('Stand aus neuerer App wird nicht übernommen (replaceState)', () => {
     replaceState({ ...empty(), points: 5 });
     eq([replaceState({ v: SCHEMA + 1, points: 9 }), getState().points], [false, 5]);
+  });
+  await test('Rückmeldungen: Unsinn fliegt raus, Zusammenführen sammelt, letzte Änderung gilt', () => {
+    const r = sanitizeState({ feedback: [{ id: 'g1-a', at: 5, fun: 4, learn: 9, what: 'X' }, { id: 'kaputt id!', at: 1, fun: 3 }, { id: 'g1-b', at: 6 }] }).state.feedback;
+    eq(r.map((f) => [f.id, f.fun, f.learn]), [['g1-a', 4, null]]);
+    const m = mergeStates({ v: 2, feedback: [{ id: 'g1-a', at: 5, fun: 2 }] }, { v: 2, feedback: [{ id: 'g1-a', at: 9, fun: 5 }, { id: 'g2-x', at: 7, learn: 3 }] });
+    eq(m.feedback.map((f) => [f.id, f.fun ?? f.learn]), [['g2-x', 3], ['g1-a', 5]]);
+  });
+  await test('Rückmeldungen bleiben beim Zurücksetzen erhalten', () => {
+    replaceState({ ...empty(), v: 2, feedback: [{ id: 'g1-a', at: 5, fun: 4 }] });
+    resetProgress();
+    eq(getState().feedback.length, 1);
   });
   await test('neueres Format wird erkannt (Sicherung lehnt es ab)', () => {
     eq([sanitizeState({ v: SCHEMA + 1 }).newer, sanitizeState({ v: SCHEMA }).newer, sanitizeState({}).newer], [true, false, false]);

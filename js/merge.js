@@ -10,7 +10,7 @@
 // bleibt nur, was nach diesem Zeitpunkt geübt wurde.
 
 import { dayKey } from './util.js';
-import { sanitizeState, sumDay, sumPoints, LEGACY_DEVICE } from './validate.js';
+import { sanitizeState, sumDay, sumPoints, LEGACY_DEVICE, FEEDBACK_MAX } from './validate.js';
 
 const total = (d) => (d ? d.right + d.wrong : 0);
 
@@ -68,6 +68,7 @@ function mergeSame(a, b) {
     items,
     days,
     tests: mergeTests(a.tests, b.tests),
+    feedback: mergeFeedback(a.feedback, b.feedback),
     pointsBy,
     points: sumPoints(pointsBy),
     pet: a.pet ?? b.pet,
@@ -98,7 +99,15 @@ function mergeAfterReset(newer, older) {
   }
   const olderTests = Object.fromEntries(Object.entries(older.tests)
     .map(([k, list]) => [k, list.filter((r) => r.day >= sinceDay)]));
-  return { ...newer, items, days, tests: mergeTests(newer.tests, olderTests) };
+  // Rückmeldungen gehören nicht zum Lernstand – sie bleiben auch über ein Zurücksetzen hinweg.
+  return { ...newer, items, days, tests: mergeTests(newer.tests, olderTests), feedback: mergeFeedback(newer.feedback, older.feedback) };
+}
+
+// Rückmeldungen: alle sammeln, pro Runde (id) gilt die zuletzt geänderte.
+function mergeFeedback(a = [], b = []) {
+  const byId = new Map();
+  for (const f of [...a, ...b]) if (!byId.has(f.id) || f.at > byId.get(f.id).at) byId.set(f.id, f);
+  return [...byId.values()].sort((x, y) => x.at - y.at).slice(-FEEDBACK_MAX);
 }
 
 function mergeTests(a = {}, b = {}) {

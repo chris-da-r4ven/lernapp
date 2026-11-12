@@ -7,7 +7,7 @@
 
 import { dayKey } from './util.js';
 import { streakInfo } from './streak.js';
-import { sanitizeState, sumDay, sumPoints, SCHEMA } from './validate.js';
+import { sanitizeState, sumDay, sumPoints, SCHEMA, FEEDBACK_MAX } from './validate.js';
 import { deviceId } from './device.js';
 
 // Die Selbsttest-Seite (tests/) arbeitet mit einem eigenen Speicher – der echte Lernstand
@@ -26,7 +26,7 @@ if (!TESTING && PROFILE === 'standard' && readKey(KEY) === null && readKey(OLD_K
 }
 
 // resetAt: Zeitpunkt des letzten Zurücksetzens (für das Zusammenführen mit der Sicherung).
-const empty = () => ({ v: SCHEMA, items: {}, days: {}, points: 0, pointsBy: {}, pet: null, tests: {}, resetAt: 0 });
+const empty = () => ({ v: SCHEMA, items: {}, days: {}, points: 0, pointsBy: {}, pet: null, tests: {}, feedback: [], resetAt: 0 });
 
 // Konnte der gespeicherte Stand nicht (vollständig) gelesen werden? Dann hebt load() den
 // Rohtext auf, und die Sicherung führt beim nächsten Abgleich zusammen statt zu überschreiben.
@@ -107,7 +107,7 @@ export const getState = () => state;
 
 // Alles zurück auf null: Punkte, Serie, Lernstand. Lektionen bleiben erhalten.
 export function resetProgress() {
-  state = { ...empty(), resetAt: Date.now() };
+  state = { ...empty(), feedback: state.feedback ?? [], resetAt: Date.now() };   // Rückmeldungen bleiben
   save();
 }
 
@@ -182,3 +182,12 @@ export function addPoints(n) {
 export function streak() {
   return streakInfo(state.days);
 }
+
+// Rückmeldung nach einer Runde (Spaß / weitergebracht, je 1–5). Gleiche id = dieselbe Runde, die
+// letzte Wahl gilt. Gespeichert und gesichert wie der Lernstand, damit die Eltern sie sehen.
+export function addFeedback(entry) {
+  const list = (state.feedback ?? []).filter((f) => f.id !== entry.id);
+  state.feedback = [...list, { ...entry, at: Date.now() }].slice(-FEEDBACK_MAX);
+  save();
+}
+export const feedbackId = () => `${deviceId()}-${Date.now().toString(36)}`;

@@ -9,6 +9,8 @@
 //              right/wrong/e/s sind die Summen über alle Geräte (e = Tagesziel-Wert in Zehnteln)
 //   tests      { "<fach>/<lektion>": [{ day, pct }] }
 //   resetAt    Zeitpunkt des letzten Zurücksetzens
+//   feedback   Rückmeldungen nach Runden: [{ id, at, fun 1–5, learn 1–5, what, mode, n, right, test }]
+//              (bleibt beim Zurücksetzen erhalten – sie ist für die Eltern, nicht Teil des Lernstands)
 // Ältere Stände (ohne v) werden umgewandelt: bisherige Werte zählen als Gerät "alt".
 //
 // Ziel: Ein vertippter, beschädigter oder manipulierter Stand darf die App weder lahmlegen
@@ -83,6 +85,22 @@ export function sumDay(by) {
 
 export const sumPoints = (pointsBy) => Object.values(pointsBy).reduce((n, x) => n + x, 0);
 
+export const FEEDBACK_MAX = 500;
+const text = (x, n) => (typeof x === 'string' ? x.slice(0, n) : '');
+const rating = (x) => { const n = int(x); return n !== null && n >= 1 && n <= 5 ? n : null; };
+
+export function cleanFeedback(list) {
+  if (!Array.isArray(list)) return [];
+  return list.filter(isObj)
+    .map((f) => ({
+      id: typeof f.id === 'string' && /^[\w-]{1,60}$/.test(f.id) ? f.id : null,
+      at: num(f.at), fun: rating(f.fun), learn: rating(f.learn),
+      what: text(f.what, 200), mode: text(f.mode, 40), n: int(f.n) ?? 0, right: int(f.right) ?? 0, test: f.test === true,
+    }))
+    .filter((f) => f.id && f.at !== null && (f.fun || f.learn))
+    .slice(-FEEDBACK_MAX);
+}
+
 function cleanTests(list) {
   if (!Array.isArray(list)) return [];
   return list
@@ -134,6 +152,7 @@ export function sanitizeState(raw) {
       pointsBy,
       pet: null,
       tests,
+      feedback: cleanFeedback(raw.feedback),
       resetAt: num(raw.resetAt) ?? 0,
     },
   };

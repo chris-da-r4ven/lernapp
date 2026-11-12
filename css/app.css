@@ -435,3 +435,12 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
 .summary .goal-line p { margin: 4px 0; }
 .summary .goal-line.done { color: var(--good); }
 .summary .goal-line .meter > div { background: var(--good); }   /* anders als der Glitzer-Balken */
+
+/* Rundenbilanz: Wie war die Runde? */
+.summary .rating-ask { margin: 8px auto 16px; padding: 10px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.summary .rating-ask p { margin: 8px 0 4px; }
+.rate { display: flex; justify-content: center; gap: 6px; }
+.rate-btn { font-size: 1.8rem; line-height: 1; padding: 6px 8px; border-radius: 12px; border: 2px solid transparent; background: none; cursor: pointer; }
+.rate.answered .rate-btn:not(.picked) { opacity: 0.35; }
+.rate-btn.picked { border-color: var(--primary); background: var(--card); }
+@media (max-width: 420px) { .rate-btn { font-size: 1.5rem; padding: 4px 5px; } }

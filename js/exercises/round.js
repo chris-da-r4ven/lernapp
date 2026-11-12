@@ -113,6 +113,12 @@ export function runRound(el, { tasks, test = false, chosen = true, onAgain, onBa
         const [q, a] = questionFor(task.dir).pair(task);
         return [q, test && typed ? `${a} – du: ${typed}` : a];
       }),
+      // Für die Rückmeldung: welche Lektionen, welche Übungsarten, Test oder nicht.
+      feedback: {
+        what: all.map((x) => x.lesson.title).slice(0, 3).join(', ') + (all.length > 3 ? ' …' : ''),
+        mode: [...new Set(tasks.map((t) => t.dir))].join(','),
+        test,
+      },
       onAgain, onBack, backLabel,
     });
   }
