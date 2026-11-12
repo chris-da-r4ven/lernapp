@@ -10,8 +10,15 @@ import { askTyped, askChoice } from './answer.js';
 import { numberLine } from './numberline.js';
 import { chart, tallyTable } from './charts.js';
 
-// 48 000 = 48000 = 48.000; xliv = XLIV
-export const mathNorm = (s) => String(s).normalize('NFC').replace(/[\s. ]/g, '').toUpperCase();
+// 48 000 = 48000 = 48.000; xliv = XLIV. Ein Punkt zählt nur als Tausendertrenner (vor genau drei Ziffern),
+// sonst als Komma: 9.7 = 9,7 (nicht 97).
+export const mathNorm = (s) => String(s).normalize('NFC').trim()
+  .replace(/(\d)[.\s](?=\d{3}(?!\d))/g, '$1')
+  .replace(/\s+/g, '')
+  .replace(/\./g, ',')
+  .toUpperCase();
+// Kurze Antworten (z. B. < > oder ja/nein) nebeneinander, lange untereinander/umbrechend.
+const short = (choices) => choices.length <= 3 && choices.every((c) => String(c).length <= 10);
 const isNumber = (s) => /^[\d\s.]+$/.test(s);
 
 // Grafik zur Aufgabe (Zahlenstrahl, Diagramm oder Strichliste).
@@ -34,7 +41,7 @@ export const mathQuestion = {
     if (item.choices) {
       askChoice(area, {
         choices: item.choices, isRight: (c) => mathNorm(c) === mathNorm(item.b),
-        api, task, test, compact: item.choices.length <= 3, solution: why,
+        api, task, test, compact: short(item.choices), solution: why,
       });
     } else {
       askTyped(area, {

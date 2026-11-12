@@ -5,7 +5,7 @@
 
 import { esc } from '../util.js';
 import { allLessons } from '../content.js';
-import { targetSide } from '../lessons.js';
+import { targetSide, kindInfo } from '../lessons.js';
 
 const VOICE_KEY = 'lernapp.voice';
 
@@ -17,7 +17,7 @@ const SAMPLES = [
 
 function lessonWords() {
   const words = [];
-  for (const { lesson } of allLessons()) {
+  for (const { lesson } of allLessons().filter((x) => kindInfo(x.lesson).language)) {   // keine Mathe-Lösungen
     lesson.items.slice(0, 4).forEach((it) => words.push(it[targetSide(lesson)]));
   }
   return words;

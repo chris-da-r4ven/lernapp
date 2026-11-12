@@ -2,7 +2,7 @@
 
 import { allLessons, contentUpdated, contentVersion } from '../content.js';
 import { syncStatus, syncWarning } from '../sync.js';
-import { getState, itemState, streak, storageProblem, profileId } from '../store.js';
+import { getState, itemState, streak, storageProblem, storageNewer, profileId } from '../store.js';
 import { deviceId } from '../device.js';
 import { parentsSection, bindParents } from './parents.js';
 import { modesFor, tasksFor } from '../exercises/registry.js';
@@ -29,6 +29,7 @@ export function statsView(el, openParents = false) {
 
   el.innerHTML = `
     <h1>Fortschritt</h1>
+    ${storageNewer() ? '<p class="card warn-banner">⚠️ Der Lernstand stammt von einer neueren App-Version. Bitte die App schließen und neu öffnen – bis dahin wird nichts gespeichert.</p>' : ''}
     ${storageProblem() ? '<p class="card warn-banner">⚠️ Der Lernstand konnte zuletzt nicht gespeichert werden – Speicher des Geräts voll oder gesperrt (privates Fenster?).</p>' : ''}
     ${syncWarning() ? `<p class="card warn-banner">⚠️ ${esc(syncWarning())}</p>` : ''}
 

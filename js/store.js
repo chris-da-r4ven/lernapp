@@ -33,6 +33,11 @@ const empty = () => ({ v: SCHEMA, items: {}, days: {}, points: 0, pointsBy: {}, 
 let recovered = false;
 export const wasRecovered = () => recovered;
 
+// Stand aus einer neueren App (Format > SCHEMA)? Dann nichts überschreiben: lesen ja, speichern nein,
+// bis die neue App da ist – sonst gingen deren Daten verloren.
+let newerData = false;
+export const storageNewer = () => newerData;
+
 let state = load();
 
 function load() {
@@ -46,7 +51,20 @@ function load() {
     try { localStorage.setItem(CORRUPT_KEY, JSON.stringify({ at: new Date().toISOString(), raw })); } catch { /* egal */ }
     console.warn('Lernstand war beschädigt – Rohdaten unter', CORRUPT_KEY, 'aufgehoben.');
   }
-  return clean ? clean.state : empty();
+  if (clean?.newer) newerData = true;
+  return clean ? moveExpertKeys(clean.state) : empty();
+}
+
+// Experten-Aufgaben hatten kurz einen eigenen Lernstand (…|experte, 12.11.2026) – jetzt teilen sie
+// ihn mit „rechnen“ (modes.js storeAs). Einmalig umziehen, der neuere Eintrag gewinnt.
+function moveExpertKeys(s) {
+  for (const k of Object.keys(s.items)) {
+    if (!k.endsWith('|experte')) continue;
+    const to = k.slice(0, -'experte'.length) + 'rechnen';
+    if (!s.items[to] || (s.items[k].last ?? 0) > (s.items[to].last ?? 0)) s.items[to] = s.items[k];
+    delete s.items[k];
+  }
+  return s;
 }
 
 const listeners = [];
@@ -62,6 +80,7 @@ export const storageProblem = () => storageFailed;
 
 function persist() {
   rev++;
+  if (newerData) return false;     // Stand einer neueren App nicht überschreiben
   try { localStorage.setItem(KEY, JSON.stringify(state)); storageFailed = false; return true; } catch {
     storageFailed = true;
     console.warn('Lernstand konnte nicht gespeichert werden (Speicher voll oder gesperrt).');
@@ -78,8 +97,8 @@ export function save() {
 // Wird vorher geprüft; ist er unbrauchbar, bleibt der jetzige Stand.
 export function replaceState(next) {
   const clean = sanitizeState(next);
-  if (!clean) return false;
-  state = clean.state;
+  if (!clean || clean.newer) return false;
+  state = moveExpertKeys(clean.state);
   persist();
   return true;
 }
@@ -145,9 +164,10 @@ export function addDayStat(correct, effort = 1, subject = null) {
   const by = { ...(state.days[k]?.by ?? {}) };
   const c = { right: 0, wrong: 0, e: 0, ...(by[dev] ?? {}) };
   if (correct) c.right++; else c.wrong++;
-  const add = Math.round(effort * 10);
-  c.e += add;
-  if (subject) c.s = { ...(c.s ?? {}), [subject]: (c.s?.[subject] ?? 0) + add };
+  const tenth = (x) => Math.round(x * 10) / 10;       // e in Zehnteln, auf 0,1 genau (kein Doppelrunden)
+  const add = tenth(effort * 10);
+  c.e = tenth(c.e + add);
+  if (subject) c.s = { ...(c.s ?? {}), [subject]: tenth((c.s?.[subject] ?? 0) + add) };
   by[dev] = c;
   state.days[k] = sumDay(by);
 }

@@ -13,6 +13,9 @@ import { MODES } from './modes.js';
 
 const byId = new Map(MODES.map((m) => [m.id, m]));
 export const modeById = (id) => byId.get(id);
+// Unter welcher Übungsart der Lernstand liegt (storeAs: z. B. Experte teilt ihn mit „rechnen“,
+// damit Umstufen einer Aufgabe nichts verliert).
+export const storeMode = (modeId) => modeById(modeId)?.storeAs ?? modeId;
 
 export const usableFor = (mode, item) => mode.usable?.(item) ?? true;
 
@@ -20,7 +23,8 @@ export const usableFor = (mode, item) => mode.usable?.(item) ?? true;
 export function modesFor(lesson) {
   const kind = kindOf(lesson);
   return MODES.filter((m) =>
-    (lesson.modes ? lesson.modes.includes(m.id) : m.kinds.includes(kind))
+    m.kinds.includes(kind)                                  // "modes" in der Lektion schränkt nur ein
+    && (!lesson.modes || lesson.modes.includes(m.id))
     && (!m.speech || canSpeak())
     && (!m.minItems || lesson.items.length >= m.minItems)
     && lesson.items.some((it) => usableFor(m, it)));
@@ -41,14 +45,14 @@ export function tasksFor(sid, lesson, modeId) {
   const mode = modeById(modeId);
   return lesson.items
     .filter((item) => !mode || usableFor(mode, item))
-    .map((item) => ({ sid, lesson, item, dir: modeId, key: itemKey(sid, lesson.id, item, modeId) }));
+    .map((item) => ({ sid, lesson, item, dir: modeId, key: itemKey(sid, lesson.id, item, storeMode(modeId)) }));
 }
 
 // Gewicht einer Aufgabe: Übungsart (ggf. je Eintrag, z. B. Antippen) × Schwierigkeitsstufe.
 export const weightFor = (modeId, item = null) => {
   const m = modeById(modeId);
   const base = (item && m?.itemWeight?.(item)) ?? m?.weight ?? 1;
-  return item ? Math.round(base * levelInfo(item).factor * 100) / 100 : base;
+  return item ? base * levelInfo(item).factor : base;   // gerundet wird erst beim Speichern (store.addDayStat)
 };
 export const learnOrderOf = (modeId) => modeById(modeId)?.learnOrder ?? 99;
 export const questionFor = (modeId) => modeById(modeId)?.question;

@@ -10,6 +10,7 @@
 //   testable     Test-Modus möglich (sonst Medaille über „sicher“); test, testLabel – Texte dazu
 //   mastery      Übungsart für „sicher“, Test und Medaille (ohne Angabe: Muttersprache → Lernsprache)
 //   showAnswers  Lösungen in der Liste der Lektion zeigen (Wortliste ja, Mathe-Lösungen nein)
+//   language     Sprachlektion mit zwei Seiten (sides) – Vorlesen, Lernsprache
 //
 // Sprachen: Jede Lektion hat zwei Seiten (a, b). Die Lernsprache ("target") ist die Seite,
 // die nicht Deutsch ist. Ihre Sprache bestimmt die Stimme beim Vorlesen.
@@ -20,10 +21,10 @@ import { levelOf } from './levels.js';
 
 export const KINDS = {
   vokabeln: {
-    unit: ['Wort', 'Wörter'], testable: true, showAnswers: true, testLabel: 'wie im Vokabeltest',
+    unit: ['Wort', 'Wörter'], language: true, testable: true, showAnswers: true, testLabel: 'wie im Vokabeltest',
     test: 'Wie im Vokabeltest: Du bekommst das deutsche Wort und schreibst es in der Fremdsprache. Jedes Wort kommt nur einmal, ohne Hilfe.',
   },
-  grammatik: { unit: ['Satz', 'Sätze'], countsAs: 'vokabeln', testable: false, showAnswers: true, mastery: 'form' },
+  grammatik: { unit: ['Satz', 'Sätze'], countsAs: 'vokabeln', language: true, testable: false, showAnswers: true, mastery: 'form' },
   mathe: {
     unit: ['Aufgabe', 'Aufgaben'], testable: true, showAnswers: false, mastery: 'rechnen', testLabel: 'wie eine Klassenarbeit',
     test: 'Wie in einer Klassenarbeit: Jede Aufgabe kommt nur einmal, ohne Hilfe.',

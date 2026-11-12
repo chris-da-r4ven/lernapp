@@ -352,7 +352,7 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
 .now-play { width: 56px; height: 56px; border-radius: 50%; background: var(--primary); color: var(--primary-text); display: grid; place-items: center; font-size: 1.5rem; flex: none; }
 
 /* Grammatik: Form wählen */
-.form-choices { grid-template-columns: repeat(3, 1fr); max-width: 420px; margin-left: auto; margin-right: auto; }
+.form-choices { grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); max-width: 420px; margin-left: auto; margin-right: auto; }
 .gap-right { color: var(--good); border-color: var(--good); }
 .gap-wrong { color: var(--good); border-color: var(--bad); }
 /* Großansicht: Sternchen auf hellem Bild deutlicher */

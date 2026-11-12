@@ -776,9 +776,9 @@
     },
     {
       "id": "a-gleich",
-      "a": "Wie viele Kinder müssten noch aufs Fahrrad umsteigen, damit Fahrrad genauso beliebt ist wie der Bus?",
+      "a": "Wie viele Kinder, die bisher zu Fuß gehen, müssten aufs Fahrrad umsteigen, damit Fahrrad genauso beliebt ist wie der Bus?",
       "b": "5",
-      "why": "Bus 12, Fahrrad 7: 12 − 7 = 5.",
+      "why": "Bus 12, Fahrrad 7: Es fehlen 12 − 7 = 5. Die kommen von „zu Fuß“ – der Bus bleibt bei 12.",
       "level": 3,
       "chart": {
         "type": "saeulen",

@@ -10,16 +10,43 @@
 // bleibt nur, was nach diesem Zeitpunkt geübt wurde.
 
 import { dayKey } from './util.js';
-import { sanitizeState, sumDay, sumPoints } from './validate.js';
+import { sanitizeState, sumDay, sumPoints, LEGACY_DEVICE } from './validate.js';
 
 const total = (d) => (d ? d.right + d.wrong : 0);
 
 export function mergeStates(local, remote) {
-  const L = normalize(local);
-  const R = normalize(remote);
+  let L = normalize(local);
+  let R = normalize(remote);
+  // Stand einer alten App (ohne Format-Version): ihre Summen enthalten schon, was die anderen Geräte
+  // beigetragen haben (sie hat die Sicherung ja gelesen). Sonst würde das doppelt gezählt.
+  if (isLegacy(remote) && !isLegacy(local)) R = liftLegacy(R, L);
+  if (isLegacy(local) && !isLegacy(remote)) L = liftLegacy(L, R);
   if (L.resetAt === R.resetAt) return mergeSame(L, R);
   const [newer, older] = L.resetAt > R.resetAt ? [L, R] : [R, L];
   return mergeAfterReset(newer, older);
+}
+
+const isLegacy = (raw) => !(raw && Number.isInteger(raw.v) && raw.v >= 2);
+
+// Alter Stand → Anteil des Geräts „alt“: Summe minus das, was die anderen Geräte im Vergleichsstand
+// gezählt haben – mindestens aber, was „alt“ dort schon hatte (nie weniger als bekannt).
+function liftLegacy(leg, ref) {
+  const others = (by = {}) => Object.entries(by).filter(([dev]) => dev !== LEGACY_DEVICE).map(([, c]) => c);
+  const sum = (list, f) => list.reduce((n, x) => n + (f(x) ?? 0), 0);
+  const refOthers = others(ref.pointsBy);
+  const alt = Math.max(ref.pointsBy[LEGACY_DEVICE] ?? 0, (leg.pointsBy[LEGACY_DEVICE] ?? 0) - sum(refOthers, (x) => x));
+  const days = {};
+  for (const [k, d] of Object.entries(leg.days)) {
+    const mine = d.by[LEGACY_DEVICE];
+    const refDay = ref.days[k];
+    if (!mine || !refDay) { days[k] = d; continue; }
+    const o = others(refDay.by);
+    const keep = refDay.by[LEGACY_DEVICE] ?? { right: 0, wrong: 0, e: 0 };
+    const part = (f) => Math.max(keep[f] ?? 0, (mine[f] ?? 0) - sum(o, (c) => c[f]));
+    days[k] = sumDay({ [LEGACY_DEVICE]: { right: part('right'), wrong: part('wrong'), e: part('e') } });
+  }
+  const pointsBy = { [LEGACY_DEVICE]: alt };
+  return { ...leg, days, pointsBy, points: sumPoints(pointsBy) };
 }
 
 // Beide Seiten vorher prüfen – Unbrauchbares zählt als leerer Stand.

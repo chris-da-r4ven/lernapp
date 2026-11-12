@@ -24,7 +24,7 @@ function allTasks() {
   for (const { sid, lesson } of allLessons()) {
     for (const m of modesFor(lesson).filter((x) => !x.optIn)) {   // Experten-Aufgaben nur auf Wunsch
       for (const t of tasksFor(sid, lesson, m.id)) {
-        tasks.push({ ...t, st: itemState(t.key), word: `${sid}/${lesson.id}/${t.item.id}` });
+        tasks.push({ ...t, st: itemState(t.key), word: t.key.split('|')[0] });   // Fach/Lektion/Wort – wie im Lernstand-Schlüssel
       }
     }
   }

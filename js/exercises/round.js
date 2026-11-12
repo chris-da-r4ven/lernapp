@@ -6,7 +6,7 @@
 
 import { esc } from '../util.js';
 import { record, roundBonus, MASTERED_FACTOR, MEDAL_BONUS } from '../srs.js';
-import { weightFor, questionFor } from './registry.js';
+import { weightFor, questionFor, modeById } from './registry.js';
 import { getState, addPoints, save } from '../store.js';
 import { levelFor } from '../pet.js';
 import { roundSummary } from './summary.js';
@@ -34,7 +34,9 @@ export function runRound(el, { tasks, test = false, chosen = true, onAgain, onBa
     const k = lessonKey(t.sid, t.lesson);
     if (!lessons.has(k)) lessons.set(k, { sid: t.sid, lesson: t.lesson, hadMedal: lessonMedal(t.sid, t.lesson).medal });
   }
-  const weight = (t) => weightFor(t.dir, t.item) * (chosen && lessons.get(lessonKey(t.sid, t.lesson)).hadMedal ? MASTERED_FACTOR : 1);
+  // Lektion mit Medaille selbst gewählt: weniger Sternchen – außer bei freiwilligen Zusatzaufgaben (Experte).
+  const penalized = (t) => chosen && !modeById(t.dir)?.optIn && lessons.get(lessonKey(t.sid, t.lesson)).hadMedal;
+  const weight = (t) => weightFor(t.dir, t.item) * (penalized(t) ? MASTERED_FACTOR : 1);
   const unit = unitOf([...lessons.values()].map((x) => x.lesson));
 
   if (!total) {
@@ -96,7 +98,7 @@ export function runRound(el, { tasks, test = false, chosen = true, onAgain, onBa
     const all = [...lessons.values()];
     const newMedals = all.filter((x) => !x.hadMedal && lessonMedal(x.sid, x.lesson).medal);
     if (newMedals.length) { addPoints(MEDAL_BONUS * newMedals.length); save(); }
-    const mastered = chosen && all.some((x) => x.hadMedal);
+    const mastered = tasks.some(penalized);
     roundSummary(el, {
       unit,
       total, firstTry, points, startLevel,

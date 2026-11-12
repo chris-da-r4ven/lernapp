@@ -3,7 +3,7 @@
 
 import { getSubject, getLesson } from '../content.js';
 import { starsFor } from '../srs.js';
-import { masteryOf, unitWord, kindInfo } from '../lessons.js';
+import { masteryOf, unitWord, kindInfo, coreItems } from '../lessons.js';
 import { lessonMedal, MEDAL_RULE, testReady } from '../medal.js';
 import { esc, stars } from '../util.js';
 
@@ -29,7 +29,7 @@ export function subjectView(el, sid) {
       <a class="card row lesson-tile${medal.medal ? ' has-medal' : ''}" href="#/lektion/${encodeURIComponent(sid)}/${encodeURIComponent(l.id)}">
         ${medal.medal ? '<span class="medal" aria-label="Medaille">🏅</span>' : ''}
         <div class="grow">
-          <strong>${esc(l.title)}</strong> <span class="muted small">${lesson.items.length} ${unitWord(lesson, lesson.items.length)}</span>
+          <strong>${esc(l.title)}</strong> <span class="muted small">${coreItems(lesson).length} ${unitWord(lesson, coreItems(lesson).length)}</span>
           <div class="meter small"><div style="width:${m * 100}%"></div></div>
           ${testReady(sid, lesson) ? '<div class="small ready-hint">📝 Bereit für den Test!</div>' : ''}
           ${!medal.medal && medal.started ? `<div class="muted small medal-hint">🏅 ${esc(medal.hint)}</div>` : ''}

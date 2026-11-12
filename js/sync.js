@@ -10,7 +10,7 @@
 //   holen, "resetAt" auf jetzt setzen, als neuen Commit schreiben.
 // - Jede Sicherung ist ein Commit – so lässt sich später jeder Stand wiederherstellen.
 
-import { getState, replaceState, onSave, revision, wasRecovered, profileId } from './store.js';
+import { getState, replaceState, onSave, revision, wasRecovered, profileId, storageNewer } from './store.js';
 import { sanitizeState } from './validate.js';
 import { mergeStates } from './merge.js';
 
@@ -207,6 +207,8 @@ async function reconcile() {
   const c = cfg;
   if (!c) return;
   try {
+    // Gerätestand aus einer neueren App: nicht hochladen (er wäre auf dieses Format gekürzt).
+    if (storageNewer()) throw new SyncError('Der Lernstand stammt von einer neueren App-Version. Bitte die App neu laden.');
     const remote = await pull();
     const needsMerge = c.dirty || (wasRecovered() && !recoveryDone);
     if (!remote.exists) {

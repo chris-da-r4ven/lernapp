@@ -1,8 +1,8 @@
 import { getSubject, getLesson } from '../content.js';
 import { itemState } from '../store.js';
 import { itemKey, status } from '../srs.js';
-import { modesFor, modeGroups, usableFor } from '../exercises/registry.js';
-import { masteryOf, unitWord, kindInfo } from '../lessons.js';
+import { modesFor, modeGroups, usableFor, storeMode } from '../exercises/registry.js';
+import { masteryOf, unitWord, kindInfo, coreItems } from '../lessons.js';
 import { levelInfo, hasLevels, LEVELS } from '../levels.js';
 import { esc } from '../util.js';
 import { lessonMedal, testReady } from '../medal.js';
@@ -18,12 +18,14 @@ export function lessonView(el, sid, lid) {
   const modes = modesFor(lesson);
   const medal = lessonMedal(sid, lesson);
   const ready = testReady(sid, lesson);
-  const showAnswers = kindInfo(lesson).showAnswers;   // Mathe: Lösungen nicht verraten
+  const showAnswers = kindInfo(lesson).showAnswers;
+  const core = coreItems(lesson).length;          // zählt für „sicher“, Test und Medaille
+  const extra = lesson.items.length - core;       // Experten-Aufgaben (nur auf Wunsch)   // Mathe: Lösungen nicht verraten
 
   el.innerHTML = `
     <a class="back" href="#/fach/${encodeURIComponent(sid)}">← ${esc(subject.name)}</a>
     <h1>${esc(lesson.title)}</h1>
-    <p class="muted">${lesson.items.length} ${unitWord(lesson, lesson.items.length)} · ${Math.round(masteryOf(sid, lesson) * 100)} % sicher</p>
+    <p class="muted">${core} ${unitWord(lesson, core)}${extra ? ` + ${extra} Experten-Aufgaben` : ''} · ${Math.round(masteryOf(sid, lesson) * 100)} % sicher</p>
     ${medal.medal
       ? '<div class="medal-banner"><span class="medal" aria-hidden="true">🏅</span><strong>Kannst du schon gut!</strong></div>'
       : `<p class="muted small">🏅 ${esc(medal.hint)}</p>`}
@@ -49,7 +51,7 @@ export function lessonView(el, sid, lid) {
             <span>${it.level ? `<span title="${esc(levelInfo(it).name)}">${levelInfo(it).icon}</span> ` : ''}${esc(it.a)}</span>
             ${!showAnswers ? '' : `<strong>${esc(it.b)}${it.hard ? ' <span class="hard" title="schwieriges Wort">✗</span>' : ''}</strong>`}
             <span class="pills">${modes.filter((m) => usableFor(m, it)).map((m) => {
-              const st = status(itemState(itemKey(sid, lid, it, m.id)));
+              const st = status(itemState(itemKey(sid, lid, it, storeMode(m.id))));
               return `<span class="pill ${st}" title="${esc(m.label(lesson))}: ${STATUS_LABEL[st]}">${esc(m.short(lesson))}</span>`;
             }).join('')}</span>
           </li>`).join('')}

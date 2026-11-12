@@ -17,9 +17,17 @@ function acceptedAnswers(answer, alts = []) {
 }
 
 // norm: eigene Vereinheitlichung (Mathe: Leerzeichen und Tausenderpunkte egal, Groß/klein egal).
+// closest: die nächstliegende richtige Antwort, so wie sie geschrieben steht (für die Anzeige).
 export function check(typed, answer, alts, norm = null) {
-  const t = norm ? norm(typed) : normalize(typed);
-  const accepted = norm ? [...new Set([answer, ...(alts ?? [])].map(norm))] : acceptedAnswers(answer, alts);
+  if (norm) {
+    const t = norm(typed);
+    const list = [answer, ...(alts ?? [])];
+    if (list.some((a) => norm(a) === t)) return { ok: true };
+    const closest = list.reduce((best, a) => (distance(t, norm(a)) < distance(t, norm(best)) ? a : best), list[0]);
+    return { ok: false, caseOnly: false, closest: normalize(closest) };
+  }
+  const t = normalize(typed);
+  const accepted = acceptedAnswers(answer, alts);
   if (accepted.includes(t)) return { ok: true };
   const caseOnly = accepted.some((a) => a.toLowerCase() === t.toLowerCase());
   const closest = accepted.reduce((best, a) => (distance(t, a) < distance(t, best) ? a : best), accepted[0]);
@@ -71,7 +79,7 @@ export function askTyped(area, { placeholder, answer, alts, norm = null, numeric
   function showWrong(typed, res) {
     api.wrong(typed);
     const diffHtml = (text, r) => {
-      const d = renderDiff(norm ? norm(text) : normalize(text), r.closest);
+      const d = renderDiff(normalize(text), r.closest);   // so, wie das Kind getippt hat
       return `
         <div class="diff">
           <div><span class="muted small">Du:</span> <span class="word">${d.yours}</span></div>

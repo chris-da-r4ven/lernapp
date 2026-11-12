@@ -18,7 +18,8 @@
 //   learnOrder Reihenfolge, in der „Jetzt üben“ ein neues Wort durch die Übungsarten führt
 //   speech     braucht Sprachausgabe; minItems – mindestens so viele Einträge in der Lektion
 //   usable     welche Einträge sich eignen (z. B. nur mit Beispielsatz)
-//   optIn      nur auf Wunsch (eigener Knopf) – nicht in „Jetzt üben“
+//   optIn      nur auf Wunsch (eigener Knopf) – nicht in „Jetzt üben“, kein Medaillen-Abschlag
+//   storeAs    Lernstand unter dieser Übungsart ablegen (statt der eigenen id)
 //   question   Fragetyp aus questions.js
 
 import { writeQuestion, chooseQuestion, gapQuestion, formQuestion, parseGap } from './questions.js';
@@ -117,6 +118,7 @@ export const MODES = [
     short: () => '🟣 Experte',
     learnOrder: 8,
     optIn: true,                                       // nur über den eigenen Knopf
+    storeAs: 'rechnen',                                // Umstufen 2 ↔ 3 behält den Lernstand
     usable: (item) => levelOf(item) === 3,
   },
 ];

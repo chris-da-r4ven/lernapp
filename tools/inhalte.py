@@ -21,9 +21,11 @@ import argparse
 import datetime
 import hashlib
 import json
+import math
 import re
 import subprocess
 import sys
+import unicodedata
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -184,7 +186,7 @@ def check_lesson(where, l):
         for alt in ('aAlt', 'bAlt'):
             if alt in it and not (isinstance(it[alt], list) and all(isinstance(x, str) for x in it[alt])):
                 errors.append(f'{at}: "{alt}" muss eine Liste von Texten sein')
-        if 'level' in it and it['level'] not in (1, 2, 3):
+        if 'level' in it and (isinstance(it['level'], bool) or it['level'] not in (1, 2, 3)):
             errors.append(f'{at}: "level" muss 1 (Basis), 2 (Fortgeschritten) oder 3 (Experte) sein')
         iid = it.get('id')
         if iid is not None and iid in ids:
@@ -251,47 +253,90 @@ def check_math_lesson(where, l, items):
 KIND_CHECKS = {'vokabeln': check_language, 'grammatik': check_grammar, 'mathe': check_math_lesson}
 
 
+def is_num(x):
+    """Zahl, aber kein True/False (bool ist in Python auch eine Zahl)."""
+    return isinstance(x, (int, float)) and not isinstance(x, bool)
+
+
+def math_norm(s):
+    """Wie mathNorm in js/exercises/math.js: Tausendertrenner (Punkt/Leerzeichen vor genau drei
+    Ziffern) und Leerzeichen weg, sonst Punkt = Komma, Groß/klein egal."""
+    s = unicodedata.normalize('NFC', str(s)).strip()
+    s = re.sub(r'(\d)[.\s](?=\d{3}(?!\d))', r'\1', s)
+    return re.sub(r'\s+', '', s).replace('.', ',').upper()
+
+
+def num_text(x):
+    """Zahl so, wie sie als Lösung geschrieben würde: 8 → "8", 2.5 → "2,5"."""
+    return str(int(x)) if float(x).is_integer() else str(x).replace('.', ',')
+
+
+def on_grid(value, start, step):
+    k = (value - start) / step
+    return abs(k - round(k)) < 1e-9
+
+
 def check_math(at, it):
-    """Mathe-Aufgabe: Antwort-Knöpfe enthalten die Lösung, Zahlenstrahl ist vollständig."""
+    """Mathe-Aufgabe: Antwort-Knöpfe enthalten die Lösung, Grafiken sind vollständig und
+    so, wie die App sie zeichnen kann (charts.js, numberline.js)."""
     out = []
-    norm = lambda s: re.sub(r'[\s.]', '', str(s)).upper()
     choices = it.get('choices')
     if choices is not None:
         if not isinstance(choices, list) or len(choices) < 2:
             out.append(f'{at}: "choices" braucht mindestens 2 Antworten')
-        elif norm(it.get('b', '')) not in [norm(c) for c in choices]:
+        elif math_norm(it.get('b', '')) not in [math_norm(c) for c in choices]:
             out.append(f'{at}: Lösung "{it.get("b")}" steht nicht in "choices"')
     chart = it.get('chart')
     if chart is not None:
+        kind = chart.get('type')
         labels, values = chart.get('labels') or [], chart.get('values') or []
-        if chart.get('type') not in ('saeulen', 'balken', 'bild'):
+        if kind not in ('saeulen', 'balken', 'bild'):
             out.append(f'{at}: "chart": type muss saeulen, balken oder bild sein')
-        if not labels or len(labels) != len(values) or not all(isinstance(v, (int, float)) and v >= 0 for v in values):
+        if not labels or len(labels) != len(values) or not all(is_num(v) and v >= 0 for v in values):
             out.append(f'{at}: "chart": labels und values (Zahlen ≥ 0) müssen gleich lang sein')
-        elif chart.get('type') != 'bild':
-            step = chart.get('step') or 1
-            top = chart.get('max') or -(-max(values) // step) * step
-            if top / step > 40:
-                out.append(f'{at}: "chart": zu viele Hilfslinien – größeres "step" wählen')
-            if max(values) > top:
-                out.append(f'{at}: "chart": Wert über "max"')
+        elif kind == 'bild':
+            per = chart.get('per', 1)
+            if not is_num(per) or per <= 0:
+                out.append(f'{at}: "chart": "per" muss eine Zahl > 0 sein')
+            else:
+                for label, v in zip(labels, values):
+                    if v % per not in (0, per / 2):
+                        out.append(f'{at}: "chart": {label} = {v} lässt sich mit je {per} pro Symbol nicht zeichnen '
+                                   '(nur ganze und halbe Symbole)')
+        elif kind in ('saeulen', 'balken'):
+            step = chart.get('step', 1)
+            top = chart.get('max')
+            if not is_num(step) or step <= 0:
+                out.append(f'{at}: "chart": "step" muss eine Zahl > 0 sein')
+            elif top is not None and (not is_num(top) or top <= 0 or not on_grid(top, 0, step)):
+                out.append(f'{at}: "chart": "max" muss ein Vielfaches von "step" sein (> 0)')
+            else:
+                top = top if top is not None else math.ceil(max(values) / step) * step
+                if top <= 0:
+                    out.append(f'{at}: "chart": alle Werte 0 – nichts zu zeichnen')
+                elif top / step > 40:
+                    out.append(f'{at}: "chart": zu viele Hilfslinien – größeres "step" wählen')
+                if max(values) > top:
+                    out.append(f'{at}: "chart": Wert über "max"')
     tally = it.get('tally')
     if tally is not None and not (isinstance(tally, list) and tally and all(
-            isinstance(r, list) and len(r) == 2 and isinstance(r[1], int) and 0 <= r[1] <= 60 for r in tally)):
+            isinstance(r, list) and len(r) == 2 and isinstance(r[1], int) and not isinstance(r[1], bool)
+            and 0 <= r[1] <= 60 for r in tally)):
         out.append(f'{at}: "tally" muss eine Liste von ["Name", Anzahl] sein (Anzahl 0–60)')
     line = it.get('line')
     if line is not None:
         nums = {k: line.get(k) for k in ('from', 'to', 'step')}
-        if not all(isinstance(v, (int, float)) for v in nums.values()) or nums['step'] <= 0 or nums['to'] <= nums['from']:
+        if not all(is_num(v) for v in nums.values()) or nums['step'] <= 0 or nums['to'] <= nums['from']:
             out.append(f'{at}: "line" braucht from < to und step > 0')
         else:
             n = (nums['to'] - nums['from']) / nums['step']
-            if n != int(n) or n > 200:
+            if not on_grid(nums['to'], nums['from'], nums['step']) or n > 200:
                 out.append(f'{at}: "line": (to - from) muss ein Vielfaches von step sein (höchstens 200 Striche)')
             arrow = line.get('arrow')
-            if arrow is not None and (not nums['from'] <= arrow <= nums['to'] or (arrow - nums['from']) % nums['step']):
+            if arrow is not None and (not is_num(arrow) or not nums['from'] <= arrow <= nums['to']
+                                      or not on_grid(arrow, nums['from'], nums['step'])):
                 out.append(f'{at}: "line": Pfeil {arrow} liegt nicht auf einem Strich')
-            if arrow is not None and norm(arrow) != norm(it.get('b', '')):
+            elif arrow is not None and math_norm(num_text(arrow)) != math_norm(it.get('b', '')):
                 out.append(f'{at}: "line": Pfeil zeigt auf {arrow}, Lösung ist aber "{it.get("b")}"')
     return out
 

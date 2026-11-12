@@ -192,6 +192,16 @@ try {
     eq([m.points, m.days['2026-11-08'].right, m.days['2026-11-08'].wrong, m.days['2026-11-08'].e], [127, 7, 1, 80]);
     eq(mergeStates(m, handy).points, 127, 'nochmal zusammenführen zählt nicht doppelt');
   });
+  await test('alte App schreibt Summe zurück: nichts doppelt zählen', () => {
+    const tablet = { v: 2, pointsBy: { alt: 1000, gT: 50 }, days: { '2026-11-08': { by: { alt: { right: 20, wrong: 0, e: 200 }, gT: { right: 5, wrong: 0, e: 50 } } } } };
+    const alteApp = { points: 1060, days: { '2026-11-08': { right: 27, wrong: 0, e: 270 } } };   // hat 1050 gelesen, +10 geübt
+    const m = mergeStates(tablet, alteApp);
+    eq([m.points, m.days['2026-11-08'].right, m.days['2026-11-08'].e], [1060, 27, 270]);
+  });
+  await test('Stand aus neuerer App wird nicht übernommen (replaceState)', () => {
+    replaceState({ ...empty(), points: 5 });
+    eq([replaceState({ v: SCHEMA + 1, points: 9 }), getState().points], [false, 5]);
+  });
   await test('neueres Format wird erkannt (Sicherung lehnt es ab)', () => {
     eq([sanitizeState({ v: SCHEMA + 1 }).newer, sanitizeState({ v: SCHEMA }).newer, sanitizeState({}).newer], [true, false, false]);
   });
@@ -263,6 +273,14 @@ try {
     const lesson = { id: 'x', kind: 'mathe', items: [{ id: 'a', a: '1', b: '1', level: 1 }, { id: 'b', a: '2', b: '2' }, { id: 'c', a: '3', b: '3', level: 3 }] };
     eq([tasksFor('t', lesson, 'rechnen').map((t) => t.item.id), tasksFor('t', lesson, 'experte').map((t) => t.item.id), coreItems(lesson).length,
       modeById('experte').optIn], [['a', 'b'], ['c'], 2, true]);
+  });
+  await test('Mathe: Dezimalpunkt bleibt Komma (9.7 ≠ 97), Anzeige zeigt die Lösung wie geschrieben', () => {
+    eq([check('9.7', '97', [], mathNorm).ok, check('9.7', '9,7', [], mathNorm).ok, check('1 000 000', '1000000', [], mathNorm).ok], [false, true, true]);
+    eq(check('4800', '48 000', [], mathNorm).closest, '48 000');
+  });
+  await test('Experten-Aufgaben teilen den Lernstand mit „Aufgaben lösen“ (Umstufen verliert nichts)', () => {
+    const lesson = { id: 'x', kind: 'mathe', items: [{ id: 'c', a: '3', b: '3', level: 3 }] };
+    eq(tasksFor('t', lesson, 'experte')[0].key, 't/x/c|rechnen');
   });
   await test('Mathe: Leerzeichen, Tausenderpunkte und Groß/klein egal', () => {
     eq([check('48000', '48 000', [], mathNorm).ok, check('48.000', '48 000', [], mathNorm).ok, check('xliv', 'XLIV', [], mathNorm).ok,

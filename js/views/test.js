@@ -4,7 +4,7 @@
 // Spicken. Am Ende: Ergebnis in Prozent.
 
 import { getSubject, getLesson } from '../content.js';
-import { kindInfo, masteryMode, unitWord, unitOf, countWord } from '../lessons.js';
+import { kindInfo, masteryMode, unitWord, unitOf, countWord, coreItems } from '../lessons.js';
 import { tasksFor } from '../exercises/registry.js';
 import { runRound } from '../exercises/round.js';
 import { esc, shuffle } from '../util.js';
@@ -14,7 +14,7 @@ import { lessonMedal } from '../medal.js';
 export function testView(el, sid, preselect) {
   const subject = getSubject(sid);
   if (!subject) { location.hash = '#/'; return; }
-  const lessons = subject.lessons.map((l) => getLesson(sid, l.id)).filter((l) => l && kindInfo(l).testable);
+  const lessons = subject.lessons.map((l) => getLesson(sid, l.id)).filter((l) => l && kindInfo(l).testable && coreItems(l).length);
   const back = `#/fach/${encodeURIComponent(sid)}`;
 
   el.innerHTML = `
@@ -30,7 +30,7 @@ export function testView(el, sid, preselect) {
           const head = meta.group && meta.group !== prev.group ? `<h3 class="test-group">${esc(meta.group)}</h3>` : '';
           return `${head}
           <label class="check"><input type="checkbox" name="lesson" value="${esc(l.id)}"${l.id === preselect ? ' checked' : ''}>
-            ${lessonMedal(sid, l).medal ? '🏅 ' : ''}${esc(meta.title ?? l.title)} <span class="muted small">(${l.items.length} ${unitWord(l, l.items.length)})</span></label>`;
+            ${lessonMedal(sid, l).medal ? '🏅 ' : ''}${esc(meta.title ?? l.title)} <span class="muted small">(${coreItems(l).length} ${unitWord(l, coreItems(l).length)})</span></label>`;
         }).join('')}
         <p class="test-count muted small"></p>
         <div class="actions"><button class="btn primary" type="submit">Test starten</button></div>
@@ -40,7 +40,7 @@ export function testView(el, sid, preselect) {
   const form = el.querySelector('.test-form');
   const chosen = () => [...form.querySelectorAll('input[name=lesson]:checked')].map((i) => lessons.find((l) => l.id === i.value));
   const updateCount = () => {
-    const n = chosen().reduce((sum, l) => sum + l.items.length, 0);
+    const n = chosen().reduce((sum, l) => sum + coreItems(l).length, 0);   // ohne Experten-Aufgaben – wie der Test
     form.querySelector('.test-count').textContent = n ? `${countWord(unitOf(chosen()), n)} im Test` : 'Hake die Lektionen an, die im Test drankommen.';
     form.querySelector('button').disabled = !n;
   };

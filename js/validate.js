@@ -19,6 +19,8 @@ const isObj = (x) => x !== null && typeof x === 'object' && !Array.isArray(x);
 const num = (x, min = 0) => (typeof x === 'number' && Number.isFinite(x) && x >= min ? x : null);
 const int = (x, min = 0) => { const n = num(x, min); return n === null ? null : Math.floor(n); };
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
+// Tagesziel-Werte (e, s) in Zehnteln, auf eine Nachkommastelle (z. B. 1,5 für eine Antipp-Aufgabe der Stufe Basis).
+const tenth = (x) => { const n = num(x); return n === null ? null : Math.round(n * 10) / 10; };
 export const SCHEMA = 2;
 export const LEGACY_DEVICE = 'alt';
 const ID = /^[\w-]{1,40}$/;
@@ -41,11 +43,11 @@ function cleanItem(v) {
 function cleanCounts(v) {
   if (!isObj(v)) return null;
   const d = { right: int(v.right) ?? 0, wrong: int(v.wrong) ?? 0 };
-  const e = int(v.e);
+  const e = tenth(v.e);
   if (e !== null) d.e = e;
   if (isObj(v.s)) {
     const sub = {};
-    for (const [k, x] of Object.entries(v.s)) { const n = int(x); if (ID.test(k) && n !== null) sub[k] = n; }
+    for (const [k, x] of Object.entries(v.s)) { const n = tenth(x); if (ID.test(k) && n !== null) sub[k] = n; }
     if (Object.keys(sub).length) d.s = sub;
   }
   return d;
@@ -72,9 +74,9 @@ export function sumDay(by) {
     d.right += c.right; d.wrong += c.wrong;
     // Tage ohne Tagesziel-Wert (vor der Gewichtung): jede Antwort zählt voll
     e = (e ?? 0) + (c.e ?? (c.right + c.wrong) * 10);
-    for (const [k, n] of Object.entries(c.s ?? {})) s[k] = (s[k] ?? 0) + n;
+    for (const [k, n] of Object.entries(c.s ?? {})) s[k] = Math.round(((s[k] ?? 0) + n) * 10) / 10;
   }
-  if (e !== null) d.e = e;
+  if (e !== null) d.e = Math.round(e * 10) / 10;
   if (Object.keys(s).length) d.s = s;
   return d;
 }
