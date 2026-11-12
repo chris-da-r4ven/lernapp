@@ -1,0 +1,149 @@
+{
+  "id": "diagramme-darstellen",
+  "title": "Diagramme richtig darstellen",
+  "group": "Daten",
+  "order": 30,
+  "kind": "mathe",
+  "type": "pairs",
+  "sides": {
+    "a": "Aufgabe",
+    "b": "Lösung"
+  },
+  "langs": {
+    "a": "de-DE",
+    "b": "de-DE"
+  },
+  "items": [
+    {
+      "id": "ueberschrift",
+      "a": "Was gehört über jedes Diagramm?",
+      "b": "eine Überschrift",
+      "why": "Die Überschrift sagt, worum es geht.",
+      "choices": [
+        "eine Überschrift",
+        "ein Datum",
+        "dein Name"
+      ]
+    },
+    {
+      "id": "achsen",
+      "a": "Was gehört an die Achsen eines Diagramms?",
+      "b": "eine Beschriftung",
+      "why": "Die Achsenbeschriftung sagt, was die Zahlen bedeuten (z. B. „Anzahl Kinder“).",
+      "choices": [
+        "eine Beschriftung",
+        "eine Farbe",
+        "ein Pfeil"
+      ]
+    },
+    {
+      "id": "skala",
+      "a": "Wie muss die Skala eingeteilt sein?",
+      "b": "gleichmäßig",
+      "why": "Gleiche Abstände für gleiche Schritte – sonst täuscht das Diagramm.",
+      "choices": [
+        "gleichmäßig",
+        "immer in Einerschritten",
+        "egal"
+      ]
+    },
+    {
+      "id": "saeulen-richtung",
+      "a": "Wie stehen die Säulen in einem Säulendiagramm?",
+      "b": "senkrecht",
+      "why": "Säulen stehen wie Säulen an einem Haus: senkrecht.",
+      "choices": [
+        "senkrecht",
+        "waagerecht"
+      ]
+    },
+    {
+      "id": "balken-richtung",
+      "a": "Wie liegen die Balken in einem Balkendiagramm?",
+      "b": "waagerecht",
+      "why": "Balken liegen waagerecht.",
+      "choices": [
+        "senkrecht",
+        "waagerecht"
+      ]
+    },
+    {
+      "id": "skala-9",
+      "a": "Der höchste Wert ist 9. Welche Skala passt am besten?",
+      "b": "Einerschritte bis 10",
+      "why": "Bei kleinen Zahlen reichen Einerschritte.",
+      "choices": [
+        "Einerschritte bis 10",
+        "Zehnerschritte bis 100",
+        "Hunderterschritte bis 1 000"
+      ]
+    },
+    {
+      "id": "skala-350",
+      "a": "Der höchste Wert ist 350. Welche Schrittweite passt am besten?",
+      "b": "50",
+      "why": "Mit 50er-Schritten brauchst du 7 Schritte bis 350 – gut zu zeichnen.",
+      "choices": [
+        "1",
+        "50",
+        "1 000"
+      ]
+    },
+    {
+      "id": "skala-9700",
+      "a": "Der höchste Wert ist 9 700. Welche Schrittweite passt am besten?",
+      "b": "1 000",
+      "why": "Mit 1 000er-Schritten brauchst du 10 Schritte bis 10 000.",
+      "choices": [
+        "10",
+        "1 000",
+        "100 000"
+      ]
+    },
+    {
+      "id": "bild-20",
+      "a": "Im Bilddiagramm steht ein ⚽ für 5 Kinder. Wie viele ⚽ zeichnest du für 20 Kinder?",
+      "b": "4",
+      "why": "20 : 5 = 4."
+    },
+    {
+      "id": "bild-35",
+      "a": "Ein 🙂 steht für 10 Personen. Wie zeichnest du 35 Personen?",
+      "b": "3 ganze und ein halbes",
+      "why": "30 = 3 ganze Symbole, 5 = ein halbes.",
+      "choices": [
+        "3 ganze",
+        "3 ganze und ein halbes",
+        "4 ganze"
+      ]
+    },
+    {
+      "id": "cm-50",
+      "a": "Die höchste Säule soll 10 cm hoch werden. Der höchste Wert ist 50. Wie viel steht dann für 1 cm?",
+      "b": "5",
+      "why": "50 : 10 = 5."
+    },
+    {
+      "id": "tabellenkalkulation",
+      "a": "Wozu kannst du eine Tabellenkalkulation benutzen?",
+      "b": "Diagramme erstellen",
+      "why": "Du gibst die Daten in Zellen ein, das Programm zeichnet das Diagramm.",
+      "choices": [
+        "Diagramme erstellen",
+        "Fotos bearbeiten",
+        "Musik hören"
+      ]
+    },
+    {
+      "id": "kreis",
+      "a": "Welches Diagramm zeigt Anteile als Kreisstücke?",
+      "b": "Kreisdiagramm",
+      "why": "Wie Tortenstücke: je größer das Stück, desto mehr.",
+      "choices": [
+        "Kreisdiagramm",
+        "Säulendiagramm",
+        "Balkendiagramm"
+      ]
+    }
+  ]
+}

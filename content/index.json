@@ -1,7 +1,7 @@
 {
-  "version": 14,
+  "version": 16,
   "updated": "2026-11-12",
-  "hash": "6584bcb26acb4448",
+  "hash": "ba5299be36467ca9",
   "minApp": 2,
   "app": {
     "modes": [
@@ -89,16 +89,22 @@
       "icon": "🔢",
       "lessons": [
         {
-          "id": "natuerliche-zahlen",
-          "title": "Zahlen ordnen & Zahlenstrahl",
-          "file": "mathe/natuerliche-zahlen.json",
-          "group": "Natürliche Zahlen"
+          "id": "strichlisten",
+          "title": "Strichlisten & Häufigkeitstabellen",
+          "file": "mathe/strichlisten.json",
+          "group": "Daten"
         },
         {
-          "id": "zahlenfolgen",
-          "title": "Zahlenfolgen & Muster",
-          "file": "mathe/zahlenfolgen.json",
-          "group": "Natürliche Zahlen"
+          "id": "diagramme-lesen",
+          "title": "Diagramme lesen",
+          "file": "mathe/diagramme-lesen.json",
+          "group": "Daten"
+        },
+        {
+          "id": "diagramme-darstellen",
+          "title": "Diagramme richtig darstellen",
+          "file": "mathe/diagramme-darstellen.json",
+          "group": "Daten"
         }
       ]
     }

@@ -14,6 +14,7 @@ import { deviceId } from '../js/device.js';
 import { MODES } from '../js/exercises/modes.js';
 import { modesFor, tasksFor, modeById, weightFor } from '../js/exercises/registry.js';
 import { numberLine } from '../js/exercises/numberline.js';
+import { chart, tallyTable } from '../js/exercises/charts.js';
 import { kindOf, targetSide, towardTarget, langOf, KINDS, isSupported, masteryMode } from '../js/lessons.js';
 import { APP_VERSION } from '../js/version.js';
 import { dayKey } from '../js/util.js';
@@ -251,6 +252,14 @@ try {
   });
   await test('Mathe: Test und Medaille fragen „Aufgaben lösen“ ab', () =>
     eq([masteryMode({ kind: 'mathe', items: [] }), KINDS.mathe.testable], ['rechnen', true]));
+  await test('Diagramme und Strichliste: Säulen, Balken, Bilder, Fünferbündel', () => {
+    const spec = { labels: ['A', 'B'], values: [7, 4], step: 2 };
+    eq((chart({ ...spec, type: 'saeulen' }).match(/class="ch-bar/g) ?? []).length, 2, 'Säulen');
+    ok(chart({ ...spec, type: 'balken' }).includes('Balkendiagramm'), 'Balken');
+    eq((chart({ type: 'bild', labels: ['X'], values: [5], symbol: '★', per: 2 }).match(/★/g) ?? []).length, 4, 'Bild: 2 ganze + halbes + Legende');
+    eq((tallyTable([['X', 12]]).match(/<svg/g) ?? []).length, 3, '12 = 5 + 5 + 2');
+    eq(chart({ type: 'saeulen', labels: ['A'], values: [] }), '', 'unvollständig → nichts');
+  });
   await test('Zahlenstrahl: Striche, Beschriftung, Pfeil', () => {
     const svg = numberLine({ from: 0, to: 40, step: 2, label: 10, arrow: 8 });
     eq([(svg.match(/nl-tick/g) ?? []).length, (svg.match(/class="nl-num"/g) ?? []).length, svg.includes('nl-arrow')], [21, 5, true]);
@@ -293,6 +302,8 @@ try {
         for (const it of lesson.items) {
           if (it.choices) ok(it.choices.some((c) => mathNorm(c) === mathNorm(it.b)) || kindOf(lesson) !== 'mathe', `${it.id}: Lösung nicht unter den Knöpfen`);
           if (it.line) ok(numberLine(it.line), `${it.id}: Zahlenstrahl leer`);
+          if (it.chart) ok(chart(it.chart), `${it.id}: Diagramm leer`);
+          if (it.tally) ok(tallyTable(it.tally), `${it.id}: Strichliste leer`);
         }
       });
     }

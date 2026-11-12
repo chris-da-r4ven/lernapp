@@ -1,0 +1,259 @@
+{
+  "id": "strichlisten",
+  "title": "Strichlisten & Häufigkeitstabellen",
+  "group": "Daten",
+  "order": 10,
+  "kind": "mathe",
+  "type": "pairs",
+  "sides": {
+    "a": "Aufgabe",
+    "b": "Lösung"
+  },
+  "langs": {
+    "a": "de-DE",
+    "b": "de-DE"
+  },
+  "items": [
+    {
+      "id": "tally-katze",
+      "a": "Wie viele Kinder haben eine Katze?",
+      "b": "12",
+      "why": "2 volle Fünferbündel = 10, dazu 2 Striche = 12.",
+      "tally": [
+        [
+          "Hund",
+          7
+        ],
+        [
+          "Katze",
+          12
+        ],
+        [
+          "Hamster",
+          3
+        ]
+      ]
+    },
+    {
+      "id": "tally-nudeln",
+      "a": "Wie viele Kinder essen am liebsten Nudeln?",
+      "b": "14",
+      "why": "2 Fünferbündel = 10, dazu 4 Striche = 14.",
+      "tally": [
+        [
+          "Pizza",
+          9
+        ],
+        [
+          "Nudeln",
+          14
+        ],
+        [
+          "Salat",
+          4
+        ]
+      ]
+    },
+    {
+      "id": "tally-summe",
+      "a": "Wie viele Kinder wurden insgesamt befragt?",
+      "b": "24",
+      "why": "11 + 8 + 5 = 24.",
+      "tally": [
+        [
+          "Fußball",
+          11
+        ],
+        [
+          "Schwimmen",
+          8
+        ],
+        [
+          "Tennis",
+          5
+        ]
+      ]
+    },
+    {
+      "id": "tally-farbe",
+      "a": "Welche Farbe wurde am häufigsten genannt?",
+      "b": "blau",
+      "why": "Blau hat die meisten Striche: 13.",
+      "tally": [
+        [
+          "rot",
+          6
+        ],
+        [
+          "blau",
+          13
+        ],
+        [
+          "grün",
+          9
+        ]
+      ],
+      "choices": [
+        "rot",
+        "blau",
+        "grün"
+      ]
+    },
+    {
+      "id": "tally-bus",
+      "a": "Wie viele Kinder kommen mit dem Bus?",
+      "b": "17",
+      "why": "3 Fünferbündel = 15, dazu 2 Striche = 17.",
+      "tally": [
+        [
+          "Bus",
+          17
+        ],
+        [
+          "Fahrrad",
+          6
+        ],
+        [
+          "zu Fuß",
+          10
+        ]
+      ]
+    },
+    {
+      "id": "tally-wahl",
+      "a": "Wer hat die Wahl gewonnen?",
+      "b": "Lara",
+      "why": "Lara hat die meisten Stimmen: 11.",
+      "tally": [
+        [
+          "Kevin",
+          8
+        ],
+        [
+          "Lara",
+          11
+        ],
+        [
+          "Tim",
+          7
+        ]
+      ],
+      "choices": [
+        "Kevin",
+        "Lara",
+        "Tim"
+      ]
+    },
+    {
+      "id": "tally-diff",
+      "a": "Wie viele Stimmen hat „ja“ mehr als „nein“?",
+      "b": "13",
+      "why": "19 − 6 = 13.",
+      "tally": [
+        [
+          "ja",
+          19
+        ],
+        [
+          "nein",
+          6
+        ]
+      ]
+    },
+    {
+      "id": "tally-20",
+      "a": "Wie viele Äpfel sind es?",
+      "b": "20",
+      "why": "4 Fünferbündel: 4 · 5 = 20.",
+      "tally": [
+        [
+          "Äpfel",
+          20
+        ]
+      ]
+    },
+    {
+      "id": "buendel",
+      "a": "Wie viele Striche hat ein volles Bündel in einer Strichliste?",
+      "b": "5",
+      "why": "4 Striche und der fünfte quer darüber."
+    },
+    {
+      "id": "buendel-23",
+      "a": "Wie viele volle Fünferbündel brauchst du für die Zahl 23?",
+      "b": "4",
+      "why": "4 · 5 = 20, dazu kommen noch 3 einzelne Striche."
+    },
+    {
+      "id": "rest-23",
+      "a": "Wie viele einzelne Striche stehen bei 23 neben den Fünferbündeln?",
+      "b": "3",
+      "why": "23 = 4 · 5 + 3."
+    },
+    {
+      "id": "haeufigkeitstabelle",
+      "a": "Du zählst die Striche einer Strichliste aus und schreibst Zahlen auf. Wie heißt das?",
+      "b": "Häufigkeitstabelle",
+      "why": "In der Häufigkeitstabelle stehen statt der Striche die Anzahlen.",
+      "choices": [
+        "Häufigkeitstabelle",
+        "Säulendiagramm",
+        "Fragebogen"
+      ]
+    },
+    {
+      "id": "liste-mia",
+      "a": "Abstimmung: Mia, Ben, Mia, Ole, Mia, Ben, Mia, Ole, Ben, Mia. Wie viele Stimmen hat Mia?",
+      "b": "5",
+      "why": "Mia kommt 5-mal vor."
+    },
+    {
+      "id": "liste-summe",
+      "a": "Abstimmung: Jan, Eda, Eda, Paul, Jan, Eda, Paul, Eda, Jan. Wie viele Stimmen wurden insgesamt abgegeben?",
+      "b": "9",
+      "why": "Jede Nennung ist eine Stimme: 9 Namen."
+    },
+    {
+      "id": "liste-km",
+      "a": "Schulweg in km: 2, 1, 3, 2, 2, 4, 1, 2, 3, 2. Wie oft wurde „2 km“ genannt?",
+      "b": "5",
+      "why": "Die 2 kommt 5-mal vor."
+    },
+    {
+      "id": "liste-geld",
+      "a": "Taschengeld: 10 €, 15 €, 10 €, 20 €, 10 €, 15 €, 5 €, 10 €. Welcher Betrag kommt am häufigsten vor?",
+      "b": "10 €",
+      "why": "10 € kommt 4-mal vor.",
+      "choices": [
+        "5 €",
+        "10 €",
+        "15 €",
+        "20 €"
+      ]
+    },
+    {
+      "id": "liste-wuerfel",
+      "a": "Gewürfelt: 3, 6, 1, 6, 2, 6, 4, 3, 6, 5. Wie oft kam eine 6?",
+      "b": "4",
+      "why": "Die 6 kommt 4-mal vor."
+    },
+    {
+      "id": "tab-jungen",
+      "a": "In der Klasse 5a sind 26 Kinder, 14 davon sind Mädchen. Wie viele Jungen sind es?",
+      "b": "12",
+      "why": "26 − 14 = 12."
+    },
+    {
+      "id": "tab-rest",
+      "a": "28 Kinder wurden befragt: 12 mögen Hunde am liebsten, 9 Katzen, die anderen Pferde. Wie viele mögen Pferde am liebsten?",
+      "b": "7",
+      "why": "28 − 12 − 9 = 7."
+    },
+    {
+      "id": "tab-summe",
+      "a": "Häufigkeitstabelle: Pizza 9, Döner 6, Salat 4. Wie viele Kinder wurden befragt?",
+      "b": "19",
+      "why": "9 + 6 + 4 = 19."
+    }
+  ]
+}

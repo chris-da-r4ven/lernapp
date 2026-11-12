@@ -402,3 +402,24 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
 .numberline .nl-num { fill: var(--text); font-size: 17px; text-anchor: middle; font-family: inherit; }
 .numberline .nl-arrow { fill: var(--primary); }
 .numberline .nl-arrow-line { stroke: var(--primary); stroke-width: 3; }
+
+/* Mathe: Diagramme (charts.js) */
+.chart { margin: 0 auto 16px; max-width: 640px; }
+.chart-title { text-align: center; font-weight: 700; margin: 0 0 6px; }
+.chart-svg { display: block; width: 100%; height: auto; }
+.chart-svg .ch-grid { stroke: var(--line); stroke-width: 1; }
+.chart-svg .ch-axis { stroke: var(--text); stroke-width: 2; }
+.chart-svg .ch-num, .chart-svg .ch-label, .chart-svg .ch-axis-title { fill: var(--text); font-size: 16px; font-family: inherit; }
+.chart-svg .ch-axis-title { fill: var(--muted); font-size: 14px; }
+.chart-svg .ch-c0 { fill: #4f6cf7; } .chart-svg .ch-c1 { fill: #f08c2e; } .chart-svg .ch-c2 { fill: #1f9d55; }
+.chart-svg .ch-c3 { fill: #d64545; } .chart-svg .ch-c4 { fill: #8e5cd9; } .chart-svg .ch-c5 { fill: #e0a100; }
+.pictogram { margin: 0 auto; border-collapse: collapse; }
+.pictogram th { text-align: right; padding: 4px 12px 4px 0; font-weight: 600; white-space: nowrap; }
+.pictogram td { text-align: left; font-size: 1.5rem; letter-spacing: 2px; padding: 2px 0; }
+.pic-half { display: inline-block; width: 0.6em; overflow: hidden; vertical-align: bottom; }
+.pic-key { text-align: center; margin-top: 6px; }
+.tally-table { margin: 0 auto 16px; border-collapse: collapse; }
+.tally-table th { text-align: right; padding: 6px 14px 6px 0; font-weight: 600; white-space: nowrap; }
+.tally-table td { text-align: left; padding: 4px 0; }
+.tally { margin-right: 10px; vertical-align: middle; }
+.tally line { stroke: var(--text); stroke-width: 2.5; stroke-linecap: round; }

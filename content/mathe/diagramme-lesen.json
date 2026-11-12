@@ -1,0 +1,634 @@
+{
+  "id": "diagramme-lesen",
+  "title": "Diagramme lesen",
+  "group": "Daten",
+  "order": 20,
+  "kind": "mathe",
+  "type": "pairs",
+  "sides": {
+    "a": "Aufgabe",
+    "b": "Lösung"
+  },
+  "langs": {
+    "a": "de-DE",
+    "b": "de-DE"
+  },
+  "items": [
+    {
+      "id": "a-fahrrad",
+      "a": "Wie viele Kinder kommen mit dem Fahrrad?",
+      "b": "7",
+      "why": "Die Säule endet genau zwischen 6 und 8.",
+      "chart": {
+        "type": "saeulen",
+        "title": "Wie kommst du zur Schule?",
+        "labels": [
+          "Bus",
+          "Auto",
+          "Fahrrad",
+          "zu Fuß"
+        ],
+        "values": [
+          12,
+          4,
+          7,
+          9
+        ],
+        "step": 2,
+        "axis": "Anzahl Kinder"
+      }
+    },
+    {
+      "id": "a-meiste",
+      "a": "Wie kommen die meisten Kinder zur Schule?",
+      "b": "Bus",
+      "why": "Die Bus-Säule ist am höchsten.",
+      "chart": {
+        "type": "saeulen",
+        "title": "Wie kommst du zur Schule?",
+        "labels": [
+          "Bus",
+          "Auto",
+          "Fahrrad",
+          "zu Fuß"
+        ],
+        "values": [
+          12,
+          4,
+          7,
+          9
+        ],
+        "step": 2,
+        "axis": "Anzahl Kinder"
+      },
+      "choices": [
+        "Bus",
+        "Auto",
+        "Fahrrad",
+        "zu Fuß"
+      ]
+    },
+    {
+      "id": "a-summe",
+      "a": "Wie viele Kinder wurden insgesamt befragt?",
+      "b": "32",
+      "why": "12 + 4 + 7 + 9 = 32.",
+      "chart": {
+        "type": "saeulen",
+        "title": "Wie kommst du zur Schule?",
+        "labels": [
+          "Bus",
+          "Auto",
+          "Fahrrad",
+          "zu Fuß"
+        ],
+        "values": [
+          12,
+          4,
+          7,
+          9
+        ],
+        "step": 2,
+        "axis": "Anzahl Kinder"
+      }
+    },
+    {
+      "id": "b-bananen",
+      "a": "Wie viele Kinder mögen Bananen am liebsten?",
+      "b": "10",
+      "why": "Der Balken endet bei 10.",
+      "chart": {
+        "type": "balken",
+        "title": "Lieblingsobst",
+        "labels": [
+          "Äpfel",
+          "Bananen",
+          "Kiwis",
+          "Pflaumen"
+        ],
+        "values": [
+          15,
+          10,
+          5,
+          20
+        ],
+        "step": 5,
+        "axis": "Anzahl Kinder"
+      }
+    },
+    {
+      "id": "b-diff",
+      "a": "Wie viele Kinder mehr mögen Pflaumen als Kiwis?",
+      "b": "15",
+      "why": "20 − 5 = 15.",
+      "chart": {
+        "type": "balken",
+        "title": "Lieblingsobst",
+        "labels": [
+          "Äpfel",
+          "Bananen",
+          "Kiwis",
+          "Pflaumen"
+        ],
+        "values": [
+          15,
+          10,
+          5,
+          20
+        ],
+        "step": 5,
+        "axis": "Anzahl Kinder"
+      }
+    },
+    {
+      "id": "b-wenigste",
+      "a": "Welches Obst mögen die wenigsten Kinder am liebsten?",
+      "b": "Kiwis",
+      "why": "Der Kiwi-Balken ist am kürzesten.",
+      "chart": {
+        "type": "balken",
+        "title": "Lieblingsobst",
+        "labels": [
+          "Äpfel",
+          "Bananen",
+          "Kiwis",
+          "Pflaumen"
+        ],
+        "values": [
+          15,
+          10,
+          5,
+          20
+        ],
+        "step": 5,
+        "axis": "Anzahl Kinder"
+      },
+      "choices": [
+        "Äpfel",
+        "Bananen",
+        "Kiwis",
+        "Pflaumen"
+      ]
+    },
+    {
+      "id": "c-gruen",
+      "a": "Wie viele grüne Gummibärchen sind in der Tüte?",
+      "b": "3",
+      "why": "Ein Bärchen steht hier für 1 Gummibärchen.",
+      "chart": {
+        "type": "bild",
+        "title": "Gummibärchen in einer Tüte",
+        "labels": [
+          "Rot",
+          "Grün",
+          "Gelb",
+          "Weiß"
+        ],
+        "values": [
+          6,
+          3,
+          5,
+          2
+        ],
+        "symbol": "🐻",
+        "per": 1,
+        "axis": "Gummibärchen"
+      }
+    },
+    {
+      "id": "c-doppelt",
+      "a": "Von welcher Farbe gibt es doppelt so viele wie von Grün?",
+      "b": "Rot",
+      "why": "Grün: 3, doppelt so viele: 6 – das ist Rot.",
+      "chart": {
+        "type": "bild",
+        "title": "Gummibärchen in einer Tüte",
+        "labels": [
+          "Rot",
+          "Grün",
+          "Gelb",
+          "Weiß"
+        ],
+        "values": [
+          6,
+          3,
+          5,
+          2
+        ],
+        "symbol": "🐻",
+        "per": 1,
+        "axis": "Gummibärchen"
+      },
+      "choices": [
+        "Rot",
+        "Gelb",
+        "Weiß"
+      ]
+    },
+    {
+      "id": "d-tom",
+      "a": "Ein 📕 steht für 2 Bücher. Wie viele Bücher hat Tom gelesen?",
+      "b": "5",
+      "why": "2 ganze Bücher-Symbole = 4, dazu ein halbes = 1. Zusammen 5.",
+      "chart": {
+        "type": "bild",
+        "title": "Gelesene Bücher",
+        "labels": [
+          "Lena",
+          "Tom",
+          "Ali"
+        ],
+        "values": [
+          8,
+          5,
+          6
+        ],
+        "symbol": "📕",
+        "per": 2,
+        "axis": "Bücher"
+      }
+    },
+    {
+      "id": "d-summe",
+      "a": "Ein 📕 steht für 2 Bücher. Wie viele Bücher haben alle drei zusammen gelesen?",
+      "b": "19",
+      "why": "Lena 8, Tom 5, Ali 6: 8 + 5 + 6 = 19.",
+      "chart": {
+        "type": "bild",
+        "title": "Gelesene Bücher",
+        "labels": [
+          "Lena",
+          "Tom",
+          "Ali"
+        ],
+        "values": [
+          8,
+          5,
+          6
+        ],
+        "symbol": "📕",
+        "per": 2,
+        "axis": "Bücher"
+      }
+    },
+    {
+      "id": "e-autos",
+      "a": "Ein 🚗 steht für 10 Fahrzeuge. Wie viele Autos wurden gezählt?",
+      "b": "40",
+      "why": "4 Symbole · 10 = 40.",
+      "chart": {
+        "type": "bild",
+        "title": "Fahrzeuge in 15 Minuten",
+        "labels": [
+          "Autos",
+          "Lkw",
+          "Fahrräder"
+        ],
+        "values": [
+          40,
+          15,
+          20
+        ],
+        "symbol": "🚗",
+        "per": 10,
+        "axis": "Fahrzeuge"
+      }
+    },
+    {
+      "id": "e-lkw",
+      "a": "Ein 🚗 steht für 10 Fahrzeuge. Wie viele Lkw wurden gezählt?",
+      "b": "15",
+      "why": "Ein ganzes Symbol = 10, ein halbes = 5. Zusammen 15.",
+      "chart": {
+        "type": "bild",
+        "title": "Fahrzeuge in 15 Minuten",
+        "labels": [
+          "Autos",
+          "Lkw",
+          "Fahrräder"
+        ],
+        "values": [
+          40,
+          15,
+          20
+        ],
+        "symbol": "🚗",
+        "per": 10,
+        "axis": "Fahrzeuge"
+      }
+    },
+    {
+      "id": "f-mittwoch",
+      "a": "Wie viele Stunden schien die Sonne am Mittwoch?",
+      "b": "8",
+      "why": "Die Säule bei „Mi“ endet bei 8.",
+      "chart": {
+        "type": "saeulen",
+        "title": "Sonnenstunden",
+        "labels": [
+          "Mo",
+          "Di",
+          "Mi",
+          "Do",
+          "Fr",
+          "Sa",
+          "So"
+        ],
+        "values": [
+          6,
+          4,
+          8,
+          2,
+          5,
+          9,
+          7
+        ],
+        "step": 2,
+        "max": 10,
+        "axis": "Stunden"
+      }
+    },
+    {
+      "id": "f-wenigste",
+      "a": "An welchem Tag schien die Sonne am kürzesten?",
+      "b": "Do",
+      "why": "Die Säule bei „Do“ ist am niedrigsten: 2 Stunden.",
+      "chart": {
+        "type": "saeulen",
+        "title": "Sonnenstunden",
+        "labels": [
+          "Mo",
+          "Di",
+          "Mi",
+          "Do",
+          "Fr",
+          "Sa",
+          "So"
+        ],
+        "values": [
+          6,
+          4,
+          8,
+          2,
+          5,
+          9,
+          7
+        ],
+        "step": 2,
+        "max": 10,
+        "axis": "Stunden"
+      },
+      "choices": [
+        "Mo",
+        "Di",
+        "Do",
+        "Fr"
+      ]
+    },
+    {
+      "id": "f-wochenende",
+      "a": "Wie viele Sonnenstunden hatte das Wochenende (Sa und So) zusammen?",
+      "b": "16",
+      "why": "9 + 7 = 16.",
+      "chart": {
+        "type": "saeulen",
+        "title": "Sonnenstunden",
+        "labels": [
+          "Mo",
+          "Di",
+          "Mi",
+          "Do",
+          "Fr",
+          "Sa",
+          "So"
+        ],
+        "values": [
+          6,
+          4,
+          8,
+          2,
+          5,
+          9,
+          7
+        ],
+        "step": 2,
+        "max": 10,
+        "axis": "Stunden"
+      }
+    },
+    {
+      "id": "g-auto",
+      "a": "Wie viele Kilometer wurden mit dem Auto gefahren?",
+      "b": "150",
+      "why": "Der Balken endet bei 150.",
+      "chart": {
+        "type": "balken",
+        "title": "Gefahrene Kilometer",
+        "labels": [
+          "Bus",
+          "Bahn",
+          "Auto",
+          "Fahrrad"
+        ],
+        "values": [
+          50,
+          350,
+          150,
+          75
+        ],
+        "step": 50,
+        "axis": "km"
+      }
+    },
+    {
+      "id": "g-meiste",
+      "a": "Mit welchem Verkehrsmittel wurde am weitesten gefahren?",
+      "b": "Bahn",
+      "why": "Der Bahn-Balken ist am längsten.",
+      "chart": {
+        "type": "balken",
+        "title": "Gefahrene Kilometer",
+        "labels": [
+          "Bus",
+          "Bahn",
+          "Auto",
+          "Fahrrad"
+        ],
+        "values": [
+          50,
+          350,
+          150,
+          75
+        ],
+        "step": 50,
+        "axis": "km"
+      },
+      "choices": [
+        "Bus",
+        "Bahn",
+        "Auto",
+        "Fahrrad"
+      ]
+    },
+    {
+      "id": "g-skala",
+      "a": "In welchen Schritten ist die Skala eingeteilt?",
+      "b": "50",
+      "why": "0, 50, 100, 150 … – immer 50 weiter.",
+      "chart": {
+        "type": "balken",
+        "title": "Gefahrene Kilometer",
+        "labels": [
+          "Bus",
+          "Bahn",
+          "Auto",
+          "Fahrrad"
+        ],
+        "values": [
+          50,
+          350,
+          150,
+          75
+        ],
+        "step": 50,
+        "axis": "km"
+      }
+    },
+    {
+      "id": "h-mittwoch",
+      "a": "Wie viele Besucher waren am Mittwoch im Freibad?",
+      "b": "500",
+      "why": "Die Säule bei „Mi“ endet bei 500.",
+      "chart": {
+        "type": "saeulen",
+        "title": "Besucher im Freibad",
+        "labels": [
+          "Mo",
+          "Di",
+          "Mi",
+          "Do"
+        ],
+        "values": [
+          300,
+          200,
+          500,
+          400
+        ],
+        "step": 100,
+        "axis": "Besucher"
+      }
+    },
+    {
+      "id": "h-skala",
+      "a": "In welchen Schritten ist die Skala eingeteilt?",
+      "b": "100",
+      "why": "0, 100, 200, 300 … – immer 100 weiter.",
+      "chart": {
+        "type": "saeulen",
+        "title": "Besucher im Freibad",
+        "labels": [
+          "Mo",
+          "Di",
+          "Mi",
+          "Do"
+        ],
+        "values": [
+          300,
+          200,
+          500,
+          400
+        ],
+        "step": 100,
+        "axis": "Besucher"
+      }
+    },
+    {
+      "id": "typ-saeulen",
+      "a": "Wie heißt diese Art von Diagramm?",
+      "b": "Säulendiagramm",
+      "why": "Die Säulen stehen senkrecht.",
+      "chart": {
+        "type": "saeulen",
+        "title": "Besucher im Freibad",
+        "labels": [
+          "Mo",
+          "Di",
+          "Mi",
+          "Do"
+        ],
+        "values": [
+          300,
+          200,
+          500,
+          400
+        ],
+        "step": 100,
+        "axis": "Besucher"
+      },
+      "choices": [
+        "Säulendiagramm",
+        "Balkendiagramm",
+        "Bilddiagramm"
+      ]
+    },
+    {
+      "id": "typ-balken",
+      "a": "Wie heißt diese Art von Diagramm?",
+      "b": "Balkendiagramm",
+      "why": "Die Balken liegen waagerecht.",
+      "chart": {
+        "type": "balken",
+        "title": "Lieblingsobst",
+        "labels": [
+          "Äpfel",
+          "Bananen",
+          "Kiwis",
+          "Pflaumen"
+        ],
+        "values": [
+          15,
+          10,
+          5,
+          20
+        ],
+        "step": 5,
+        "axis": "Anzahl Kinder"
+      },
+      "choices": [
+        "Säulendiagramm",
+        "Balkendiagramm",
+        "Bilddiagramm"
+      ]
+    },
+    {
+      "id": "typ-bild",
+      "a": "Wie heißt diese Art von Diagramm?",
+      "b": "Bilddiagramm",
+      "why": "Statt Säulen oder Balken stehen hier Bilder (Symbole).",
+      "chart": {
+        "type": "bild",
+        "title": "Gummibärchen in einer Tüte",
+        "labels": [
+          "Rot",
+          "Grün",
+          "Gelb",
+          "Weiß"
+        ],
+        "values": [
+          6,
+          3,
+          5,
+          2
+        ],
+        "symbol": "🐻",
+        "per": 1,
+        "axis": "Gummibärchen"
+      },
+      "choices": [
+        "Säulendiagramm",
+        "Balkendiagramm",
+        "Bilddiagramm"
+      ]
+    }
+  ]
+}

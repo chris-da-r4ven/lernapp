@@ -70,6 +70,10 @@ abschreiben, nur das Thema und die Art der Aufgabe übernehmen.
   die Vielfachen von `label`, `arrow` (optional) zeigt auf eine Zahl. Das Werkzeug prüft, dass der
   Pfeil auf einem Strich liegt und zur Lösung passt.
 - Beim Eintippen sind Leerzeichen, Tausenderpunkte und Groß/klein egal (48 000 = 48000, xliv = XLIV).
+- `chart` – Diagramm: `{"type": "saeulen" | "balken" | "bild", "title": "…", "labels": [...], "values": [...],
+  "step": 2, "axis": "Anzahl Kinder"}`; beim Bilddiagramm `"symbol": "🚗", "per": 10` (ein Symbol = 10,
+  halbe Symbole werden halb gezeichnet).
+- `tally` – Strichliste: `[["Hund", 7], ["Katze", 12]]`, gezeichnet in Fünferbündeln.
 
 ## Ändern, zusammenlegen, umbenennen
 

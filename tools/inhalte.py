@@ -213,6 +213,24 @@ def check_math(at, it):
             out.append(f'{at}: "choices" braucht mindestens 2 Antworten')
         elif norm(it.get('b', '')) not in [norm(c) for c in choices]:
             out.append(f'{at}: Lösung "{it.get("b")}" steht nicht in "choices"')
+    chart = it.get('chart')
+    if chart is not None:
+        labels, values = chart.get('labels') or [], chart.get('values') or []
+        if chart.get('type') not in ('saeulen', 'balken', 'bild'):
+            out.append(f'{at}: "chart": type muss saeulen, balken oder bild sein')
+        if not labels or len(labels) != len(values) or not all(isinstance(v, (int, float)) and v >= 0 for v in values):
+            out.append(f'{at}: "chart": labels und values (Zahlen ≥ 0) müssen gleich lang sein')
+        elif chart.get('type') != 'bild':
+            step = chart.get('step') or 1
+            top = chart.get('max') or -(-max(values) // step) * step
+            if top / step > 40:
+                out.append(f'{at}: "chart": zu viele Hilfslinien – größeres "step" wählen')
+            if max(values) > top:
+                out.append(f'{at}: "chart": Wert über "max"')
+    tally = it.get('tally')
+    if tally is not None and not (isinstance(tally, list) and tally and all(
+            isinstance(r, list) and len(r) == 2 and isinstance(r[1], int) and 0 <= r[1] <= 60 for r in tally)):
+        out.append(f'{at}: "tally" muss eine Liste von ["Name", Anzahl] sein (Anzahl 0–60)')
     line = it.get('line')
     if line is not None:
         nums = {k: line.get(k) for k in ('from', 'to', 'step')}

@@ -17,6 +17,7 @@ import { renderDiff, distance } from '../diff.js';
 import { speak, speechControls, bindSpeechControls } from '../speech.js';
 import { targetSide, otherSide, langOf } from '../lessons.js';
 import { numberLine } from './numberline.js';
+import { chart, tallyTable } from './charts.js';
 
 // --- Prüfen ------------------------------------------------------------------
 
@@ -333,7 +334,8 @@ export const formQuestion = {
 // --- Mathe: Aufgabe lösen ------------------------------------------------------
 // Eintrag: "a" Aufgabe, "b" Lösung, optional "bAlt" (weitere richtige Schreibweisen),
 // "choices" (Antwort antippen statt eintippen, z. B. ["<", ">"]), "line" (Zahlenstrahl,
-// siehe numberline.js) und "why" (Erklärung, erscheint nach dem Antworten).
+// siehe numberline.js), "chart" / "tally" (Diagramm / Strichliste, siehe charts.js)
+// und "why" (Erklärung, erscheint nach dem Antworten).
 
 // 48 000 = 48000 = 48.000; xliv = XLIV
 export const mathNorm = (s) => String(s).normalize('NFC').replace(/[\s.\u202f]/g, '').toUpperCase();
@@ -348,6 +350,8 @@ export const mathQuestion = {
     card.innerHTML = `
       <div class="prompt math-q">${esc(item.a)}</div>
       ${item.line ? numberLine(item.line) : ''}
+      ${item.chart ? chart(item.chart) : ''}
+      ${item.tally ? tallyTable(item.tally) : ''}
       <div class="answer-area"></div>`;
     const area = card.querySelector('.answer-area');
     if (!item.choices) {
