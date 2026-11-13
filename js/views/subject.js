@@ -95,7 +95,7 @@ export function subjectView(el, sid) {
 
 // Fächer mit eigenem Banner (img/banner-<fach>.svg aus tools/hofkarte), sonst der Hof. Feste Liste:
 // Bildadressen nie aus Inhaltsdaten.
-const BANNERS = { englisch: 'banner-own' };
+const BANNERS = { englisch: 'banner-own', mathe: 'banner-own' };
 
 // Symbol der Lektion (Feld "icon"), sonst nach Art
 const KIND_ICON = { vokabeln: '📖', mathe: '🔢', grammatik: '🧩' };
