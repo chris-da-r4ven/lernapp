@@ -10,7 +10,7 @@
 // bleibt nur, was nach diesem Zeitpunkt geübt wurde.
 
 import { dayKey } from './util.js';
-import { sanitizeState, sumDay, sumPoints, LEGACY_DEVICE, FEEDBACK_MAX } from './validate.js';
+import { sanitizeState, sumDay, sumPoints, LEGACY_DEVICE, FEEDBACK_MAX, BLITZ_MAX } from './validate.js';
 
 const total = (d) => (d ? d.right + d.wrong : 0);
 
@@ -72,7 +72,45 @@ function mergeSame(a, b) {
     pointsBy,
     points: sumPoints(pointsBy),
     pet: a.pet ?? b.pet,
+    path: mergePath(a.path, b.path),
+    pathSince: Math.max(a.pathSince ?? 0, b.pathSince ?? 0),
+    opened: mergeStamps(a.opened, b.opened),
+    blitz: mergeBlitz(a.blitz, b.blitz),
   };
+}
+
+// --- Lernweg (SCHEMA 3) ------------------------------------------------------------
+// Zeitstempel-Sammlungen: Vereinigung, der frühere Zeitpunkt gewinnt (geschafft bleibt geschafft).
+// since: nur Einträge nach diesem Zeitpunkt übernehmen (nach einem Zurücksetzen).
+function mergeStamps(a = {}, b = {}, since = -Infinity) {
+  const out = { ...a };
+  for (const [k, t] of Object.entries(b)) {
+    if (t <= since) continue;
+    if (!Object.hasOwn(out, k) || t < out[k]) out[k] = t;
+  }
+  return out;
+}
+
+// Lernweg pro Lektion: gelernte Wörter und gemischte Etappen vereinigen; das neuere Turnier gilt
+// (mit seinen falschen Wörtern „retry“).
+export function mergePath(a = {}, b = {}, since = -Infinity) {
+  const out = { ...a };
+  for (const [k, e] of Object.entries(b)) {
+    const cur = Object.hasOwn(out, k) ? out[k] : { learned: {}, mix: {} };
+    const m = { learned: mergeStamps(cur.learned, e.learned, since), mix: mergeStamps(cur.mix, e.mix, since) };
+    const take = e.turnier && e.turnier.at > since && (!cur.turnier || e.turnier.at > cur.turnier.at) ? e : cur;
+    if (take.turnier) m.turnier = take.turnier;
+    if (take.retry) m.retry = take.retry;
+    out[k] = m;
+  }
+  return out;
+}
+
+// Blitzrunden: alle gespielten sammeln (gleiche id = dieselbe Runde).
+function mergeBlitz(a = [], b = [], since = -Infinity) {
+  const byId = new Map();
+  for (const x of [...a, ...b]) if (x.at > since && !byId.has(x.id)) byId.set(x.id, x);
+  return [...byId.values()].sort((x, y) => x.at - y.at).slice(-BLITZ_MAX);
 }
 
 // Ein Tag: pro Gerät der Eintrag mit mehr Antworten (die Zähler wachsen nur).
@@ -100,7 +138,13 @@ function mergeAfterReset(newer, older) {
   const olderTests = Object.fromEntries(Object.entries(older.tests)
     .map(([k, list]) => [k, list.filter((r) => r.day >= sinceDay)]));
   // Rückmeldungen gehören nicht zum Lernstand – sie bleiben auch über ein Zurücksetzen hinweg.
-  return { ...newer, items, days, tests: mergeTests(newer.tests, olderTests), feedback: mergeFeedback(newer.feedback, older.feedback) };
+  // Lernweg, geöffnete Lektionen und Blitzrunden: wie der Lernstand nur, was nach dem Zurücksetzen kam.
+  return {
+    ...newer, items, days, tests: mergeTests(newer.tests, olderTests), feedback: mergeFeedback(newer.feedback, older.feedback),
+    path: mergePath(newer.path, older.path, since),
+    opened: mergeStamps(newer.opened, older.opened, since),
+    blitz: mergeBlitz(newer.blitz, older.blitz.filter((x) => x.at > since)),
+  };
 }
 
 // Rückmeldungen: alle sammeln, pro Runde (id) gilt die zuletzt geänderte.

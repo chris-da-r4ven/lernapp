@@ -239,6 +239,51 @@ try {
     resetProgress();
     eq(getState().feedback.length, 1);
   });
+  section('Lernweg-Speicher (Format 3)');
+  await test('Stand aus Format 2 wird ohne Verlust gelesen, Lernweg leer', () => {
+    const r = sanitizeState({ v: 2, items: { 'e/l/w|ab': { box: 2 } }, pointsBy: { gA: 3 } });
+    eq([r.dropped, r.state.v, r.state.items['e/l/w|ab'].box, r.state.path, r.state.pathSince, r.state.opened, r.state.blitz], [0, 3, 2, {}, 0, {}, []]);
+  });
+  await test('Lernweg: gute Einträge bleiben, Unsinn fliegt raus', () => {
+    const r = sanitizeState({ v: 3, path: {
+      'englisch/halloween': { learned: { 'black cat': 5, 'How are you?': 6, x: 'nein' }, mix: { 'springen-1': 7 }, turnier: { day: '2026-11-13', at: 9, pct: 95 }, retry: ['bat', 3] },
+      'kaputt': { learned: {} }, 'a/b': 'nein',
+    } }).state.path;
+    eq(r, { 'englisch/halloween': { learned: { 'black cat': 5, 'How are you?': 6 }, mix: { 'springen-1': 7 }, turnier: { day: '2026-11-13', at: 9, pct: 95 }, retry: ['bat'] } });
+  });
+  await test('__proto__ & Co. als Schlüssel werden nie übernommen', () => {
+    const raw = JSON.parse('{"v":3,"items":{"__proto__":{"box":1}},"tests":{"__proto__":[{"day":"2026-11-13","pct":90}]},'
+      + '"path":{"__proto__":{"learned":{}},"e/l":{"learned":{"__proto__":1,"constructor":2,"ok":3}}},'
+      + '"opened":{"__proto__":1},"pointsBy":{"__proto__":5},"days":{"2026-11-13":{"by":{"__proto__":{"right":1,"wrong":0}}}}}');
+    const st = sanitizeState(raw).state;
+    eq([Object.keys(st.items), Object.keys(st.tests), Object.keys(st.path), Object.keys(st.path['e/l'].learned), Object.keys(st.opened), Object.keys(st.pointsBy),
+      Object.getPrototypeOf(st.path) === Object.prototype, Object.keys(st.days['2026-11-13'].by)],
+    [[], [], ['e/l'], ['ok'], [], [], true, []]);
+  });
+  await test('Zusammenführen: gelernte Wörter vereinigt, früherer Zeitpunkt gilt, neueres Turnier gewinnt', () => {
+    const a = { v: 3, path: { 'e/l': { learned: { w1: 5 }, mix: {}, turnier: { day: '2026-11-12', at: 10, pct: 70 }, retry: ['w1'] } }, opened: { 'e/x': 9 }, blitz: [{ id: 'b1', at: 3 }] };
+    const b = { v: 3, path: { 'e/l': { learned: { w1: 2, w2: 4 }, mix: { 'springen-1': 6 }, turnier: { day: '2026-11-13', at: 20, pct: 95 } } }, opened: { 'e/x': 4 }, blitz: [{ id: 'b1', at: 3 }, { id: 'b2', at: 8 }] };
+    const m = mergeStates(a, b);
+    eq([m.path['e/l'].learned, m.path['e/l'].mix, m.path['e/l'].turnier.pct, m.path['e/l'].retry, m.opened, m.blitz.map((x) => x.id)],
+      [{ w1: 2, w2: 4 }, { 'springen-1': 6 }, 95, undefined, { 'e/x': 4 }, ['b1', 'b2']]);
+    eq(JSON.stringify(mergeStates(b, a)), JSON.stringify(m), 'symmetrisch');
+  });
+  await test('nach dem Zurücksetzen kommt alter Lernweg nicht zurück, Neues bleibt', () => {
+    const now = { v: 3, resetAt: 100, path: {}, blitz: [] };
+    const old = { v: 3, resetAt: 0, path: { 'e/l': { learned: { alt: 50, neu: 150 }, mix: {} } }, opened: { 'e/x': 50 }, blitz: [{ id: 'b1', at: 50 }] };
+    const m = mergeStates(now, old);
+    eq([m.path['e/l'].learned, m.opened, m.blitz], [{ neu: 150 }, {}, []]);
+  });
+  await test('Zurücksetzen leert den Lernweg, Rückmeldungen bleiben', () => {
+    replaceState({ ...empty(), v: 3, path: { 'e/l': { learned: { w: 1 }, mix: {} } }, feedback: [{ id: 'g1-a', at: 5, fun: 4 }] });
+    resetProgress();
+    eq([getState().path, getState().feedback.length, getState().pathSince > 0], [{}, 1, true]);
+  });
+  await test('Umzug einer Lektion nimmt Lernweg mit', () => {
+    replaceState({ ...empty(), v: 3, path: { 't/alt': { learned: { w: 1 }, mix: {} }, 't/neu': { learned: { v: 2 }, mix: {} } } });
+    migrateLessons('t', { alt: 'neu' });
+    eq(getState().path, { 't/neu': { learned: { v: 2, w: 1 }, mix: {} } });
+  });
   await test('neueres Format wird erkannt (Sicherung lehnt es ab)', () => {
     eq([sanitizeState({ v: SCHEMA + 1 }).newer, sanitizeState({ v: SCHEMA }).newer, sanitizeState({}).newer], [true, false, false]);
   });

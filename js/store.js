@@ -9,6 +9,7 @@ import { dayKey } from './util.js';
 import { streakInfo } from './streak.js';
 import { sanitizeState, sumDay, sumPoints, SCHEMA, FEEDBACK_MAX } from './validate.js';
 import { deviceId } from './device.js';
+import { mergePath } from './merge.js';
 
 // Die Selbsttest-Seite (tests/) arbeitet mit einem eigenen Speicher – der echte Lernstand
 // wird dort nie angefasst, auch wenn der Test mittendrin abbricht.
@@ -26,7 +27,8 @@ if (!TESTING && PROFILE === 'standard' && readKey(KEY) === null && readKey(OLD_K
 }
 
 // resetAt: Zeitpunkt des letzten Zurücksetzens (für das Zusammenführen mit der Sicherung).
-const empty = () => ({ v: SCHEMA, items: {}, days: {}, points: 0, pointsBy: {}, pet: null, tests: {}, feedback: [], resetAt: 0 });
+const empty = () => ({ v: SCHEMA, items: {}, days: {}, points: 0, pointsBy: {}, pet: null, tests: {}, feedback: [], resetAt: 0,
+  path: {}, pathSince: 0, opened: {}, blitz: [] });
 
 // Konnte der gespeicherte Stand nicht (vollständig) gelesen werden? Dann hebt load() den
 // Rohtext auf, und die Sicherung führt beim nächsten Abgleich zusammen statt zu überschreiben.
@@ -107,7 +109,8 @@ export const getState = () => state;
 
 // Alles zurück auf null: Punkte, Serie, Lernstand. Lektionen bleiben erhalten.
 export function resetProgress() {
-  state = { ...empty(), feedback: state.feedback ?? [], resetAt: Date.now() };   // Rückmeldungen bleiben
+  // Rückmeldungen bleiben. Der Lernweg beginnt neu – ohne erneute Übernahme (pathSince).
+  state = { ...empty(), feedback: state.feedback ?? [], resetAt: Date.now(), pathSince: Date.now() };
   save();
 }
 
@@ -127,9 +130,21 @@ export function migrateLessons(sid, moved = {}) {
       changed = true;
     }
     const tFrom = `${sid}/${from}`;
+    const tTo = `${sid}/${to}`;
     if (state.tests?.[tFrom]) {
-      state.tests[`${sid}/${to}`] = [...(state.tests[`${sid}/${to}`] ?? []), ...state.tests[tFrom]];
+      state.tests[tTo] = [...(state.tests[tTo] ?? []), ...state.tests[tFrom]];
       delete state.tests[tFrom];
+      changed = true;
+    }
+    // Lernweg und Freischaltung ziehen mit (vereinigt mit dem, was die neue Lektion schon hat).
+    if (Object.hasOwn(state.path ?? {}, tFrom)) {
+      state.path = mergePath(state.path, { [tTo]: state.path[tFrom] });
+      delete state.path[tFrom];
+      changed = true;
+    }
+    if (Object.hasOwn(state.opened ?? {}, tFrom)) {
+      state.opened[tTo] = Math.min(state.opened[tTo] ?? Infinity, state.opened[tFrom]);
+      delete state.opened[tFrom];
       changed = true;
     }
   }
@@ -191,3 +206,37 @@ export function addFeedback(entry) {
   save();
 }
 export const feedbackId = () => `${deviceId()}-${Date.now().toString(36)}`;
+
+// --- Lernweg (Bedeutung und Regeln: path.js) -------------------------------------------
+const emptyEntry = () => ({ learned: {}, mix: {} });
+// Lernweg-Eintrag einer Lektion (lk = "<fach>/<lektion>") – nur lesen.
+export const pathEntry = (lk) => (Object.hasOwn(state.path ?? {}, lk) ? state.path[lk] : emptyEntry());
+export const pathSince = () => state.pathSince ?? 0;
+
+function entryFor(lk) {
+  state.path ??= {};
+  if (!Object.hasOwn(state.path, lk)) state.path[lk] = emptyEntry();
+  return state.path[lk];
+}
+// Wörter einer geschafften Etappe als gelernt eintragen (der erste Zeitpunkt bleibt).
+export function markLearned(lk, wordIds, at = Date.now()) {
+  const e = entryFor(lk);
+  for (const w of wordIds) if (!Object.hasOwn(e.learned, w)) e.learned[w] = at;
+  save();
+}
+// Gemischte Etappe (Springen, Koppel …) geschafft.
+export function markMix(lk, id, at = Date.now()) {
+  const e = entryFor(lk);
+  if (!Object.hasOwn(e.mix, id)) e.mix[id] = at;
+  save();
+}
+// Einmalige Übernahme des bisherigen Lernstands: { lk: [wort-ids] }.
+export function adoptLearned(byLesson, at = Date.now()) {
+  for (const [lk, ids] of Object.entries(byLesson)) {
+    if (!ids.length) continue;
+    const e = entryFor(lk);
+    for (const w of ids) if (!Object.hasOwn(e.learned, w)) e.learned[w] = at;
+  }
+  state.pathSince = at;
+  save();
+}
