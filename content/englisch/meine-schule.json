@@ -1,6 +1,7 @@
 {
   "id": "meine-schule",
   "title": "Meine Schule",
+  "icon": "🏫",
   "group": "Schule & ich",
   "order": 30,
   "kind": "vokabeln",

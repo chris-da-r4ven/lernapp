@@ -1,6 +1,7 @@
 {
   "id": "schulsachen",
   "title": "Schulsachen",
+  "icon": "✏️",
   "group": "Schule & ich",
   "order": 40,
   "kind": "vokabeln",

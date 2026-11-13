@@ -1,6 +1,7 @@
 {
   "id": "diagramme-lesen",
   "title": "Diagramme lesen",
+  "icon": "📊",
   "group": "Daten",
   "order": 20,
   "kind": "mathe",

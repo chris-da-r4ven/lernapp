@@ -1,6 +1,7 @@
 {
   "id": "natuerliche-zahlen",
   "title": "Zahlen ordnen & Zahlenstrahl",
+  "icon": "🔢",
   "group": "Natürliche Zahlen",
   "order": 40,
   "kind": "mathe",

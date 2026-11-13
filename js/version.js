@@ -3,4 +3,4 @@
 // Felder in Lektionen dazukommen. tools/inhalte.py schreibt diesen Wert als "minApp" in
 // content/index.json – ein Gerät mit älterer App behält dann seine bisherigen Inhalte, bis
 // die neue App da ist (Updates der App kommen über sw.js).
-export const APP_VERSION = 5;
+export const APP_VERSION = 6;

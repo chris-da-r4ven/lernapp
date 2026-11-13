@@ -1,6 +1,7 @@
 {
   "id": "diagramme-darstellen",
   "title": "Diagramme richtig darstellen",
+  "icon": "📈",
   "group": "Daten",
   "order": 30,
   "kind": "mathe",

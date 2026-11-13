@@ -1,6 +1,7 @@
 {
   "id": "klassenzimmer",
   "title": "Im Klassenzimmer",
+  "icon": "🪑",
   "group": "Schule & ich",
   "order": 50,
   "kind": "vokabeln",

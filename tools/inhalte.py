@@ -184,6 +184,8 @@ def check_lesson(where, l):
     errors, warnings = [], []
     if 'neu' in l:
         warnings.append(f'{where}: "neu" wird nicht mehr genutzt (Lektionen öffnen sich streng nacheinander) – kann weg')
+    if 'icon' in l and not (isinstance(l['icon'], str) and 0 < len(l['icon']) <= 8 and not re.search(r'[<>&"\s]', l['icon'])):
+        errors.append(f'{where}: "icon" muss ein kurzes Symbol sein (ein Emoji, z. B. "🎃")')
     if 'hof' in l and l['hof'] not in HOF_THEMES:
         errors.append(f'{where}: "hof" muss eins von {sorted(HOF_THEMES)} sein (Thema der Hofkarte)')
     if not LESSON_ID.match(str(l.get('id', ''))):

@@ -530,3 +530,31 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
 .hof-st.now { animation: hof-bob 1.6s ease-in-out infinite; }
 @keyframes hof-bob { 50% { transform: translateY(-8px); } }
 @media (prefers-reduced-motion: reduce) { .hof-st.now { animation: none; } }
+
+/* Fachseite: Banner und Stallboxen (oben offen = Lektion offen, ganz zu = kommt als Nächstes) */
+.fach-banner { position: relative; height: 96px; border-radius: 18px; overflow: hidden; background: #bfe3ff; margin: 4px 0 10px; }
+.fach-banner img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 52%; }
+.fach-banner h1 { position: absolute; left: 12px; bottom: 10px; margin: 0; background: #fffffff0; color: #1d2233; padding: 4px 14px; border-radius: 999px; font-size: 1.3rem; }
+.stall-group { margin: 18px 0 8px; font-size: 0.95rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+.stalls { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+.stall { display: flex; flex-direction: column; border: 3px solid #5b3a1f; border-radius: 10px 10px 6px 6px; background: #8b5a2b; overflow: hidden; color: #fff7e6; text-decoration: none; }
+.stall:hover { color: #fff7e6; }
+.stall-beam { background: #6e4423; border-bottom: 3px solid #5b3a1f; padding: 6px; min-height: 56px; display: flex; align-items: center; justify-content: center; text-align: center; }
+.stall-plate { display: inline-block; max-width: 100%; background: #f3dfb6; color: #4a2f14; font-weight: 800; font-size: 0.82rem; line-height: 1.25; padding: 3px 10px; border-radius: 6px; border: 2px solid #5b3a1f; overflow-wrap: break-word; hyphens: auto; }
+.stall-top { height: 74px; margin: 0 12px; background: #2a1a0e; border-left: 6px solid #6e4423; border-right: 6px solid #6e4423; display: grid; place-items: end center; font-size: 2.6rem; line-height: 1; padding-bottom: 4px; }
+.stall-top.closed, .stall-bottom { background: repeating-linear-gradient(90deg, #9a6533 0 16px, #8b5a2b 16px 18px); }
+.stall-top.closed { place-items: center; padding: 0; }
+.stall-plate.long { font-size: 0.72rem; padding: 3px 6px; }
+.stall-q { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; background: #f3dfb6; color: #4a2f14; border: 2px solid #5b3a1f; font-size: 1.6rem; font-weight: 900; }
+.stall-bottom { position: relative; height: 52px; margin: 0 12px; border-top: 6px solid #5b3a1f; display: flex; align-items: center; gap: 4px; padding-left: 6px; }
+.stall-bottom::after { content: ''; position: absolute; right: 10px; top: 17px; width: 14px; height: 8px; background: #c9ced8; border-radius: 2px; }
+.stall-badge { font-size: 1.5rem; }
+.stall-hay { height: 10px; margin-top: 8px; background: #3e2614; }
+.stall-hay > div { height: 100%; background: #f5d24a; }
+.stall-foot { display: flex; justify-content: space-between; align-items: center; gap: 6px; font-size: 0.78rem; padding: 5px 8px; background: #5b3a1f; }
+.stall-foot .stars { font-size: 0.8rem; }
+.stall-foot.ready-hint { background: #3e2614; color: #f5d24a; }
+.stall.now { border-color: var(--primary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 45%, transparent); }
+.stall.locked { filter: saturate(0.5) brightness(0.85); }
+.stall:focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
+.mastered .stalls { margin-top: 4px; }

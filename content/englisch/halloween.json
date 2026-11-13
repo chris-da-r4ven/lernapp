@@ -1,6 +1,7 @@
 {
   "id": "halloween",
   "title": "Halloween",
+  "icon": "🎃",
   "group": "Feiertage",
   "order": 70,
   "kind": "vokabeln",

@@ -43,6 +43,7 @@ python3 tools/inhalte.py bauen
   öffnet sich eine Lektion erst, wenn der Lernweg der vorigen geschafft ist – vorher nur über
   Fortschritt → Für Eltern → „Lektionen öffnen“ (z. B. wenn das Thema in der Schule schon dran ist).
   Grammatik: `--grammatik` dazu.
+- Symbol: optional `"icon": "🎃"` (ein Emoji) – erscheint in der Stallbox auf der Fachseite (sonst je nach Art 📖, 🔢 oder 🧩).
 - Hofkarte: optional `"hof": "halloween"` oder `"schule"` in der Lektion wählt das Thema der Karte auf der
   Lektionsseite (sonst `neutral`). Neue Themen entstehen in `tools/hofkarte/` (`python3 tools/hofkarte/hofkarte.py`).
 - `bauen` prüft alles, ergänzt IDs und Varianten, baut `content/index.json` und erhöht die

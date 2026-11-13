@@ -1,6 +1,7 @@
 {
   "id": "stundenplan",
   "title": "Stundenplan",
+  "icon": "🗓️",
   "group": "Schule & ich",
   "order": 60,
   "kind": "vokabeln",

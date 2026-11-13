@@ -1,6 +1,7 @@
 {
   "id": "zahlen-farben",
   "title": "Zahlen & Farben",
+  "icon": "🎨",
   "group": "Schule & ich",
   "order": 20,
   "kind": "vokabeln",

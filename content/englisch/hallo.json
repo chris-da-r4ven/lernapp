@@ -1,6 +1,7 @@
 {
   "id": "hallo",
   "title": "Hallo & Kennenlernen",
+  "icon": "👋",
   "group": "Schule & ich",
   "order": 10,
   "kind": "vokabeln",

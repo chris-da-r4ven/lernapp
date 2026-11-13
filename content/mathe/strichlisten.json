@@ -1,6 +1,7 @@
 {
   "id": "strichlisten",
   "title": "Strichlisten & Häufigkeitstabellen",
+  "icon": "📋",
   "group": "Daten",
   "order": 10,
   "kind": "mathe",

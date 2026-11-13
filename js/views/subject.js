@@ -1,9 +1,10 @@
 // Fachseite: Lektionen nach Gruppen (z. B. „Schule & ich“, „Feiertage“, „Grammatik“).
 // Lektionen mit Medaille 🏅 rutschen in ihrer Gruppe nach unten in „Kannst du schon gut“.
+// Jede Lektion ist eine Stallbox: oben offen = offen, ganz zu = die nächste (Geheimnis-Feld).
 
 import { getSubject, getLesson } from '../content.js';
 import { starsFor } from '../srs.js';
-import { masteryOf, unitWord, kindInfo, coreItems } from '../lessons.js';
+import { masteryOf, kindInfo, kindOf } from '../lessons.js';
 import { lessonMedal, MEDAL_RULE, testReady } from '../medal.js';
 import { esc, stars } from '../util.js';
 import { etappenFor, progress, lessonAccess } from '../path.js';
@@ -36,50 +37,62 @@ export function subjectView(el, sid) {
 
   const testLabel = [...groups.values()].flat().filter((x) => x.lesson).map((x) => kindInfo(x.lesson)).find((k) => k.testable)?.testLabel;
 
+  // Aktuelle Lektion: die erste offene, deren Lernweg noch nicht geschafft ist
+  const nowId = subject.lessons.find((l) => {
+    const lesson = getLesson(sid, l.id);
+    if (!lesson || access.get(l.id) !== 'open') return false;
+    const way = progress(etappenFor(sid, lesson));
+    return way.total > 0 && !way.complete;
+  })?.id;
+
+  // Stallbox: Tür oben offen = Lektion offen (ihr Symbol schaut heraus), ganz zu = kommt als Nächstes.
   const secretTile = ({ prev }) => `
-      <div class="card row secret-tile" aria-label="Nächste Lektion, noch verborgen">
-        <span class="knobel-icon" aria-hidden="true">❓</span>
-        <span class="grow"><strong>Was kommt wohl als Nächstes?</strong><br>
-          <span class="muted small">${prev ? `Wenn du den Lernweg von „${esc(prev)}“ geschafft hast, öffnet sich dieses Feld.` : 'Diese Lektion öffnet sich bald.'}</span></span>
+      <div class="stall locked" role="img" aria-label="Nächste Lektion, noch verschlossen">
+        <div class="stall-beam"><span class="stall-plate">? ? ?</span></div>
+        <div class="stall-top closed"><span class="stall-q">?</span></div>
+        <div class="stall-bottom"></div>
+        <div class="stall-hay"><div style="width:0"></div></div>
+        <div class="stall-foot">${prev ? `Öffnet sich nach „${esc(prev)}“` : 'Öffnet sich bald'}</div>
       </div>`;
   const tile = (x) => {
     if (x.secret) return secretTile(x);
     const { l, lesson, medal } = x;
     const m = masteryOf(sid, lesson);
     const way = progress(etappenFor(sid, lesson));
+    const share = way.total ? way.done / way.total : m;
+    const foot = way.complete ? '🎀 Lernweg geschafft' : way.total ? `Etappe ${way.done + 1} von ${way.total}` : `${Math.round(m * 100)} % sicher`;
     return `
-      <a class="card row lesson-tile${medal.medal ? ' has-medal' : ''}" href="#/lektion/${encodeURIComponent(sid)}/${encodeURIComponent(l.id)}">
-        ${medal.medal ? '<span class="medal" aria-label="Medaille">🏅</span>' : ''}
-        <div class="grow">
-          <strong>${esc(l.title)}</strong> <span class="muted small">${coreItems(lesson).length} ${unitWord(lesson, coreItems(lesson).length)}</span>
-          ${way.total ? `<div class="small ${way.complete ? 'way-done' : 'muted'}">${way.complete ? '🎀 Lernweg geschafft' : `Lernweg: ${way.done} von ${way.total} Etappen`}</div>` : ''}
-          <div class="meter small"><div style="width:${m * 100}%"></div></div>
-          ${testReady(sid, lesson) ? '<div class="small ready-hint">📝 Bereit für den Test!</div>' : ''}
-          ${!medal.medal && medal.started ? `<div class="muted small medal-hint">🏅 ${esc(medal.hint)}</div>` : ''}
-        </div>
-        ${stars(starsFor(m))}
+      <a class="stall${l.id === nowId ? ' now' : ''}${medal.medal ? ' has-medal' : ''}" href="#/lektion/${encodeURIComponent(sid)}/${encodeURIComponent(l.id)}">
+        <div class="stall-beam"><span class="stall-plate${/\S{15,}/u.test(l.title) ? ' long' : ''}">${esc(l.title)}</span></div>
+        <div class="stall-top" aria-hidden="true">${esc(lessonIcon(lesson))}</div>
+        <div class="stall-bottom" aria-hidden="true">${way.complete ? '<span class="stall-badge">🎀</span>' : ''}${medal.medal ? '<span class="stall-badge medal">🏅</span>' : ''}</div>
+        <div class="stall-hay" aria-hidden="true"><div style="width:${Math.round(share * 100)}%"></div></div>
+        <div class="stall-foot"><span>${foot}</span>${stars(starsFor(m))}</div>
+        ${testReady(sid, lesson) ? '<div class="stall-foot ready-hint">📝 Bereit für den Test!</div>' : ''}
       </a>`;
   };
 
   el.innerHTML = `
     <a class="back" href="#/">← Start</a>
-    <h1>${esc(subject.icon ?? '')} ${esc(subject.name)}</h1>
+    <div class="fach-banner"><img src="img/hof-neutral.svg" alt=""><h1>${esc(subject.icon ?? '')} ${esc(subject.name)}</h1></div>
     <p class="muted small">${esc(MEDAL_RULE)}</p>
     ${[...groups].map(([name, list]) => {
       const open = list.filter((x) => !x.medal.medal);
       const done = list.filter((x) => x.medal.medal);
       return `
-        <h2 class="section-title">${esc(name)}</h2>
-        <section class="list">
-          ${open.map(tile).join('')}
-          ${done.length ? `
-            <details class="mastered"${open.length ? '' : ' open'}>
-              <summary>🏅 Kannst du schon gut (${done.length})</summary>
-              ${done.map(tile).join('')}
-            </details>` : ''}
-        </section>`;
+        <h2 class="stall-group">${esc(name)}</h2>
+        <section class="stalls">${open.map(tile).join('')}</section>
+        ${done.length ? `
+          <details class="mastered"${open.length ? '' : ' open'}>
+            <summary>🏅 Kannst du schon gut (${done.length})</summary>
+            <section class="stalls">${done.map(tile).join('')}</section>
+          </details>` : ''}`;
     }).join('')}
     <div class="actions">
       <a class="btn" href="#/test/${encodeURIComponent(sid)}">📝 Test-Modus${testLabel ? ` – ${esc(testLabel)}` : ''}</a>
     </div>`;
 }
+
+// Symbol der Lektion (Feld "icon"), sonst nach Art
+const KIND_ICON = { vokabeln: '📖', mathe: '🔢', grammatik: '🧩' };
+export const lessonIcon = (lesson) => (typeof lesson.icon === 'string' && lesson.icon ? lesson.icon : KIND_ICON[kindOf(lesson)] ?? '📖');
