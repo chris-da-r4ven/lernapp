@@ -11,6 +11,7 @@ import { etappenFor, nextEtappe, progress, etappeNo, blitzAvailable, blitzTasks,
 import { etappeHref, lessonOpen } from './etappe.js';
 import { lessonKey } from '../lessons.js';
 import { pathEntry } from '../store.js';
+import { bannerFor, lessonIcon } from './subject.js';
 
 const PET_NAME = PET.name;
 
@@ -39,14 +40,14 @@ export function homeView(el) {
 
     ${hasContent() ? `<div class="home-actions">${continueCard()}${blitzCard()}${ausrittCard()}</div>` : ''}
 
-    <h2 class="section-title">Fächer</h2>
-    <section class="tiles">
+    <h2 class="section-title home-sign">Fächer</h2>
+    <section class="subject-tiles">
       ${hasContent() ? getSubjects().map(subjectTile).join('') : `
         <div class="card"><p>Noch keine Lerninhalte da. Verbinde das Tablet mit dem Internet und tippe auf „Neue Inhalte suchen“.</p></div>`}
     </section>
 
     <div class="footer-actions">
-      <button class="btn" data-act="update">Neue Inhalte suchen</button>
+      <button class="btn ghost small" data-act="update">↻ Neue Inhalte suchen</button>
     </div>
 
     <dialog class="pet-dialog">
@@ -69,12 +70,13 @@ export function homeView(el) {
   });
 }
 
+// Fach-Kachel mit dem Banner des Fachs als Bild
 function subjectTile(s) {
   return `
-    <a class="tile" href="#/fach/${encodeURIComponent(s.id)}">
-      <span class="tile-icon">${esc(s.icon ?? '📘')}</span>
-      <span class="tile-name">${esc(s.name)}</span>
-      <span class="muted small">${s.lessons.length} ${s.lessons.length === 1 ? 'Lektion' : 'Lektionen'}</span>
+    <a class="subject-tile" href="#/fach/${encodeURIComponent(s.id)}">
+      <span class="subject-pic" aria-hidden="true"><img src="${bannerFor(s.id)}" alt=""></span>
+      <span class="subject-plate"><span class="tile-name">${esc(s.icon ?? '📘')} ${esc(s.name)}</span>
+        <span class="small">${s.lessons.length} ${s.lessons.length === 1 ? 'Lektion' : 'Lektionen'}</span></span>
     </a>`;
 }
 
@@ -128,12 +130,15 @@ function continueCard() {
   const p = progress(pick.stages);
   const subject = getSubjects().find((s) => s.id === pick.sid);
   return `
-    <a class="card continue-card now-card" href="${etappeHref(pick.sid, pick.lesson.id, next.n)}">
-      <span class="now-play" aria-hidden="true">▶</span>
-      <span>
-        <strong>Weiter: ${esc(pick.lesson.title)}</strong>
-        <span class="muted small">${esc(subject?.icon ?? '')} ${esc(subject?.name ?? '')} · ${next.optional ? 'Aufwärmen' : `Etappe ${etappeNo(pick.stages, next)} von ${p.total}`} · ${st.icon} ${esc(st.name)}</span>
+    <a class="continue-card go-card" href="${etappeHref(pick.sid, pick.lesson.id, next.n)}">
+      <span class="go-window" aria-hidden="true">${esc(lessonIcon(pick.lesson))}</span>
+      <span class="go-text">
+        <span class="go-label">WEITER GEHT’S</span>
+        <strong>${esc(pick.lesson.title)}</strong>
+        <span class="small">${esc(subject?.icon ?? '')} ${esc(subject?.name ?? '')} · ${next.optional ? 'Aufwärmen' : `Etappe ${etappeNo(pick.stages, next)} von ${p.total}`} · ${st.icon} ${esc(st.name)}</span>
+        <span class="go-hay" aria-hidden="true"><span style="width:${p.total ? Math.round((p.done / p.total) * 100) : 0}%"></span></span>
       </span>
+      <span class="go-play" aria-hidden="true">▶</span>
     </a>`;
 }
 
@@ -143,7 +148,7 @@ function ausrittCard() {
   const unit = unitOf(allLessons().map((x) => x.lesson));
   return `
     <a class="card row ausritt-card" href="#/ausritt">
-      <span class="knobel-icon" aria-hidden="true">🌳</span>
+      <span class="home-badge" aria-hidden="true">🌳</span>
       <span class="grow">
         <strong>Ausritt</strong> <span class="muted small">· Auffrischen</span><br>
         <span class="muted small">${due ? `${countWord(unit, due)} ${due === 1 ? 'ist' : 'sind'} wieder dran` : 'Gerade ist nichts fällig – du kannst trotzdem ausreiten'}</span>
@@ -159,7 +164,7 @@ function blitzCard() {
   if (!stock || blitzTasks(allLessons()).length < 4) return '';
   return `
     <a class="card row blitz-card" href="#/blitz">
-      <span class="knobel-icon" aria-hidden="true">⚡</span>
+      <span class="home-badge" aria-hidden="true">⚡</span>
       <span class="grow"><strong>Blitzrunde</strong>${stock > 1 ? ` <span class="muted small">· ${stock} verdient</span>` : ''}<br>
         <span class="muted small">8 schnelle Antipp-Aufgaben – Fanny galoppiert mit</span></span>
       <span aria-hidden="true">›</span>

@@ -623,3 +623,40 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
   .result { font-size: 1.7rem; }
   .gap-sentence { font-size: 1.9rem; }
 }
+
+/* Startseite im Hofstil */
+.pet-card { position: relative; overflow: hidden; padding-bottom: 30px; }
+.pet-card::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 16px;
+  background: linear-gradient(#8b5a2b 0 3px, transparent 3px 8px, #8b5a2b 8px 11px, transparent 11px),
+    repeating-linear-gradient(90deg, #7a4e2e 0 6px, transparent 6px 46px), #7fc672; }
+.go-card { display: flex; align-items: center; gap: 14px; padding: 14px; border-radius: 20px; text-decoration: none;
+  background: #8b5a2b; border: 3px solid #5b3a1f; color: #fff7e6; box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 45%, transparent); }
+.go-card:hover { color: #fff7e6; }
+.go-window { flex: none; width: 84px; height: 84px; display: grid; place-items: end center; padding-bottom: 6px; font-size: 2.8rem; line-height: 1;
+  background: #2a1a0e; border: 6px solid #6e4423; border-radius: 6px; }
+.go-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.go-label { font-size: 0.75rem; font-weight: 800; letter-spacing: 0.08em; color: #f5d24a; }
+.go-text strong { font-size: 1.3rem; line-height: 1.2; }
+.go-hay { display: block; height: 10px; margin-top: 6px; border-radius: 999px; background: #3e2614; overflow: hidden; }
+.go-hay > span { display: block; height: 100%; background: #f5d24a; }
+.go-play { flex: none; width: 60px; height: 60px; border-radius: 50%; display: grid; place-items: center; font-size: 1.6rem;
+  background: var(--primary); color: var(--primary-text); box-shadow: 0 0 0 5px #f5d24a; }
+.continue-card.done { border: 3px solid #5b3a1f; }
+.home-badge { flex: none; width: 52px; height: 52px; display: grid; place-items: center; font-size: 1.7rem; border-radius: 50%; }
+.ausritt-card { background: linear-gradient(100deg, #e3f6d8, var(--card) 70%); }
+.ausritt-card .home-badge { background: #7fc672; }
+.blitz-card { background: linear-gradient(100deg, #fff0cc, var(--card) 70%); }
+.blitz-card .home-badge { background: #f5d24a; }
+@media (prefers-color-scheme: dark) {
+  .ausritt-card { background: linear-gradient(100deg, #2f4f34, var(--card) 70%); }
+  .blitz-card { background: linear-gradient(100deg, #5a4824, var(--card) 70%); }
+}
+.home-sign { display: inline-block; margin-top: 18px; background: #8b5a2b; color: #fff7e6; padding: 4px 14px; border-radius: 8px;
+  border: 2px solid #5b3a1f; box-shadow: 0 3px 0 #5b3a1f; font-size: 1rem; }
+.subject-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; margin: 6px 0 16px; }
+.subject-tile { display: flex; flex-direction: column; border-radius: 18px; overflow: hidden; text-decoration: none; color: var(--text);
+  background: var(--card); border: 2px solid var(--line); }
+.subject-pic { position: relative; display: block; aspect-ratio: 5 / 2; background: #bfe3ff; }
+.subject-pic img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 60% 100%; }
+.subject-plate { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 10px 14px; }
+.subject-plate .small { color: var(--muted); }
