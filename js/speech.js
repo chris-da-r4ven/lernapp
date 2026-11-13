@@ -55,15 +55,38 @@ export const setRate = (r) => write(RATE_KEY, String(r));
 // Klammern wie in "(to) listen" nicht mitsprechen lassen, Schrägstriche als Pause.
 const spoken = (text) => String(text).replace(/[()]/g, '').replace(/\s*\/\s*/g, ', ');
 
+// Robust gegen Eigenheiten der Sprachausgabe (v. a. Chrome auf Android):
+// - direkt nach cancel() verschluckt die Ausgabe manchmal das nächste speak() → kurz warten
+// - Stimmen kommen nach dem Start der App erst verzögert → bis 1 s auf „voiceschanged“ warten
+// - eine angehaltene Ausgabe (App war im Hintergrund) bleibt stumm → resume()
+// - Fehler (außer durch eigenes Abbrechen) → einmal neu versuchen
+let lastRequest = 0;
+const voicesReady = () => (voices.length || !canSpeak() ? Promise.resolve() : new Promise((done) => {
+  const t = setTimeout(done, 1000);
+  speechSynthesis.addEventListener?.('voiceschanged', () => { clearTimeout(t); refreshVoices(); done(); }, { once: true });
+  refreshVoices();
+  if (voices.length) { clearTimeout(t); done(); }
+}));
+
 export function speak(text, lang = 'en-GB', rate = getRate()) {
   if (!canSpeak()) return;
+  const id = ++lastRequest;
+  const busy = speechSynthesis.speaking || speechSynthesis.pending;
   speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(spoken(text));
-  const voice = pickVoice(lang);
-  try { u.voice = voice; } catch { /* Sprache reicht */ }
-  u.lang = voice?.lang ?? lang;
-  u.rate = rate;
-  speechSynthesis.speak(u);
+  const say = (retry) => {
+    if (id !== lastRequest) return;   // inzwischen wurde etwas Neueres angefordert
+    const u = new SpeechSynthesisUtterance(spoken(text));
+    const voice = pickVoice(lang);
+    try { u.voice = voice; } catch { /* Sprache reicht */ }
+    u.lang = voice?.lang ?? lang;
+    u.rate = rate;
+    u.onerror = (e) => {
+      if (retry && e.error !== 'interrupted' && e.error !== 'canceled') setTimeout(() => say(false), 250);
+    };
+    if (speechSynthesis.paused) speechSynthesis.resume();
+    speechSynthesis.speak(u);
+  };
+  voicesReady().then(() => setTimeout(() => say(true), busy ? 150 : 30));
 }
 
 // Großer Abspielknopf plus Tempo-Knöpfe.
