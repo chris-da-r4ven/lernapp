@@ -12,8 +12,9 @@ import { portrait } from '../views/portrait.js';
 // intro: eigene Zeile statt „X Wörter geübt …“ (z. B. Testergebnis)
 // notice: zusätzlicher Hinweis unter den Sternchen (z. B. „Teste dich doch mal!“)
 // goalBefore: Tagesziel-Stand vor der Runde – die Bilanz zeigt, wie viel die Runde dafür gebracht hat
-// feedback: { what, mode, test } – dann fragt die Bilanz „Spaß?“ und „weitergebracht?“ (je 1–5)
-export function roundSummary(el, { unit = ['Wort', 'Wörter'], goalBefore = null, feedback = null, total, firstTry, points, bonus, extraPoints = 0, startLevel, mistakes, intro, mistakesTitle, notice = '', onAgain, onBack, backLabel = 'Zur Lektion' }) {
+// feedback: { what, mode, art, test } – dann fragt die Bilanz „Spaß?“ und „weitergebracht?“ (je 1–5)
+// title: Überschrift (z. B. „Etappe geschafft!“), againLabel: Text des Hauptknopfs (ohne onAgain: kein Knopf)
+export function roundSummary(el, { unit = ['Wort', 'Wörter'], goalBefore = null, feedback = null, total, firstTry, points, bonus, extraPoints = 0, startLevel, mistakes, intro, mistakesTitle, notice = '', title = 'Geschafft! 🏁', againLabel = 'Noch eine Runde', onAgain, onBack, backLabel = 'Zur Lektion' }) {
   addPoints(bonus);
   save();
   const pet = petStatus(getState().points, mood(streak()));
@@ -21,7 +22,7 @@ export function roundSummary(el, { unit = ['Wort', 'Wörter'], goalBefore = null
   const w = (n) => `${n} ${unit[n === 1 ? 0 : 1]}`;
   el.innerHTML = `
     <div class="card summary">
-      <h2>Geschafft! 🏁</h2>
+      <h2>${esc(title)}</h2>
       ${intro ?? `<p class="big">${w(total)} geübt – ${firstTry === total ? 'alle' : firstTry + ' davon'} sofort richtig</p>`}
       <div class="earned">
         <div>✦ +${bonus} fürs Durchhalten</div>
@@ -45,12 +46,12 @@ export function roundSummary(el, { unit = ['Wort', 'Wörter'], goalBefore = null
       ${mistakes.length ? `<h3>${esc(mistakesTitle)}</h3>
         <ul class="word-list">${mistakes.map(([q, a]) => `<li><span>${esc(q)}</span><strong>${esc(a)}</strong></li>`).join('')}</ul>` : '<p>Keine Fehler – super!</p>'}
       <div class="actions">
-        <button class="btn primary" data-act="again">Noch eine Runde</button>
+        ${onAgain ? `<button class="btn primary" data-act="again">${esc(againLabel)}</button>` : ''}
         <button class="btn" data-act="back">${esc(backLabel)}</button>
       </div>
     </div>`;
   if (feedback) bindRating(el, { ...feedback, n: total, right: firstTry });
-  el.querySelector('[data-act=again]').addEventListener('click', onAgain);
+  el.querySelector('[data-act=again]')?.addEventListener('click', onAgain);
   el.querySelector('[data-act=back]').addEventListener('click', onBack);
 }
 

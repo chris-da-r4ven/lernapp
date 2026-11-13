@@ -6,7 +6,11 @@ import { petStatus, PET } from '../pet.js';
 import { esc, fmt1 } from '../util.js';
 import { updateContent } from '../updates.js';
 import { portrait, bigPortrait } from './portrait.js';
-import { dueSummary } from '../practice-now.js';
+import { dueSummary } from '../ausritt.js';
+import { etappenFor, nextEtappe, progress, STATIONS } from '../path.js';
+import { etappeHref } from './etappe.js';
+import { lessonKey } from '../lessons.js';
+import { pathEntry } from '../store.js';
 
 const PET_NAME = PET.name;
 
@@ -33,7 +37,7 @@ export function homeView(el) {
       </div>
     </section>
 
-    ${hasContent() ? nowCard() : ''}
+    ${hasContent() ? `<div class="home-actions">${continueCard()}${ausrittCard()}</div>` : ''}
 
     <h2 class="section-title">Fächer</h2>
     <section class="tiles">
@@ -91,21 +95,58 @@ function streakMessage(s) {
   }
 }
 
-// Großer Knopf „Jetzt üben“ mit dem, was gerade wartet.
-function nowCard() {
-  const { due, fresh, steps } = dueSummary();
-  const parts = [];
-  // Einheit: „Wörter“, solange es nur Englisch gibt – mit Mathe & Co. „Aufgaben“.
-  const unit = unitOf(allLessons().map((x) => x.lesson));
-  if (due) parts.push(`${countWord(unit, due)} zum Wiederholen`);
-  if (fresh) parts.push(`${fresh} neue ${unit[fresh === 1 ? 0 : 1]}`);
-  if (!due && !fresh && steps) parts.push(`neue Übungen mit bekannten ${unit[1] === 'Wörter' ? 'Wörtern' : 'Aufgaben'}`);
+// Woran zuletzt gearbeitet wurde: jüngster Zeitpunkt im Lernstand oder Lernweg der Lektion.
+function lastActivity(sid, lesson, items) {
+  const prefix = `${sid}/${lesson.id}/`;
+  let t = 0;
+  for (const [k, v] of Object.entries(items)) if (k.startsWith(prefix) && v.last > t) t = v.last;
+  const e = pathEntry(lessonKey(sid, lesson));
+  for (const x of [...Object.values(e.learned), ...Object.values(e.mix)]) if (x > t) t = x;
+  return t;
+}
+
+// Großer Knopf „Weiter“: nächste Etappe der zuletzt geübten Lektion, deren Lernweg noch nicht fertig ist –
+// sonst die erste unfertige Lektion.
+function continueCard() {
+  const items = getState().items;
+  const open = allLessons()
+    .map(({ sid, lesson }) => ({ sid, lesson, stages: etappenFor(sid, lesson) }))
+    .filter((x) => nextEtappe(x.stages));
+  if (!open.length) {
+    return `
+      <div class="card continue-card done">
+        <p class="next-label">🎀 ALLE LERNWEGE GESCHAFFT</p>
+        <p class="muted small">Neue Lektionen kommen, sobald sie in der Schule dran sind. Bis dahin: 🌳 Ausritt.</p>
+      </div>`;
+  }
+  const withTime = open.map((x) => ({ ...x, t: lastActivity(x.sid, x.lesson, items) }));
+  const recent = withTime.filter((x) => x.t > 0).sort((a, b) => b.t - a.t)[0];
+  const pick = recent ?? withTime[0];
+  const next = nextEtappe(pick.stages);
+  const st = STATIONS[next.station];
+  const p = progress(pick.stages);
+  const subject = getSubjects().find((s) => s.id === pick.sid);
   return `
-    <a class="card now-card" href="#/jetzt">
+    <a class="card continue-card now-card" href="${etappeHref(pick.sid, pick.lesson.id, next.n)}">
       <span class="now-play" aria-hidden="true">▶</span>
       <span>
-        <strong>Jetzt üben</strong>
-        <span class="muted small">${parts.length ? parts.join(' · ') : 'Alles erledigt – du kannst trotzdem üben'}</span>
+        <strong>Weiter: ${esc(pick.lesson.title)}</strong>
+        <span class="muted small">${esc(subject?.icon ?? '')} ${esc(subject?.name ?? '')} · ${next.optional ? 'Aufwärmen' : `Etappe ${p.done + 1} von ${p.total}`} · ${st.icon} ${esc(st.name)}</span>
       </span>
+    </a>`;
+}
+
+// 🌳 Ausritt: fällige Wiederholungen aus allem, was schon geübt wurde.
+function ausrittCard() {
+  const { due } = dueSummary();
+  const unit = unitOf(allLessons().map((x) => x.lesson));
+  return `
+    <a class="card row ausritt-card" href="#/ausritt">
+      <span class="knobel-icon" aria-hidden="true">🌳</span>
+      <span class="grow">
+        <strong>Ausritt</strong> <span class="muted small">· Auffrischen</span><br>
+        <span class="muted small">${due ? `${countWord(unit, due)} ${due === 1 ? 'ist' : 'sind'} wieder dran` : 'Gerade ist nichts fällig – du kannst trotzdem ausreiten'}</span>
+      </span>
+      <span aria-hidden="true">›</span>
     </a>`;
 }

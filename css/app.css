@@ -449,3 +449,36 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
 .rate.answered .rate-btn:not(.picked) { opacity: 0.35; }
 .rate-btn.picked { border-color: var(--primary); background: var(--card); }
 @media (max-width: 420px) { .rate-btn { font-size: 1.5rem; padding: 4px 5px; } }
+
+/* --- Lernweg ------------------------------------------------------------------- */
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.next-card { border: 3px solid var(--primary); box-shadow: 0 5px 0 color-mix(in srgb, var(--primary) 75%, #000); }
+.next-card.done { border-color: var(--good); box-shadow: none; }
+.next-label { margin: 0; font-size: 0.8rem; font-weight: 800; letter-spacing: 0.05em; color: var(--primary); }
+.next-card.done .next-label { color: var(--good); }
+.next-title { margin: 6px 0; font-size: 1.35rem; font-weight: 800; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 14px; }
+.chip { font-size: 0.85rem; font-weight: 700; padding: 5px 11px; border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 12%, var(--card)); color: var(--primary); }
+.big-btn { display: block; width: 100%; text-align: center; font-size: 1.15rem; padding: 14px; }
+.knobel-card { border: 2px solid #8e5cd9; }
+.knobel-card.locked { opacity: 0.6; border-style: dashed; }
+.knobel-icon { font-size: 1.6rem; }
+.stage-list { list-style: none; margin: 0; padding: 0; }
+.stage { display: flex; align-items: baseline; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.stage:last-child { border-bottom: 0; }
+.stage a { color: var(--text); text-decoration: none; }
+.stage-mark { width: 1.4em; text-align: center; font-weight: 800; flex: none; }
+.stage.done .stage-mark { color: var(--good); }
+.stage.now { font-weight: 700; }
+.stage.now .stage-mark { color: var(--primary); }
+.stage.later { color: var(--muted); }
+.fold > summary { cursor: pointer; font-weight: 700; list-style: none; }
+.fold > summary::-webkit-details-marker { display: none; }
+.fold > summary::before { content: '▸ '; color: var(--muted); }
+.fold[open] > summary::before { content: '▾ '; }
+.fold[open] > summary { margin-bottom: 12px; }
+.etappe-head { margin: 0 0 8px; }
+.etappe-done { margin: 10px 0; }
+.continue-card { display: block; text-decoration: none; color: var(--text); border: 3px solid var(--primary); }
+.home-actions { display: grid; gap: 12px; }

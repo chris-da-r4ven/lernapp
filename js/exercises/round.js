@@ -18,8 +18,12 @@ const RETRY_GAP = 3;
 
 // tasks: [{ sid, lesson, item, dir, key }]
 // chosen: Lektion selbst ausgewählt (Lektion oder Test) – dann bringen Lektionen
-// mit Medaille weniger Sternchen. Bei „Jetzt üben“ wählt die App, dort gibt es volle Sternchen.
-export function runRound(el, { tasks, test = false, chosen = true, onAgain, onBack, backLabel }) {
+// mit Medaille weniger Sternchen. Im Ausritt wählt die App, dort gibt es volle Sternchen.
+// art: Rundenart für die Rückmeldung (frei, etappe, ausritt, test …).
+// onComplete({ mistakes, firstTry, total }): Runde zu Ende gespielt – vor der Bilanz (z. B. Etappe als
+// geschafft speichern). Kann HTML für einen Hinweis in der Bilanz zurückgeben.
+// title, againLabel: Überschrift und Hauptknopf der Bilanz.
+export function runRound(el, { tasks, test = false, chosen = true, art = test ? 'test' : 'frei', onComplete = null, title, againLabel, onAgain, onBack, backLabel }) {
   const queue = tasks.map((t) => ({ ...t, attempts: 0 }));
   const total = queue.length;
   let done = 0;
@@ -45,9 +49,15 @@ export function runRound(el, { tasks, test = false, chosen = true, onAgain, onBa
     return;
   }
 
+  // Falsche Aufgabe später nochmal – aber nicht direkt neben eine Aufgabe desselben Worts
+  // (in Etappen kommt ein Wort zweimal vor: erkennen und schreiben).
+  const wordOf = (t) => t.key.split('|')[0];
   function requeue(task) {
     queue.shift();
-    queue.splice(Math.min(RETRY_GAP, queue.length), 0, task);
+    let at = Math.min(RETRY_GAP, queue.length);
+    const near = (i) => [queue[i - 1], queue[i]].some((t) => t && t !== task && wordOf(t) === wordOf(task));
+    while (at < queue.length && near(at)) at++;
+    queue.splice(at, 0, task);
   }
 
   const api = {
@@ -93,6 +103,8 @@ export function runRound(el, { tasks, test = false, chosen = true, onAgain, onBa
 
   function summary() {
     const list = [...mistakes.values()];
+    const completeNotice = onComplete?.({ mistakes: [...mistakes.keys()], firstTry, total }) ?? '';
+    const words = new Set(tasks.map(wordOf)).size;   // in Etappen kommt ein Wort mehrmals vor
     const pct = Math.round((firstTry / total) * 100);
     // Im Test: Ergebnis pro Lektion speichern (für die Medaille 🏅).
     const progress = test ? saveTest(tasks.map((t) => ({ sid: t.sid, lesson: t.lesson, right: !mistakes.has(t.key) }))) : [];
@@ -106,8 +118,10 @@ export function runRound(el, { tasks, test = false, chosen = true, onAgain, onBa
       total, firstTry, points, startLevel, goalBefore,
       bonus: roundBonus(tasks.map(weight)),
       extraPoints: MEDAL_BONUS * newMedals.length,
-      intro: test ? `<p class="big">${firstTry} von ${total} richtig (${pct} %)</p>` : null,
-      notice: newMedalsHtml(newMedals.map((x) => x.lesson)) + medalProgressHtml(progress)
+      intro: test ? `<p class="big">${firstTry} von ${total} richtig (${pct} %)</p>`
+        : words < total ? `<p class="big">${words} ${esc(unit[words === 1 ? 0 : 1])} in ${total} Aufgaben – ${firstTry === total ? 'alle' : `${firstTry} davon`} sofort richtig</p>` : null,
+      title, againLabel,
+      notice: completeNotice + newMedalsHtml(newMedals.map((x) => x.lesson)) + medalProgressHtml(progress)
         + (mastered ? MASTERED_HTML : '') + (test ? '' : readyNoticeHtml(all)),
       mistakesTitle: test ? `Diese ${unit[1]} waren noch nicht richtig:` : `Diese ${unit[1]} üben wir weiter:`,
       mistakes: list.map(({ task, typed }) => {
@@ -118,6 +132,7 @@ export function runRound(el, { tasks, test = false, chosen = true, onAgain, onBa
       feedback: {
         what: all.map((x) => x.lesson.title).slice(0, 3).join(', ') + (all.length > 3 ? ' …' : ''),
         mode: [...new Set(tasks.map((t) => t.dir))].join(','),
+        art,
         test,
       },
       onAgain, onBack, backLabel,

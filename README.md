@@ -83,7 +83,8 @@ Lernstand          js/store.js + js/srs.js (Karteikasten)  →  js/sync.js + js/
 Seiten             js/views/…   Start, Fach, Lektion, Üben, Jetzt üben, Test, Fortschritt
 ```
 
-- `js/practice-now.js` – „Jetzt üben“: fällige Wörter aus allen Lektionen und Übungsarten
+- `js/path.js` – Lernweg: Etappen einer Lektion, ihr Stand, Aufgaben einer Etappe (Plan: docs/plan-lernweg.md)
+- `js/ausritt.js` – 🌳 Ausritt (Auffrischen): fällige Wiederholungen aus allen Lektionen, wechselnde Übungsarten
 - `js/medal.js`, `js/streak.js`, `js/pet.js` – Medaille, Serie, Fanny (Medaillen-Regeln und Test-Auswertung nur in `medal.js`)
 - `js/nav.js` – neu zeichnen und „gerade am Üben?“ ohne Import von `app.js` (kein Import-Kreis);
   `js/updates.js` – „Neue Inhalte suchen“

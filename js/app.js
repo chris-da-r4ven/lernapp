@@ -1,4 +1,6 @@
-import { applyMoves } from './content.js';
+import { applyMoves, allLessons, hasContent } from './content.js';
+import { pathSince, adoptLearned, storageNewer } from './store.js';
+import { adoptable } from './path.js';
 import { startSync } from './sync.js';
 import { toast } from './util.js';
 import { homeView } from './views/home.js';
@@ -8,8 +10,9 @@ import { practiceView } from './views/practice.js';
 import { statsView } from './views/stats.js';
 import { handwritingTestView } from './views/handwriting-test.js';
 import { speechTestView } from './views/speech-test.js';
-import { nowView } from './views/now.js';
+import { ausrittView } from './views/ausritt.js';
 import { testView } from './views/test.js';
+import { etappeView } from './views/etappe.js';
 import { setRenderer, practicing } from './nav.js';
 import { updateContent } from './updates.js';
 
@@ -18,7 +21,9 @@ const routes = [
   [/^#\/fach\/([^/]+)$/, subjectView, 'home'],
   [/^#\/lektion\/([^/]+)\/([^/]+)$/, lessonView, 'home'],
   [/^#\/ueben\/([^/]+)\/([^/]+)\/([a-z-]+)(\/alle)?$/, practiceView, 'home'],   // Übungsart wird in der Ansicht geprüft
-  [/^#\/jetzt$/, nowView, 'home'],
+  [/^#\/etappe\/([^/]+)\/([^/]+)\/(\d{1,2})$/, etappeView, 'home'],
+  [/^#\/ausritt$/, ausrittView, 'home'],
+  [/^#\/jetzt$/, () => { location.replace('#/ausritt'); }, 'home'],   // alte Adresse (Lesezeichen)
   [/^#\/test\/([^/]+)(?:\/([^/]+))?$/, testView, 'home'],
   [/^#\/statistik$/, statsView, 'statistik'],
   [/^#\/handschrift-test$/, handwritingTestView, 'home'],
@@ -39,14 +44,22 @@ function render() {
   view(app, ...params);
 }
 
+// Einmalig beim ersten Start mit Lernweg: Was schon sitzt (Abruf-Fach ≥ 2), gilt als gelernt –
+// Etappen mit diesen Wörtern sind gleich abgehakt (path.js adoptable).
+function adoptOnce() {
+  if (pathSince() || !hasContent() || storageNewer()) return;
+  adoptLearned(adoptable(allLessons()));
+}
+
 setRenderer(render);
 window.addEventListener('hashchange', render);
 applyMoves();
+adoptOnce();
 render();
 updateContent({ quiet: true });
 // Sicherung: wurde sie von außen geändert (z. B. zurückgesetzt), Seite neu zeichnen –
 // außer mitten in einer Übungsrunde.
-startSync({ onRemoteChange: () => { applyMoves(); if (!practicing()) render(); } });
+startSync({ onRemoteChange: () => { applyMoves(); adoptOnce(); if (!practicing()) render(); } });
 
 // Browser bitten, den Spielstand nicht bei Speichermangel selbst zu löschen.
 navigator.storage?.persist?.().catch(() => {});
