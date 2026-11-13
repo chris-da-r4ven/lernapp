@@ -261,3 +261,10 @@ export function addBlitz(at = Date.now()) {
   state.blitz = [...(state.blitz ?? []), { id: `${deviceId()}-${at.toString(36)}`, at }].slice(-500);
   save();
 }
+
+// Lernweg der Lektion einmal ganz geschafft – bleibt gemerkt (die nächste Lektion bleibt offen, auch wenn
+// später neue Wörter dazukommen oder ein Turnier nochmal schwächer ausfällt).
+export function markComplete(lk, at = Date.now()) {
+  const e = entryFor(lk);
+  if (!e.complete) { e.complete = at; save(); }
+}

@@ -7,11 +7,11 @@
 import { getSubject, getLesson } from '../content.js';
 import { etappenFor, tasksForEtappe, nextEtappe, progress, wordId, pathModes, lessonAccess, blitzAvailable, STATIONS, RETRY_BELOW } from '../path.js';
 import { lessonKey, kindOf, targetSide } from '../lessons.js';
-import { markLearned, markMix, setTurnier } from '../store.js';
+import { markLearned, markMix, setTurnier, markComplete } from '../store.js';
 import { itemKey } from '../srs.js';
 import { storeMode } from '../exercises/registry.js';
 import { runRound } from '../exercises/round.js';
-import { esc } from '../util.js';
+import { esc, shuffle } from '../util.js';
 
 export const etappeHref = (sid, lid, n, probe = false) =>
   `#/etappe/${encodeURIComponent(sid)}/${encodeURIComponent(lid)}/${n}${probe ? '/probe' : ''}`;
@@ -55,6 +55,9 @@ export function etappeView(el, sid, lid, nr, probe) {
     const p = progress(after);
     const next = nextEtappe(after);
     nextHref = next ? etappeHref(sid, lid, next.n) : null;
+    if (p.complete) markComplete(lk);
+    // Hauptknopf passend zum Stand nach dem Speichern (z. B. nach dem Turnier ins Nachtraining)
+    queueMicrotask(() => { const b = el.querySelector('[data-act=again]'); if (b && !probe) b.textContent = next ? 'Weiter zur nächsten Etappe' : 'Zur Lektion'; });
     const way = p.complete
       ? '<p class="big">🎀 Lernweg geschafft! Alle Etappen dieser Lektion sind erledigt.</p>'
       : `<p class="muted">${p.done} von ${p.total} Etappen geschafft${next ? ` · als Nächstes: ${STATIONS[next.station].icon} ${esc(STATIONS[next.station].name)}` : ''}</p>`;
@@ -79,7 +82,7 @@ export function etappeView(el, sid, lid, nr, probe) {
       art: 'turnier',
       title: 'Turnier geschafft! 🏆',
       onComplete: ({ mistakes, firstTry, total }) => {
-        const pct = total ? (firstTry / total) * 100 : 0;
+        const pct = total ? Math.round((firstTry / total) * 100) : 0;   // so wird es gespeichert und geprüft
         const prefix = `${sid}/${lesson.id}/`;
         const wrong = [...new Set(mistakes.map((k) => k.split('|')[0].slice(prefix.length)))];
         setTurnier(lk, pct, pct < RETRY_BELOW ? wrong : []);
@@ -95,7 +98,7 @@ export function etappeView(el, sid, lid, nr, probe) {
   // Probe „Ich kann das schon“: nur Gruppen, jedes Wort einmal abrufen
   if (probe && stage.type === 'gruppe') {
     const pm = pathModes(lesson);
-    const tasks = stage.items.map((it) => ({ sid, lesson, item: it, dir: pm.recall, key: itemKey(sid, lesson.id, it, storeMode(pm.recall)) }));
+    const tasks = shuffle(stage.items).map((it) => ({ sid, lesson, item: it, dir: pm.recall, key: itemKey(sid, lesson.id, it, storeMode(pm.recall)) }));
     runRound(box, {
       tasks,
       once: true,
@@ -121,7 +124,8 @@ export function etappeView(el, sid, lid, nr, probe) {
 
   // Nach einer Probe: Wörter, die sie schon konnte, fallen in dieser einen Runde weg (kein Teilstand).
   const query = location.hash.split('?ohne=')[1] ?? '';
-  const skip = new Set(decodeURIComponent(query).split('|').filter(Boolean));
+  let skip = new Set();
+  try { skip = new Set(decodeURIComponent(query).split('|').filter(Boolean)); } catch { /* kaputte Adresse: ganze Etappe */ }
   const rest = stage.type === 'gruppe' ? stage.items.filter((it) => !skip.has(wordId(it))) : stage.items;
   const play = rest.length && rest.length < stage.items.length ? { ...stage, items: rest } : stage;
 

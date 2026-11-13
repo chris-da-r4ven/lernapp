@@ -368,6 +368,10 @@ try {
     eq(acc({ complete: (l) => l.id === 'a' }), 'open,open,secret,hidden,open');
     eq(acc({ items: { 't/c/x|ab': { box: 1 } } }), 'open,secret,open,hidden,open');
     eq(acc({ opened: { 't/b': 5 } }), 'open,open,secret,hidden,open');
+    // einmal geschafft bleibt geschafft (Standard-Prüfung über den gemerkten Zeitpunkt)
+    const vl = ['xa', 'xb', 'xc'].map((id) => ({ ...vocab(3), id }));
+    const kept = vl.map((l) => lessonAccess('t', vl, { opened: {}, items: {}, pathOf: (x) => (x.id === 'xa' ? { learned: {}, complete: 5 } : { learned: {} }) }).get(l.id)).join(',');
+    eq(kept, 'open,open,open', 'gemerkt (xc ist die neueste)');
     const dated = [{ id: 'a' }, { id: 'b', neu: '2026-11-10' }, { id: 'c' }];
     eq(dated.map((l) => lessonAccess('t', dated, ctx()).get(l.id)).join(','), 'open,open,secret');
   });

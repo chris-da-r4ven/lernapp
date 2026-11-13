@@ -12,7 +12,7 @@
 //   feedback   Rückmeldungen nach Runden: [{ id, at, fun 1–5, learn 1–5, what, mode, art, n, right, test }]
 //              (bleibt beim Zurücksetzen erhalten – sie ist für die Eltern, nicht Teil des Lernstands)
 // Ab SCHEMA 3 (Lernweg, siehe path.js):
-//   path       { "<fach>/<lektion>": { learned: { <wort-id>: ms }, mix: { <etappe>: ms },
+//   path       { "<fach>/<lektion>": { learned: { <wort-id>: ms }, mix: { <etappe>: ms }, complete?: ms,
 //                turnier?: { day, at, pct }, retry?: [<wort-id>] } }
 //   pathSince  Zeitpunkt der einmaligen Übernahme des bisherigen Lernstands in den Lernweg (0 = noch nicht)
 //   opened     { "<fach>/<lektion>": ms } – von den Eltern geöffnete Lektionen
@@ -39,7 +39,7 @@ export const safeKey = (k) => typeof k === 'string' && !UNSAFE.has(k);
 // Lektion im Lernweg: "<fach>/<lektion>". Wort- und Etappen-IDs: wie in den Inhalten (auch „How are you?“),
 // nur ohne Steuerzeichen und spitze Klammern, höchstens 80 Zeichen.
 const LESSON_KEY = /^[\w-]{1,40}\/[\w-]{1,60}$/;
-const WORD_ID = /^[^\u0000-\u001f<>]{1,80}$/u;
+const WORD_ID = /^[^\u0000-\u001f<>|]{1,80}$/u;   // ohne „|“: trennt in Lernstand-Schlüsseln die Übungsart ab
 const MAX_LESSONS = 300;
 const MAX_WORDS = 500;
 const MAX_RETRY = 100;
@@ -136,7 +136,8 @@ function cleanPathEntry(v) {
     for (const [k, x] of Object.entries(o).slice(0, max)) { const n = num(x); if (safeKey(k) && WORD_ID.test(k) && n !== null) out[k] = n; }
     return out;
   };
-  const e = { learned: stamps(v.learned, MAX_WORDS), mix: stamps(v.mix, 50) };
+  const e = { learned: stamps(v.learned, MAX_WORDS), mix: stamps(v.mix, 200) };
+  if (num(v.complete) !== null) e.complete = num(v.complete);
   const t = v.turnier;
   if (isObj(t) && typeof t.day === 'string' && DAY.test(t.day) && num(t.at) !== null) {
     e.turnier = { day: t.day, at: num(t.at), pct: Math.min(100, int(t.pct) ?? 0) };

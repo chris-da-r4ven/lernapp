@@ -210,7 +210,7 @@ export function tasksForEtappe(sid, lesson, stage, stages = etappenFor(sid, less
     const modes = pm.extra;
     const words = [...stage.items]
       .sort((a, b) => bestBox(sid, lesson, a, [pm.recall], stateOf) - bestBox(sid, lesson, b, [pm.recall], stateOf))
-      .slice(0, SPRING_MAX);
+      .slice(0, stage.type === 'nachtraining' ? Infinity : SPRING_MAX);   // Nachtraining: alle falschen Wörter
     const list = shuffle(words).map((it, i) => {
       // Übungsarten reihum; passt eine nicht zum Wort (z. B. kein Beispielsatz), die nächste.
       for (let k = 0; k < modes.length; k++) {
@@ -274,7 +274,11 @@ export function adoptable(lessons, { stateOf = itemState } = {}) {
 // lessons: Lektionen eines Fachs in Reihenfolge. Ergebnis: Map lektions-id → 'open' | 'secret' | 'hidden'.
 // ctx: opened (von den Eltern geöffnet), items (Lernstand), pathOf(lesson) → Lernweg-Eintrag,
 // complete(lesson) → Lernweg geschafft?
-export function lessonAccess(sid, lessons, { opened = getState().opened ?? {}, items = getState().items, pathOf = (l) => pathEntry(lessonKey(sid, l)), complete = (l) => progress(etappenFor(sid, l)).complete } = {}) {
+export function lessonAccess(sid, lessons, { opened = getState().opened ?? {}, items = getState().items, pathOf = (l) => pathEntry(lessonKey(sid, l)), complete = (l) => {
+  if (pathOf(l).complete) return true;                       // einmal geschafft bleibt geschafft
+  const st = etappenFor(sid, l);
+  return progress(st).complete || !st.some((s) => !s.optional); // Lektion ohne Lernweg blockiert nicht
+} } = {}) {
   const out = new Map();
   if (!lessons.length) return out;
   // neueste: höchstes "neu"-Datum, ohne Angaben die letzte in der Reihenfolge

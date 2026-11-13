@@ -500,11 +500,11 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
 .race.gallop .race-hills { animation: race-scroll 0.8s ease-out; }
 .race.gallop .race-fence { animation: race-scroll 0.6s ease-out; }
 .race.gallop .race-fanny svg { animation: hop 0.3s ease-in-out 2; }
-@keyframes race-scroll { from { transform: translateX(0); } to { transform: translateX(-80px); } }
+@keyframes race-scroll { from { transform: translateX(0); } to { transform: translateX(-160px); } }
 @keyframes hop { 50% { transform: translateY(-6px); } }
 .race-note { text-align: center; margin: 0 0 8px; }
 @media (prefers-reduced-motion: reduce) {
   .race.gallop .race-hills, .race.gallop .race-fence, .race.gallop .race-fanny svg { animation: none; }
-  .race-fanny { transition: none; }
+  .race > .race-fanny { transition: none; }
 }
 .blitz-card { border: 2px solid #f5d77a; }

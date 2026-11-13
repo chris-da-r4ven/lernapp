@@ -7,7 +7,7 @@ import { esc, fmt1 } from '../util.js';
 import { updateContent } from '../updates.js';
 import { portrait, bigPortrait } from './portrait.js';
 import { dueSummary } from '../ausritt.js';
-import { etappenFor, nextEtappe, progress, etappeNo, blitzAvailable, STATIONS } from '../path.js';
+import { etappenFor, nextEtappe, progress, etappeNo, blitzAvailable, blitzTasks, STATIONS } from '../path.js';
 import { etappeHref, lessonOpen } from './etappe.js';
 import { lessonKey } from '../lessons.js';
 import { pathEntry } from '../store.js';
@@ -155,7 +155,8 @@ function ausrittCard() {
 // ⚡ Blitzrunde – nur, wenn eine verdient ist.
 function blitzCard() {
   const { stock } = blitzAvailable();
-  if (!stock) return '';
+  // ohne genug Antipp-Aufgaben (z. B. Gerät ohne Sprachausgabe) keine Karte, die nie aufgeht
+  if (!stock || blitzTasks(allLessons()).length < 4) return '';
   return `
     <a class="card row blitz-card" href="#/blitz">
       <span class="knobel-icon" aria-hidden="true">⚡</span>

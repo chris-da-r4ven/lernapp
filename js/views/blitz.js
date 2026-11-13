@@ -30,6 +30,7 @@ export function blitzView(el) {
     return;
   }
   const fanny = el.querySelector('.race-fanny');
+  let lastDone = 0;
   const race = el.querySelector('.race');
   runRound(box, {
     tasks,
@@ -38,7 +39,9 @@ export function blitzView(el) {
     title: 'Ziel erreicht! ⚡',
     onProgress: (done, total) => {
       fanny.style.left = `${4 + (done / total) * 78}%`;
-      if (done) { race.classList.remove('gallop'); void race.offsetWidth; race.classList.add('gallop'); }
+      // nur bei einer neu gelösten Aufgabe galoppieren, nicht nach einem Fehler
+      if (done > lastDone) { race.classList.remove('gallop'); void race.offsetWidth; race.classList.add('gallop'); }
+      lastDone = done;
     },
     onComplete: () => { addBlitz(); return ''; },
     againLabel: 'Zur Startseite',

@@ -175,7 +175,7 @@ def item_label(where, n, it):
 
 # Muster wie in js/validate.js (Lernweg-Spielstand): Lektion "<fach>/<lektion>", Wort-IDs.
 LESSON_ID = re.compile(r'^[A-Za-z0-9_-]{1,60}$')
-WORD_ID = re.compile(r'^[^\x00-\x1f<>]{1,80}$')
+WORD_ID = re.compile(r'^[^\x00-\x1f<>|]{1,80}$')
 
 
 def check_lesson(where, l):
@@ -216,7 +216,7 @@ def check_lesson(where, l):
         # Wort-IDs stehen im Lernweg-Spielstand (js/validate.js WORD_ID) – sonst ginge Fortschritt verloren.
         wid = iid if iid is not None else it.get('b')
         if isinstance(wid, str) and not WORD_ID.match(wid):
-            errors.append(f'{at}: id/b "{wid}" passt nicht als Kennung (höchstens 80 Zeichen, ohne < > und Steuerzeichen) – "id" setzen')
+            errors.append(f'{at}: id/b "{wid}" passt nicht als Kennung (höchstens 80 Zeichen, ohne < > | und Steuerzeichen) – "id" setzen')
         if wid in ('__proto__', 'constructor', 'prototype'):
             errors.append(f'{at}: "{wid}" ist als Kennung nicht erlaubt')
         if iid is not None and iid in ids:
