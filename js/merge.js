@@ -98,7 +98,10 @@ export function mergePath(a = {}, b = {}, since = -Infinity) {
   for (const [k, e] of Object.entries(b)) {
     const cur = Object.hasOwn(out, k) ? out[k] : { learned: {}, mix: {} };
     const m = { learned: mergeStamps(cur.learned, e.learned, since), mix: mergeStamps(cur.mix, e.mix, since) };
-    const take = e.turnier && e.turnier.at > since && (!cur.turnier || e.turnier.at > cur.turnier.at) ? e : cur;
+    // Das neuere Turnier gilt; bei gleichem Zeitpunkt entscheidet der Inhalt (damit beide Richtungen gleich ausgehen).
+    const later = (x, y) => (x.turnier?.at ?? -1) - (y.turnier?.at ?? -1) || JSON.stringify(x.retry ?? []).localeCompare(JSON.stringify(y.retry ?? []));
+    const fresh = e.turnier && e.turnier.at > since ? e : { learned: {}, mix: {} };
+    const take = later(fresh, cur) > 0 ? fresh : cur;
     if (take.turnier) m.turnier = take.turnier;
     if (take.retry) m.retry = take.retry;
     out[k] = m;

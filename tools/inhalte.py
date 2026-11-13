@@ -173,9 +173,16 @@ def item_label(where, n, it):
     return f'{where} Eintrag {n}' + (f' ({it.get("b")})' if it.get('b') else '')
 
 
+# Muster wie in js/validate.js (Lernweg-Spielstand): Lektion "<fach>/<lektion>", Wort-IDs.
+LESSON_ID = re.compile(r'^[A-Za-z0-9_-]{1,60}$')
+WORD_ID = re.compile(r'^[^\x00-\x1f<>]{1,80}$')
+
+
 def check_lesson(where, l):
     """Was für jede Lektion gilt – dann die Prüfung ihrer Art."""
     errors, warnings = [], []
+    if not LESSON_ID.match(str(l.get('id', ''))):
+        errors.append(f'{where}: "id" darf nur a–z, A–Z, 0–9, - und _ enthalten (höchstens 60 Zeichen)')
     if not l.get('title'):
         errors.append(f'{where}: "title" fehlt')
     for old in ('exercises', 'grammar'):
@@ -204,6 +211,12 @@ def check_lesson(where, l):
         if 'level' in it and (isinstance(it['level'], bool) or it['level'] not in (1, 2, 3)):
             errors.append(f'{at}: "level" muss 1 (Basis), 2 (Fortgeschritten) oder 3 (Experte) sein')
         iid = it.get('id')
+        # Wort-IDs stehen im Lernweg-Spielstand (js/validate.js WORD_ID) – sonst ginge Fortschritt verloren.
+        wid = iid if iid is not None else it.get('b')
+        if isinstance(wid, str) and not WORD_ID.match(wid):
+            errors.append(f'{at}: id/b "{wid}" passt nicht als Kennung (höchstens 80 Zeichen, ohne < > und Steuerzeichen) – "id" setzen')
+        if wid in ('__proto__', 'constructor', 'prototype'):
+            errors.append(f'{at}: "{wid}" ist als Kennung nicht erlaubt')
         if iid is not None and iid in ids:
             errors.append(f'{at}: id "{iid}" gibt es in der Lektion zweimal')
         ids.add(iid)

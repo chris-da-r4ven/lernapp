@@ -46,9 +46,14 @@ function render() {
 
 // Einmalig beim ersten Start mit Lernweg: Was schon sitzt (Abruf-Fach ≥ 2), gilt als gelernt –
 // Etappen mit diesen Wörtern sind gleich abgehakt (path.js adoptable).
+// Lief die Übernahme gerade erst (in dieser Sitzung), wird sie nach dem ersten Abgleich mit der Sicherung
+// ergänzt – ein anderes Gerät kann weiter gewesen sein.
+let adoptedNow = false;
 function adoptOnce() {
-  if (pathSince() || !hasContent() || storageNewer()) return;
-  adoptLearned(adoptable(allLessons()));
+  if (storageNewer() || !hasContent()) return;
+  if (pathSince() && !adoptedNow) return;
+  adoptLearned(adoptable(allLessons()), adoptedNow ? pathSince() : Date.now());
+  adoptedNow = true;
 }
 
 setRenderer(render);

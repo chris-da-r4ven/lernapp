@@ -34,12 +34,14 @@ erlaubt, nicht Hauptkost · keine Uhr, keine Bestenliste · keine weiteren Beloh
 
 - Gruppen: feste Größe 5–6 in Datei-Reihenfolge, eine zu kleine Restgruppe geht in die vorige. 30 Wörter → 5 Gruppen
   + 2× Springen + Turnier = 8 Etappen (Obergrenze).
-- Ohne Sprachausgabe (oder < 4 Wörter) ersetzt „Bedeutung antippen“ (Text) das Hören.
+- Ohne Sprachausgabe (oder < 4 Wörter) entfällt das Erkennen: Die Wörter werden direkt abgerufen (umgesetzt in R2;
+  eine Text-Auswahl als Ersatz wäre eine neue Übungsart – später, falls nötig).
 - **Mathe:** Gruppe = Abschnitt der Aufgabenliste (8–10 Aufgaben), ab Etappe 2 werden 2–3 frühere beigemischt.
   🌿 Koppel (Basis) nur, solange die Basis-Aufgaben nicht sicher sind – zählt nicht im „x von n“.
   🟣 **Knobel-Parcours** (Experte) sichtbar und gleichwertig neben dem Weg, ab der ersten geschafften Etappe offen.
-- **Grammatik:** Pflege = Form antippen; Springen = Form **selbst eintippen** (neue Übungsart `form-tippen`,
-  eigener Lernstand, nie mit `form` desselben Satzes in einer Runde).
+- **Grammatik:** Pflege/Dressur = Form antippen (dazu 2 Sätze der vorigen Gruppe selbst eintippen);
+  Springen = Form **selbst eintippen** (neue Übungsart `form-tippen`, eigener Lernstand, nie mit `form`
+  desselben Satzes in einer Runde).
 - **Etappe geschafft** = Runde zu Ende gespielt (falsche Aufgaben kommen in derselben Runde wieder, auch nach
   „Nochmal ansehen“). Durchfallen geht nicht. Abbruch → Etappe beginnt beim nächsten Mal neu.
 - **„Frei üben“ hakt keine Etappen ab** (zählt aber für Karteikasten, Sternchen, Tagesziel).
@@ -125,8 +127,8 @@ Nur die **nächste** gesperrte Lektion erscheint als Geheimnis-Feld (ohne Titel)
   - Gespeichert wird **pro Wort**, nicht pro Etappe: Gruppen werden abgeleitet (gelernte Wörter in Datei-Reihenfolge
     = geschaffte Gruppen, dann die ungelernten = offene). Dadurch stören neue oder umsortierte Wörter nicht, und
     „geschafft bleibt geschafft“ gilt von selbst.
-  - Springen-Etappen mit fester Nummer. Kommen nach einem geschafften Springen neue Wörter dazu, folgen deren Gruppen
-    und ein neues Springen.
+  - Springen-Kennung = Nummer + Wortzahl (`springen-1-11`). Kommen neue Wörter dazu, ist das Springen mit den neuen
+    Wörtern wieder offen (umgesetzt in R2, einfacher als ein zusätzliches Springen; Geschafftes bei den Gruppen bleibt).
   - Zusammenführen: Vereinigung, frühester Zeitpunkt gewinnt; `retry` vom Turnier mit dem neueren `at`.
 - `opened`: `{ "<fach>/<lektion>": at }` – von den Eltern geöffnet; Vereinigung, frühester Zeitpunkt.
 - `blitz`: `[{ id, at }]` – Vereinigung nach id (wie `feedback`).

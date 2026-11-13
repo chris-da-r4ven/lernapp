@@ -6,7 +6,7 @@ import { masteryOf, unitWord, kindInfo, coreItems } from '../lessons.js';
 import { levelInfo, hasLevels, LEVELS } from '../levels.js';
 import { esc } from '../util.js';
 import { lessonMedal, testReady } from '../medal.js';
-import { etappenFor, tasksForEtappe, nextEtappe, progress, minutesFor, pathModes, STATIONS } from '../path.js';
+import { etappenFor, tasksForEtappe, nextEtappe, progress, minutesFor, pathModes, etappeNo, STATIONS } from '../path.js';
 import { etappeHref } from './etappe.js';
 import { kindOf, nativeSide } from '../lessons.js';
 
@@ -22,11 +22,11 @@ function stageText(lesson, stage) {
     : { what: 'Aufgaben lösen', how: 'eintippen' };
   if (kind === 'grammatik') return stage.type === 'springen'
     ? { what: 'Formen selbst schreiben, gemischt', how: 'eintippen' }
-    : { what: 'Richtige Form erst antippen, dann selbst schreiben', how: 'antippen & eintippen' };
+    : { what: 'Richtige Form antippen', how: stage.group ? 'antippen & eintippen' : 'antippen' };
   if (stage.type === 'springen') return { what: 'Alles gemischt: Lückensätze, Diktat, beide Richtungen', how: 'eintippen' };
   return pm.recognize === 'hoeren-wahl'
     ? { what: 'Neue Wörter hören, antippen und schreiben', how: 'hören, antippen & eintippen' }
-    : { what: 'Neue Wörter kennenlernen und schreiben', how: 'eintippen' };
+    : { what: 'Neue Wörter lesen und schreiben', how: 'eintippen' };
 }
 
 export function lessonView(el, sid, lid) {
@@ -53,6 +53,9 @@ export function lessonView(el, sid, lid) {
   const preview = (stage) => (kindOf(lesson) === 'vokabeln' && stage.type === 'gruppe'
     ? `<p class="muted small">${stage.items.slice(0, 4).map((it) => esc(it[native])).join(' · ')}${stage.items.length > 4 ? ' …' : ''}</p>` : '');
   const nextCard = () => {
+    if (!stages.length) {
+      return `<section class="card"><p class="muted">Für diese Lektion gibt es keinen Lernweg – übe sie unter „Frei üben“.</p></section>`;
+    }
     if (!next) {
       return `
         <section class="card next-card done">
@@ -65,7 +68,7 @@ export function lessonView(el, sid, lid) {
     const st = STATIONS[next.station];
     const t = stageText(lesson, next);
     const n = tasksForEtappe(sid, lesson, next, stages).length;
-    const pos = next.optional ? 'AUFWÄRMEN' : `ETAPPE ${stages.filter((s) => !s.optional).indexOf(next) + 1} VON ${prog.total}`;
+    const pos = next.optional ? 'AUFWÄRMEN' : `ETAPPE ${etappeNo(stages, next)} VON ${prog.total}`;
     return `
       <section class="card next-card">
         <p class="next-label">${pos} · ${st.icon} ${esc(st.name.toUpperCase())}</p>
@@ -110,10 +113,10 @@ export function lessonView(el, sid, lid) {
     ${nextCard()}
     ${knobel}
 
-    <section class="card">
+    ${stages.length ? `<section class="card">
       <h2>Dein Lernweg</h2>
       <ol class="stage-list">${stages.map(stageRow).join('')}</ol>
-    </section>
+    </section>` : ''}
 
     <details class="card fold">
       <summary>Frei üben – einzelne Übungsarten, ganze Lektion, Test</summary>

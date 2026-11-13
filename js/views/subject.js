@@ -32,7 +32,7 @@ export function subjectView(el, sid) {
         ${medal.medal ? '<span class="medal" aria-label="Medaille">🏅</span>' : ''}
         <div class="grow">
           <strong>${esc(l.title)}</strong> <span class="muted small">${coreItems(lesson).length} ${unitWord(lesson, coreItems(lesson).length)}</span>
-          <div class="small ${way.complete ? 'way-done' : 'muted'}">${way.complete ? '🎀 Lernweg geschafft' : `Lernweg: ${way.done} von ${way.total} Etappen`}</div>
+          ${way.total ? `<div class="small ${way.complete ? 'way-done' : 'muted'}">${way.complete ? '🎀 Lernweg geschafft' : `Lernweg: ${way.done} von ${way.total} Etappen`}</div>` : ''}
           <div class="meter small"><div style="width:${m * 100}%"></div></div>
           ${testReady(sid, lesson) ? '<div class="small ready-hint">📝 Bereit für den Test!</div>' : ''}
           ${!medal.medal && medal.started ? `<div class="muted small medal-hint">🏅 ${esc(medal.hint)}</div>` : ''}

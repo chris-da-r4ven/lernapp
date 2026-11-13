@@ -7,7 +7,7 @@ import { esc, fmt1 } from '../util.js';
 import { updateContent } from '../updates.js';
 import { portrait, bigPortrait } from './portrait.js';
 import { dueSummary } from '../ausritt.js';
-import { etappenFor, nextEtappe, progress, STATIONS } from '../path.js';
+import { etappenFor, nextEtappe, progress, etappeNo, STATIONS } from '../path.js';
 import { etappeHref } from './etappe.js';
 import { lessonKey } from '../lessons.js';
 import { pathEntry } from '../store.js';
@@ -131,7 +131,7 @@ function continueCard() {
       <span class="now-play" aria-hidden="true">▶</span>
       <span>
         <strong>Weiter: ${esc(pick.lesson.title)}</strong>
-        <span class="muted small">${esc(subject?.icon ?? '')} ${esc(subject?.name ?? '')} · ${next.optional ? 'Aufwärmen' : `Etappe ${p.done + 1} von ${p.total}`} · ${st.icon} ${esc(st.name)}</span>
+        <span class="muted small">${esc(subject?.icon ?? '')} ${esc(subject?.name ?? '')} · ${next.optional ? 'Aufwärmen' : `Etappe ${etappeNo(pick.stages, next)} von ${p.total}`} · ${st.icon} ${esc(st.name)}</span>
       </span>
     </a>`;
 }

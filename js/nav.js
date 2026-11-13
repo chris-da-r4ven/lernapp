@@ -6,4 +6,4 @@ export const setRenderer = (fn) => { renderer = fn; };
 export const rerender = () => renderer();
 
 // Mitten in einer Übung die Seite nicht neu zeichnen.
-export const practicing = () => /^#\/(ueben|jetzt|test)\//.test(location.hash + '/');
+export const practicing = () => /^#\/(ueben|jetzt|test|etappe|ausritt)\//.test(location.hash + '/');

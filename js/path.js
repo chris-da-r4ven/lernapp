@@ -66,10 +66,14 @@ export function pathModes(lesson) {
     return { pool: 'rechnen', recognize: null, recall: pick('rechnen'), extra: ['rechnen'], groupMax: MATH_GROUP_MAX };
   }
   if (kind === 'grammatik') {
-    return { pool: 'form', recognize: pick('form'), recall: pick('form-tippen', 'form'), extra: ['form-tippen', 'form'].filter((m) => avail.has(m)), groupMax: GROUP_MAX };
+    // Pflege/Dressur: Form antippen (dazu 2 Sätze der vorigen Gruppe selbst schreiben), Springen: nur selbst
+    // schreiben. Nie beide Formen desselben Satzes in einer Runde (sonst wäre das Schreiben nur Abschreiben).
+    return { pool: 'form', recognize: null, recall: pick('form'), extra: [pick('form-tippen', 'form')].filter(Boolean), groupMax: GROUP_MAX };
   }
   const recall = pick(towardTarget(lesson));
-  const recognize = pick('hoeren-wahl', recall === 'ab' ? 'ba' : 'ab');
+  // Erkennen nur über Hören & antippen. Ohne Sprachausgabe (oder bei weniger als 4 Wörtern) direkt abrufen –
+  // ein Ersatz durch eine zweite Schreib-Übung wäre doppelte Last statt eines leichten Einstiegs.
+  const recognize = pick('hoeren-wahl');
   const extra = ['satz', 'hoeren', recall === 'ab' ? 'ba' : 'ab', recall].filter((m) => m && avail.has(m));
   return { pool: recall, recognize, recall, extra, groupMax: GROUP_MAX };
 }
@@ -89,9 +93,9 @@ export function etappenFor(sid, lesson, { entry = pathEntry(lessonKey(sid, lesso
   const stages = [];
   // Koppel: Basis-Aufgaben, solange sie nicht sicher sitzen und noch nicht gespielt
   if (math && !has(entry.mix, 'koppel')) {
-    const basics = lesson.items.filter((it) => levelOf(it) === 1 && usable(it));
+    const basics = lesson.items.filter((it) => levelOf(it) === 1 && usable(it)).slice(0, KOPPEL_MAX);
     const unsafe = basics.some((it) => stateOf(itemKey(sid, lesson.id, it, storeMode('rechnen'))).box < SAFE_BOX);
-    if (basics.length && unsafe) stages.push({ type: 'koppel', id: 'koppel', station: 'koppel', items: basics.slice(0, KOPPEL_MAX), optional: true, done: false });
+    if (basics.length && unsafe) stages.push({ type: 'koppel', id: 'koppel', station: 'koppel', items: basics, optional: true, done: false });
   }
   let since = [];
   let springNo = 0;
@@ -125,8 +129,13 @@ export function progress(stages) {
   return { done, total: req.length, complete: req.length > 0 && done === req.length };
 }
 
-// Nächste Etappe (erste offene, nicht geschaffte) – oder null, wenn alles geschafft ist.
-export const nextEtappe = (stages) => stages.find((s) => s.open && !s.done) ?? null;
+// Nächste Etappe (erste offene, nicht geschaffte) – oder null, wenn alle Pflicht-Etappen geschafft sind
+// (die freiwillige Koppel allein ist kein „Weiter“).
+export const nextEtappe = (stages) =>
+  (stages.some((s) => !s.optional && !s.done) ? stages.find((s) => s.open && !s.done) ?? null : null);
+
+// Nummer einer Etappe im Pflichtweg (1, 2, …) – für „Etappe x von n“.
+export const etappeNo = (stages, stage) => stages.filter((s) => !s.optional).indexOf(stage) + 1;
 
 // --- Aufgaben einer Etappe ---------------------------------------------------------
 

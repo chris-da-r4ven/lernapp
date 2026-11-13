@@ -331,6 +331,21 @@ try {
     const safe = etappenFor('t', L, { entry: E(), stateOf: () => ({ box: 3 }) });
     eq([st.map((s) => s.type).join(','), st[0].optional, st[1].open, st[1].items.length, safe[0].type, progress(st).total], ['koppel,gruppe,springen', true, true, 3, 'gruppe', 2]);
   });
+  await test('Grammatik: Gruppe nur antippen (+ 2 der vorigen eintippen), Springen nur eintippen', () => {
+    const G = { id: 'g', kind: 'grammatik', sides: { a: 'Deutsch', b: 'Englisch' },
+      items: Array.from({ length: 12 }, (_, i) => ({ id: `s${i}`, a: `Satz ${i}`, b: `I am ${i}.`, ex: `I {am} ${i}.`, choices: ['am', 'is', 'are'] })) };
+    const st = etappenFor('t', G, { entry: E(), stateOf: none });
+    const g2 = tasksForEtappe('t', G, st[1], st, { stateOf: none });
+    const spr = tasksForEtappe('t', G, st[2], st, { stateOf: none });
+    const same = g2.some((t) => t.dir === 'form-tippen' && g2.some((u) => u.dir === 'form' && u.item === t.item));
+    eq([g2.filter((t) => t.dir === 'form').length, g2.filter((t) => t.dir === 'form-tippen').length, same, [...new Set(spr.map((t) => t.dir))]],
+      [6, 2, false, ['form-tippen']]);
+  });
+  await test('Koppel allein ist kein „Weiter“, wenn der Lernweg fertig ist', () => {
+    const L = mathL([1, 2, 2]);
+    const st = etappenFor('t', L, { entry: E(['a2', 'a3'], ['springen-1-2']), stateOf: none });
+    eq([st[0].type, progress(st).complete, nextEtappe(st)], ['koppel', true, null]);
+  });
   await test('Übernahme: Wörter mit Abruf-Fach ≥ 2 gelten als gelernt', () => {
     const L = vocab(3);
     const st = (k) => ({ box: k.includes('/w1|ab') ? 2 : k.includes('/w2|hoeren-wahl') ? 5 : 0 });
