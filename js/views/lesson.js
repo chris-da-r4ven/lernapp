@@ -9,6 +9,7 @@ import { lessonMedal, testReady } from '../medal.js';
 import { etappenFor, tasksForEtappe, nextEtappe, progress, minutesFor, pathModes, etappeNo, STATIONS } from '../path.js';
 import { etappeHref, lessonOpen } from './etappe.js';
 import { kindOf, nativeSide } from '../lessons.js';
+import { hofkarte } from '../hofkarte.js';
 
 const STATUS_LABEL = { neu: 'neu', wackelt: 'wackelt', sicher: 'sicher' };
 
@@ -114,6 +115,7 @@ export function lessonView(el, sid, lid) {
       ? '<div class="medal-banner"><span class="medal" aria-hidden="true">🏅</span><strong>Kannst du schon gut!</strong></div>'
       : `<p class="muted small">🏅 ${esc(medal.hint)}</p>`}
 
+    ${hofkarte(lesson, stages, next, (s) => etappeHref(sid, lid, s.n))}
     ${nextCard()}
     ${knobel}
 

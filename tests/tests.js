@@ -20,6 +20,7 @@ import { kindOf, targetSide, towardTarget, langOf, KINDS, isSupported, masteryMo
 import { APP_VERSION } from '../js/version.js';
 import { dayKey } from '../js/util.js';
 import { sanitizeState, SCHEMA, LEGACY_DEVICE } from '../js/validate.js';
+import { hofkarte, hofTheme, along, stationTs } from '../js/hofkarte.js';
 import { chunk, etappenFor, progress, nextEtappe, tasksForEtappe, interleave, spreadModes, adoptable, wordId, lessonAccess, blitzAvailable } from '../js/path.js';
 
 const results = [];
@@ -537,6 +538,31 @@ try {
       });
     }
   }
+  section('Hofkarte');
+  await test('Thema nur aus der festen Liste, sonst neutral', () => {
+    eq([hofTheme({ hof: 'halloween' }), hofTheme({ hof: 'schule' }), hofTheme({ hof: '__proto__' }), hofTheme({ hof: '../x' }), hofTheme({})],
+      ['halloween', 'schule', 'neutral', 'neutral', 'neutral']);
+  });
+  await test('Stationen gleichmäßig vom Anfang bis zum Ende des Wegs', () => {
+    eq(stationTs(1), [1]);
+    eq(stationTs(3), [0, 0.5, 1]);
+    const way = [[0, 0], [10, 0], [10, 10]];
+    eq(along(way, 0).point, [0, 0]);
+    eq(along(way, 0.5).point, [10, 0]);
+    eq(along(way, 0.75).point, [10, 5]);
+    eq(along(way, 1).point, [10, 10]);
+    eq(along(way, 0.75).walked, [[0, 0], [10, 0], [10, 5]]);
+  });
+  await test('Karte: eine Station pro Etappe, keine Inhaltstexte, Thema-Datei fest', () => {
+    const items = Array.from({ length: 13 }, (_, k) => ({ a: `<b>w${k}</b>`, b: `wort${k}` }));
+    const lesson = { id: 'hk', title: '<script>', kind: 'vokabeln', items, hof: 'halloween' };
+    const stages = etappenFor('englisch', lesson, { entry: { learned: {}, mix: {} }, stateOf: () => null, tests: [] });
+    const html = hofkarte(lesson, stages, nextEtappe(stages), (s) => `#/x/${s.n}`);
+    eq((html.match(/class="hof-st /g) ?? []).length, stages.length);
+    ok(html.includes('img/hof-halloween.svg'), 'Thema-Datei');
+    ok(!html.includes('<b>') && !html.includes('wort') && !html.includes('<script>'), 'keine Inhaltstexte');
+    eq(hofkarte(lesson, [], null, () => ''), '');
+  });
   section('Schutz des echten Lernstands');
   await test('Selbsttest hat den echten Lernstand nicht angefasst', () =>
     eq(REAL_KEYS.map((k) => localStorage.getItem(k)), realBefore));

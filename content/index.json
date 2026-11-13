@@ -1,8 +1,8 @@
 {
-  "version": 21,
+  "version": 22,
   "updated": "2026-11-13",
-  "hash": "5edb3837a2c8abf9",
-  "minApp": 4,
+  "hash": "9b593ea3d3209d5c",
+  "minApp": 5,
   "app": {
     "modes": [
       "ab",

@@ -176,7 +176,8 @@ THEMES = {
     'school': dict(grass='#7fc672', grass2='#73bd66', tuft='#5aa557', path='#d9dde6', path2='#eef1f6', flowers=['#ffffff', '#9fd3ff', '#ffe27a'], tree='green'),
 }
 
-def scene(theme, stations, current, objects, regions, locked, seed):
+def scene(theme, stations, current, objects, regions, locked, seed, bare=False):
+    # bare: nur Hintergrund (ohne Stationen, gelaufenen Weg und Nebel) – die App zeichnet die Ebene darüber
     T = THEMES[theme]
     rng = random.Random(seed)
     g = []
@@ -198,7 +199,7 @@ def scene(theme, stations, current, objects, regions, locked, seed):
     g.append(f'<path d="{pathd(curve)}" stroke="#00000014" stroke-width="40" fill="none" stroke-linecap="round" stroke-linejoin="round" transform="translate(0 4)"></path>')
     g.append(f'<path d="{pathd(curve)}" stroke="{T["path"]}" stroke-width="34" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>')
     g.append(f'<path d="{pathd(curve)}" stroke="{T["path2"]}" stroke-width="14" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"></path>')
-    walked = catmull(sp[:current + 1], 12) if current > 0 else []
+    walked = catmull(sp[:current + 1], 12) if current > 0 and not bare else []
     if walked:
         g.append(f'<path d="{pathd(walked)}" stroke="#f5b400" stroke-width="7" fill="none" stroke-linecap="round" stroke-dasharray="2 16"></path>')
     def onfree(i, j):
@@ -208,18 +209,19 @@ def scene(theme, stations, current, objects, regions, locked, seed):
     # gesperrter Bereich: Dunst + Gatter
     li, lj, lr = locked
     lx, ly = P(li, lj)
-    g.append(f'<ellipse cx="{f(lx)}" cy="{f(ly)}" rx="{f(lr*TW*0.75)}" ry="{f(lr*TH*0.75)}" fill="#ffffff" opacity="0.6" clip-path="url(#gnd)"></ellipse>')
+    if not bare: g.append(f'<ellipse cx="{f(lx)}" cy="{f(ly)}" rx="{f(lr*TW*0.75)}" ry="{f(lr*TH*0.75)}" fill="#ffffff" opacity="0.6" clip-path="url(#gnd)"></ellipse>')
     # Objekte nach Tiefe
     objs = sorted(objects, key=lambda o: o[0])
     for _, svg in objs:
         g.append(svg)
+    if bare: return ''.join(g)
     g.append(f'<circle cx="{f(lx)}" cy="{f(ly-26)}" r="28" fill="#ffffff" stroke="#9aa3b5" stroke-width="4" stroke-dasharray="7 5"></circle><text x="{f(lx)}" y="{f(ly-15)}" text-anchor="middle" font-size="32" font-weight="900" fill="#8a93b3" font-family="Nunito, sans-serif">?</text>')
     for k, (i, j) in enumerate(stations):
         st = 'done' if k < current else ('now' if k == current else 'next')
         g.append(marker(i, j, str(k + 1), st))
     return ''.join(g)
 
-def build(theme):
+def build(theme, bare=False):
     global CURVE
     ST = {'neutral': [(15.5, 15), (12, 14.5), (10, 10.5), (6.5, 12.5), (4.5, 7.5), (8.5, 4)],
           'halloween': [(3, 15.5), (6.5, 13.5), (10.5, 14.8), (13.8, 11), (11, 7), (14.6, 5.4)],
@@ -268,9 +270,11 @@ def build(theme):
             objs.append((t[0] + t[1], tree(*t[:3], kind='green')))
         objs += [(20.5, bunting(3.5, 14.5, 6.5, 16.5)), (21, podium(4.2, 16.2))]
         locked = (15.5, 10.5, 2.6); current = 2
-    svg = scene(theme, st, current, objs, regions, locked, seed=len(theme) * 7)
+    svg = scene(theme, st, current, objs, regions, locked, seed=len(theme) * 7, bare=bare)
     if theme == 'halloween':
         svg += bat(1240, 120, 1.4) + bat(1320, 80, 1.0) + bat(260, 150, 1.2)
+    if bare:
+        return svg, catmull([P(*q) for q in st], 12)   # Weg in Bildpunkten
     fx, fy = P(*st[current])
     return svg, (fx, fy)
 

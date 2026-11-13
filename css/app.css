@@ -508,3 +508,21 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
   .race > .race-fanny { transition: none; }
 }
 .blitz-card { border: 2px solid #f5d77a; }
+
+/* Hofkarte (Lektionsseite) */
+.hofkarte { margin: 0 0 12px; border-radius: 18px; overflow: hidden; background: #bfe3ff; }
+.hofkarte svg { display: block; width: 100%; height: auto; }
+.hof-walked { fill: none; stroke: #f5b400; stroke-width: 9; stroke-linecap: round; stroke-dasharray: 2 18; }
+.hof-st line { stroke-width: 5; stroke: #aab4d0; }
+.hof-st circle { fill: #ffffff; stroke: #aab4d0; stroke-width: 4; stroke-dasharray: 6 5; }
+.hof-st text { font: 900 34px Nunito, sans-serif; fill: #6b7290; }
+.hof-st.special text { font-size: 30px; }
+.hof-st.done line { stroke: #1f9d55; }
+.hof-st.done circle { fill: #1f9d55; stroke: #ffffff; stroke-dasharray: none; }
+.hof-st.done text { fill: #ffffff; }
+.hof-st.now line { stroke: #4f6cf7; }
+.hof-st.now circle { fill: #4f6cf7; stroke: #ffffff; stroke-width: 5; stroke-dasharray: none; }
+.hof-st.now text { fill: #ffffff; }
+.hof-st.now { animation: hof-bob 1.6s ease-in-out infinite; }
+@keyframes hof-bob { 50% { transform: translateY(-8px); } }
+@media (prefers-reduced-motion: reduce) { .hof-st.now { animation: none; } }

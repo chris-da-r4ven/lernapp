@@ -43,6 +43,8 @@ python3 tools/inhalte.py bauen
   `"neu": "JJJJ-MM-TT"` – die neueste Lektion eines Fachs ist in der App immer offen, auch wenn der
   Lernweg der vorigen noch nicht geschafft ist.
   Grammatik: `--grammatik` dazu.
+- Hofkarte: optional `"hof": "halloween"` oder `"schule"` in der Lektion wählt das Thema der Karte auf der
+  Lektionsseite (sonst `neutral`). Neue Themen entstehen in `tools/hofkarte/` (`python3 tools/hofkarte/hofkarte.py`).
 - `bauen` prüft alles, ergänzt IDs und Varianten, baut `content/index.json` und erhöht die
   Inhalts-Version nur, wenn sich wirklich etwas geändert hat. Bei Fehlern wird nichts gebaut.
 - Nur prüfen: `python3 tools/inhalte.py pruefen`.

@@ -176,6 +176,7 @@ def item_label(where, n, it):
 # Muster wie in js/validate.js (Lernweg-Spielstand): Lektion "<fach>/<lektion>", Wort-IDs.
 LESSON_ID = re.compile(r'^[A-Za-z0-9_-]{1,60}$')
 WORD_ID = re.compile(r'^[^\x00-\x1f<>|]{1,80}$')
+HOF_THEMES = {'neutral', 'halloween', 'schule'}   # wie js/hof-data.js
 
 
 def check_lesson(where, l):
@@ -183,6 +184,8 @@ def check_lesson(where, l):
     errors, warnings = [], []
     if 'neu' in l and not (isinstance(l['neu'], str) and re.match(r'^\d{4}-\d{2}-\d{2}$', l['neu'])):
         errors.append(f'{where}: "neu" muss ein Datum JJJJ-MM-TT sein (wann die Lektion dazukam)')
+    if 'hof' in l and l['hof'] not in HOF_THEMES:
+        errors.append(f'{where}: "hof" muss eins von {sorted(HOF_THEMES)} sein (Thema der Hofkarte)')
     if not LESSON_ID.match(str(l.get('id', ''))):
         errors.append(f'{where}: "id" darf nur a–z, A–Z, 0–9, - und _ enthalten (höchstens 60 Zeichen)')
     if not l.get('title'):
