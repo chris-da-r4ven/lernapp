@@ -1,7 +1,7 @@
 {
-  "version": 22,
+  "version": 23,
   "updated": "2026-11-13",
-  "hash": "9b593ea3d3209d5c",
+  "hash": "20da3cfb16d95f0b",
   "minApp": 5,
   "app": {
     "modes": [
@@ -107,6 +107,12 @@
           "title": "Diagramme richtig darstellen",
           "file": "mathe/diagramme-darstellen.json",
           "group": "Daten"
+        },
+        {
+          "id": "natuerliche-zahlen",
+          "title": "Zahlen ordnen & Zahlenstrahl",
+          "file": "mathe/natuerliche-zahlen.json",
+          "group": "Natürliche Zahlen"
         }
       ]
     }
