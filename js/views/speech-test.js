@@ -50,6 +50,7 @@ export async function speechTestView(el) {
         <button class="btn small primary" data-rate="0.9">normal</button>
         <button class="btn small" data-rate="1.05">flott</button>
       </div>
+      <p class="small sp-status" aria-live="polite"></p>
       <h3>Beispiele</h3>
       <div class="sp-samples"></div>
       <h3>Eigener Text</h3>
@@ -96,6 +97,9 @@ export async function speechTestView(el) {
     el.querySelectorAll('[data-rate]').forEach((x) => x.classList.toggle('primary', x === b));
   }));
 
+  // Rückmeldung der Sprachausgabe anzeigen, damit man auf dem Gerät sieht, wo es hängt.
+  const status = el.querySelector('.sp-status');
+  const show = (msg) => { status.textContent = msg; };
   const speak = (text) => {
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
@@ -103,6 +107,14 @@ export async function speechTestView(el) {
     try { u.voice = voice ?? null; } catch { /* Stimme nicht setzbar – Sprache reicht */ }
     u.lang = voice?.lang ?? 'en-GB';
     u.rate = rate;
+    let started = false;
+    u.onstart = () => { started = true; show(`🔊 spricht … (${voice ? voice.name : 'Standardstimme'})`); };
+    u.onend = () => show(`✅ fertig gesprochen (${voice ? voice.name : 'Standardstimme'})`);
+    u.onerror = (e) => show(`❌ Fehler der Sprachausgabe: ${e.error}`);
+    show('… angefordert');
+    setTimeout(() => {
+      if (!started) show(`⚠️ Nach 2 Sekunden noch kein Ton mit „${voice ? voice.name : 'Standardstimme'}“${voice && !voice.localService ? ' (Online-Stimme – braucht Internet)' : ''}. Bitte eine andere Stimme wählen, am besten eine mit „offline: ja“.`);
+    }, 2000);
     speechSynthesis.speak(u);
   };
 

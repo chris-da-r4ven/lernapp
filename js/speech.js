@@ -32,11 +32,15 @@ export function englishVoices() {
   return voices.filter(isEn);
 }
 
+// Stimmen, die auf diesem Gerät stumm geblieben sind (z. B. Online-Stimme ohne Verbindung) –
+// für die Dauer der Sitzung überspringen.
+const silent = new Set();
+
 function pickVoice(lang = 'en-GB') {
   if (!voices.length) refreshVoices();
   const want = norm(lang);
   const base = want.split('-')[0];
-  const fitting = voices.filter((v) => norm(v.lang).split('-')[0] === base);
+  const fitting = voices.filter((v) => norm(v.lang).split('-')[0] === base && !silent.has(v.voiceURI));
   const saved = read(VOICE_KEY);
   return fitting.find((v) => v.voiceURI === saved)
     ?? fitting.find((v) => norm(v.lang) === want && v.localService)
@@ -59,7 +63,8 @@ const spoken = (text) => String(text).replace(/[()]/g, '').replace(/\s*\/\s*/g, 
 // - direkt nach cancel() verschluckt die Ausgabe manchmal das nächste speak() → kurz warten
 // - Stimmen kommen nach dem Start der App erst verzögert → bis 1 s auf „voiceschanged“ warten
 // - eine angehaltene Ausgabe (App war im Hintergrund) bleibt stumm → resume()
-// - Fehler (außer durch eigenes Abbrechen) → einmal neu versuchen
+// - Fehler (außer durch eigenes Abbrechen) oder nach 2 s noch kein Start → einmal neu versuchen,
+//   dann ohne feste Stimme (die Standardstimme des Geräts für die Sprache)
 let lastRequest = 0;
 const voicesReady = () => (voices.length || !canSpeak() ? Promise.resolve() : new Promise((done) => {
   const t = setTimeout(done, 1000);
@@ -76,15 +81,23 @@ export function speak(text, lang = 'en-GB', rate = getRate()) {
   const say = (retry) => {
     if (id !== lastRequest) return;   // inzwischen wurde etwas Neueres angefordert
     const u = new SpeechSynthesisUtterance(spoken(text));
-    const voice = pickVoice(lang);
-    try { u.voice = voice; } catch { /* Sprache reicht */ }
+    const voice = retry ? pickVoice(lang) : null;
+    if (voice) { try { u.voice = voice; } catch { /* Sprache reicht */ } }
     u.lang = voice?.lang ?? lang;
     u.rate = rate;
-    u.onerror = (e) => {
-      if (retry && e.error !== 'interrupted' && e.error !== 'canceled') setTimeout(() => say(false), 250);
+    let started = false;
+    const fallback = () => {
+      if (!retry || started || id !== lastRequest) return;
+      retry = false;
+      if (voice) silent.add(voice.voiceURI);
+      speechSynthesis.cancel();
+      setTimeout(() => say(false), 150);
     };
+    u.onstart = () => { started = true; };
+    u.onerror = (e) => { if (e.error !== 'interrupted' && e.error !== 'canceled') fallback(); };
     if (speechSynthesis.paused) speechSynthesis.resume();
     speechSynthesis.speak(u);
+    setTimeout(fallback, 2000);
   };
   voicesReady().then(() => setTimeout(() => say(true), busy ? 150 : 30));
 }
