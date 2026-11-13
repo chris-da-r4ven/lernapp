@@ -18,7 +18,7 @@ export const hasLevels = (lesson) => Boolean(lesson?.items?.some((it) => it.leve
 export const isBasic = (item) => levelOf(item) === 1;
 
 // Runde mit Aufwärmen: höchstens WARMUP Basis-Aufgaben vorneweg, dann die anspruchsvolleren.
-// Basis füllt nur auf, wenn sonst zu wenig da ist. Für Lektions-Runden (srs.js) und „Jetzt üben“.
+// Basis füllt nur auf, wenn sonst zu wenig da ist. Für Lektions-Runden (srs.js) und den Ausritt.
 // ordered: Kandidaten in Wunsch-Reihenfolge (jeweils mit .item), size: gewünschte Rundengröße.
 export function withWarmup(ordered, size) {
   const basic = (e) => isBasic(e.item);

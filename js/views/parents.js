@@ -152,6 +152,9 @@ export function bindParents(el, rerender) {
 const FEEDBACK_ROWS = 15;
 const avg = (list) => (list.length ? (list.reduce((n, x) => n + x, 0) / list.length).toLocaleString('de-DE', { maximumFractionDigits: 1 }) : '–');
 const modeNames = (mode) => [...new Set(String(mode).split(',').map((id) => modeById(id)?.name ?? id))].join(', ');
+// Rundenart (ab dem Lernweg): Etappe, Ausritt … – ältere Rückmeldungen nach Übungsart.
+const ART_NAMES = { etappe: 'Lernweg-Etappe', koppel: 'Aufwärmen (Koppel)', ausritt: 'Ausritt (Auffrischen)', blitz: 'Blitzrunde', test: 'Test' };
+const kindOfRound = (f) => ART_NAMES[f.art] ?? (f.art === 'frei' ? `Frei üben: ${modeNames(f.mode)}` : modeNames(f.mode) + (f.test ? ' (Test)' : ''));
 
 function feedbackBlock() {
   const list = getState().feedback ?? [];
@@ -159,7 +162,7 @@ function feedbackBlock() {
   // Durchschnitt pro Übungsart – zeigt, was gut ankommt und was sie als nützlich empfindet.
   const byMode = new Map();
   for (const f of list) {
-    const k = modeNames(f.mode) + (f.test ? ' (Test)' : '');
+    const k = kindOfRound(f);
     const m = byMode.get(k) ?? { fun: [], learn: [] };
     if (f.fun) m.fun.push(f.fun);
     if (f.learn) m.learn.push(f.learn);
@@ -178,7 +181,7 @@ function feedbackBlock() {
       <div class="table-wrap"><table class="table">
         <thead><tr><th>Wann</th><th>Was</th><th>Spaß</th><th>Gebracht</th></tr></thead>
         <tbody>${list.slice(-FEEDBACK_ROWS).reverse().map((f) => `
-          <tr><td class="muted">${esc(when(f.at))}</td><td>${esc(f.what)}<br><span class="muted">${esc(modeNames(f.mode))}${f.test ? ' · Test' : ''} · ${f.right}/${f.n} sofort richtig</span></td>
+          <tr><td class="muted">${esc(when(f.at))}</td><td>${esc(f.what)}<br><span class="muted">${esc(kindOfRound(f))} · ${f.right}/${f.n} sofort richtig</span></td>
             <td>${icon('fun', f.fun)}</td><td>${icon('learn', f.learn)}</td></tr>`).join('')}
         </tbody>
       </table></div>

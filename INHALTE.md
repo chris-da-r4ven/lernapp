@@ -75,7 +75,7 @@ abschreiben, nur das Thema und die Art der Aufgabe übernehmen.
   halbe Symbole werden halb gezeichnet).
 - `level` – Schwierigkeit: `1` Basis (🟢, zum Aufwärmen, höchstens 2 pro Runde, Denkaufwand 0,5),
   `2` Fortgeschritten (🔵, Standard, Niveau E), `3` Experte (🟣, über das Buch hinaus, eigener Knopf
-  „Experten-Aufgaben“, nicht in „Jetzt üben“, Test und Medaille, Denkaufwand 1,5). Pro Lektion grob:
+  „Experten-Aufgaben“, nicht im Ausritt, Test und Medaille, Denkaufwand 1,5). Pro Lektion grob:
   wenige Basis, viele Fortgeschritten, ein paar Experte.
 - `denken` – Denkaufwand, wenn er von der Stufe abweicht: `0.3` erkennen, `0.5` Routine, `0.8` mit Hilfe,
   `1` ein Schritt, `1.5` mehrere Schritte, `2` Knobeln. Schwere (Sternchen, Tagesziel) = Antwortform × Denkaufwand,

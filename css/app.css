@@ -482,3 +482,4 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
 .etappe-done { margin: 10px 0; }
 .continue-card { display: block; text-decoration: none; color: var(--text); border: 3px solid var(--primary); }
 .home-actions { display: grid; gap: 12px; }
+.way-done { color: var(--good); font-weight: 700; }

@@ -1,6 +1,6 @@
 // Alle Übungsarten der App – jede ist genau EIN Eintrag in dieser Liste.
 // Daraus leiten sich ab: Knöpfe in der Lektion, Adressen, Sternchen-Gewicht,
-// Reihenfolge in „Jetzt üben“, Markierungen und Fortschrittsseite.
+// Markierungen und Fortschrittsseite.
 //
 // Neue Übungsart (z. B. ein Quiz oder Spiel):
 //   1. Fragetyp schreiben (describe, pair, render – siehe questions.js bzw. math.js).
@@ -17,10 +17,10 @@
 //   label      Knopftext (Funktion der Lektion), short – Kurzform für Markierungen
 //   answer     Antwortform (item) → Faktor, think – Denkaufwand (item) → Faktor; Schwere = answer × think
 //              (Sternchen und Tagesziel, siehe weights.js)
-//   learnOrder Reihenfolge, in der „Jetzt üben“ ein neues Wort durch die Übungsarten führt
+//   learnOrder eindeutige Reihenfolge der Übungsarten (Sortierung)
 //   speech     braucht Sprachausgabe; minItems – mindestens so viele Einträge in der Lektion
 //   usable     welche Einträge sich eignen (z. B. nur mit Beispielsatz)
-//   optIn      nur auf Wunsch (eigener Knopf) – nicht in „Jetzt üben“, kein Medaillen-Abschlag
+//   optIn      nur auf Wunsch (eigener Knopf) – nicht im Ausritt, kein Medaillen-Abschlag
 //   storeAs    Lernstand unter dieser Übungsart ablegen (statt der eigenen id)
 //   question   Fragetyp aus questions.js
 

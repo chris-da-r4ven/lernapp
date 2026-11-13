@@ -43,7 +43,7 @@ export const isSupported = (lesson) => Boolean(lesson && kindOf(lesson) && Array
 export const kindInfo = (lesson) => KINDS[kindOf(lesson)];
 export const unitWord = (lesson, n) => kindInfo(lesson).unit[n === 1 ? 0 : 1];
 
-// Einheit für mehrere Lektionen (z. B. „Jetzt üben“): gleiche Art → deren Wort, sonst „Aufgaben“.
+// Einheit für mehrere Lektionen (z. B. Ausritt): gleiche Art → deren Wort, sonst „Aufgaben“.
 // Grammatik zählt dabei wie Vokabeln (countsAs) – Englisch bleibt „Wörter“.
 export function unitOf(lessons) {
   const kinds = new Set(lessons.map(kindOf));
