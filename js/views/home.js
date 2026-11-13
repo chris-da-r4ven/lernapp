@@ -7,7 +7,7 @@ import { esc, fmt1 } from '../util.js';
 import { updateContent } from '../updates.js';
 import { portrait, bigPortrait } from './portrait.js';
 import { dueSummary } from '../ausritt.js';
-import { etappenFor, nextEtappe, progress, etappeNo, STATIONS } from '../path.js';
+import { etappenFor, nextEtappe, progress, etappeNo, blitzAvailable, STATIONS } from '../path.js';
 import { etappeHref, lessonOpen } from './etappe.js';
 import { lessonKey } from '../lessons.js';
 import { pathEntry } from '../store.js';
@@ -37,7 +37,7 @@ export function homeView(el) {
       </div>
     </section>
 
-    ${hasContent() ? `<div class="home-actions">${continueCard()}${ausrittCard()}</div>` : ''}
+    ${hasContent() ? `<div class="home-actions">${continueCard()}${blitzCard()}${ausrittCard()}</div>` : ''}
 
     <h2 class="section-title">Fächer</h2>
     <section class="tiles">
@@ -148,6 +148,19 @@ function ausrittCard() {
         <strong>Ausritt</strong> <span class="muted small">· Auffrischen</span><br>
         <span class="muted small">${due ? `${countWord(unit, due)} ${due === 1 ? 'ist' : 'sind'} wieder dran` : 'Gerade ist nichts fällig – du kannst trotzdem ausreiten'}</span>
       </span>
+      <span aria-hidden="true">›</span>
+    </a>`;
+}
+
+// ⚡ Blitzrunde – nur, wenn eine verdient ist.
+function blitzCard() {
+  const { stock } = blitzAvailable();
+  if (!stock) return '';
+  return `
+    <a class="card row blitz-card" href="#/blitz">
+      <span class="knobel-icon" aria-hidden="true">⚡</span>
+      <span class="grow"><strong>Blitzrunde</strong>${stock > 1 ? ` <span class="muted small">· ${stock} verdient</span>` : ''}<br>
+        <span class="muted small">8 schnelle Antipp-Aufgaben – Fanny galoppiert mit</span></span>
       <span aria-hidden="true">›</span>
     </a>`;
 }

@@ -296,3 +296,51 @@ export function lessonAccess(sid, lessons, { opened = getState().opened ?? {}, i
   });
   return out;
 }
+
+// --- ⚡ Blitzrunde ------------------------------------------------------------------------
+// Verdient: 1 pro 2 geschaffte Etappen (nach der Übernahme), Vorrat höchstens BLITZ_STOCK.
+// Gespeichert werden nur die gespielten Blitzrunden; der Vorrat wird der Zeit nach nachgerechnet,
+// damit die Obergrenze laufend wirkt (auch über mehrere Geräte).
+export const BLITZ_STOCK = 2;
+export const BLITZ_PER = 2;
+export const BLITZ_SIZE = 8;
+
+// Zeitpunkte geschaffter Etappen: je Lektion jede eigene Gruppe (gleicher Zeitpunkt = eine Etappe) und jede
+// gemischte Etappe. Was mit der einmaligen Übernahme kam (≤ since), zählt nicht.
+export function stageTimes(path = {}, since = 0) {
+  const times = [];
+  for (const e of Object.values(path)) {
+    const learned = new Set(Object.values(e.learned ?? {}).filter((t) => t > since));
+    times.push(...learned, ...Object.values(e.mix ?? {}).filter((t) => t > since));
+  }
+  return times.sort((a, b) => a - b);
+}
+
+export function blitzAvailable({ path = getState().path, since = getState().pathSince ?? 0, blitz = getState().blitz ?? [] } = {}) {
+  const events = [...stageTimes(path, since).map((t) => [t, 1]), ...blitz.map((b) => [b.at, -1])].sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  let stock = 0;
+  let half = 0;
+  for (const [, kind] of events) {
+    if (kind > 0) {
+      half++;
+      if (half === BLITZ_PER) { half = 0; stock = Math.min(BLITZ_STOCK, stock + 1); }
+    } else stock = Math.max(0, stock - 1);
+  }
+  return { stock, toNext: BLITZ_PER - half };
+}
+
+// Antipp-Aufgaben aus geschafften Etappen (gelernte Wörter): Hören & antippen, Form antippen, Mathe mit Auswahl.
+export function blitzTasks(lessons, { pathOf = (sid, l) => pathEntry(lessonKey(sid, l)) } = {}) {
+  const out = [];
+  for (const { sid, lesson } of lessons) {
+    const e = pathOf(sid, lesson);
+    const avail = new Set(modesFor(lesson).map((m) => m.id));
+    for (const it of lesson.items) {
+      if (!has(e.learned, wordId(it))) continue;
+      const mode = ['hoeren-wahl', 'form'].find((m) => avail.has(m) && canUse(m, it))
+        ?? (avail.has('rechnen') && it.choices && canUse('rechnen', it) ? 'rechnen' : null);
+      if (mode) out.push(task(sid, lesson, it, mode));
+    }
+  }
+  return shuffle(out).slice(0, BLITZ_SIZE);
+}

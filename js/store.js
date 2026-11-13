@@ -255,3 +255,9 @@ export function openLesson(lk, at = Date.now()) {
   if (!Object.hasOwn(state.opened, lk)) state.opened[lk] = at;
   save();
 }
+
+// Blitzrunde gespielt (der Vorrat wird in path.js nachgerechnet).
+export function addBlitz(at = Date.now()) {
+  state.blitz = [...(state.blitz ?? []), { id: `${deviceId()}-${at.toString(36)}`, at }].slice(-500);
+  save();
+}

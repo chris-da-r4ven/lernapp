@@ -24,7 +24,8 @@ const RETRY_GAP = 3;
 // geschafft speichern). Kann HTML für einen Hinweis in der Bilanz zurückgeben.
 // title, againLabel: Überschrift und Hauptknopf der Bilanz.
 // once: jede Aufgabe nur einmal, falsche kommen nicht wieder (Probe „Ich kann das schon“) – mit Hilfe, ohne Testergebnis.
-export function runRound(el, { tasks, test = false, once = false, chosen = true, art = test ? 'test' : 'frei', onComplete = null, title, againLabel, onAgain, onBack, backLabel }) {
+// onProgress(done, total): nach jeder Aufgabe (z. B. Fanny auf der Rennbahn weiterlaufen lassen).
+export function runRound(el, { tasks, test = false, once = false, onProgress = null, chosen = true, art = test ? 'test' : 'frei', onComplete = null, title, againLabel, onAgain, onBack, backLabel }) {
   const queue = tasks.map((t) => ({ ...t, attempts: 0 }));
   const total = queue.length;
   let done = 0;
@@ -92,6 +93,7 @@ export function runRound(el, { tasks, test = false, once = false, chosen = true,
   };
 
   function next() {
+    onProgress?.(done, total);
     if (!queue.length) return summary();
     const task = queue[0];
     const q = questionFor(task.dir);

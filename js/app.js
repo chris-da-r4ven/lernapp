@@ -13,6 +13,7 @@ import { speechTestView } from './views/speech-test.js';
 import { ausrittView } from './views/ausritt.js';
 import { testView } from './views/test.js';
 import { etappeView } from './views/etappe.js';
+import { blitzView } from './views/blitz.js';
 import { setRenderer, practicing } from './nav.js';
 import { updateContent } from './updates.js';
 
@@ -23,6 +24,7 @@ const routes = [
   [/^#\/ueben\/([^/]+)\/([^/]+)\/([a-z-]+)(\/alle)?$/, practiceView, 'home'],   // Übungsart wird in der Ansicht geprüft
   [/^#\/etappe\/([^/]+)\/([^/]+)\/(\d{1,3})(?:\/(probe))?(?:\?.*)?$/, etappeView, 'home'],
   [/^#\/ausritt$/, ausrittView, 'home'],
+  [/^#\/blitz$/, blitzView, 'home'],
   [/^#\/jetzt$/, () => { location.replace('#/ausritt'); }, 'home'],   // alte Adresse (Lesezeichen)
   [/^#\/test\/([^/]+)(?:\/([^/]+))?$/, testView, 'home'],
   [/^#\/statistik$/, statsView, 'statistik'],

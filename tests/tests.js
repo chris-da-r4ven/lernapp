@@ -20,7 +20,7 @@ import { kindOf, targetSide, towardTarget, langOf, KINDS, isSupported, masteryMo
 import { APP_VERSION } from '../js/version.js';
 import { dayKey } from '../js/util.js';
 import { sanitizeState, SCHEMA, LEGACY_DEVICE } from '../js/validate.js';
-import { chunk, etappenFor, progress, nextEtappe, tasksForEtappe, interleave, spreadModes, adoptable, wordId, lessonAccess } from '../js/path.js';
+import { chunk, etappenFor, progress, nextEtappe, tasksForEtappe, interleave, spreadModes, adoptable, wordId, lessonAccess, blitzAvailable } from '../js/path.js';
 
 const results = [];
 let group = '';
@@ -370,6 +370,14 @@ try {
     eq(acc({ opened: { 't/b': 5 } }), 'open,open,secret,hidden,open');
     const dated = [{ id: 'a' }, { id: 'b', neu: '2026-11-10' }, { id: 'c' }];
     eq(dated.map((l) => lessonAccess('t', dated, ctx()).get(l.id)).join(','), 'open,open,secret');
+  });
+  await test('Blitzrunde: 1 pro 2 Etappen, Vorrat höchstens 2, Übernahme zählt nicht', () => {
+    const path = (stamps) => ({ 'e/l': { learned: Object.fromEntries(stamps.map((t, i) => [`w${i}`, t])), mix: {} } });
+    const v = (stamps, blitz = [], since = 0) => blitzAvailable({ path: path(stamps), since, blitz }).stock;
+    eq([v([10]), v([10, 20]), v([10, 20, 30, 40, 50, 60, 70, 80]), v([10, 20, 30, 40, 50, 60], [{ id: 'b', at: 65 }]),
+      v([10, 20, 30, 40], [{ id: 'b', at: 15 }]), v([5, 5, 5, 10, 20], [], 5)],
+    [0, 1, 2, 1, 2, 1]);
+    eq(v([10, 10, 10, 20]), 1, 'gleicher Zeitpunkt = eine Etappe');
   });
   await test('Übernahme: Wörter mit Abruf-Fach ≥ 2 gelten als gelernt', () => {
     const L = vocab(3);

@@ -5,7 +5,7 @@
 // sonst geht es direkt mit der Etappe weiter, ohne die schon gekonnten Wörter (?ohne=…, nur für diese Runde).
 
 import { getSubject, getLesson } from '../content.js';
-import { etappenFor, tasksForEtappe, nextEtappe, progress, wordId, pathModes, lessonAccess, STATIONS, RETRY_BELOW } from '../path.js';
+import { etappenFor, tasksForEtappe, nextEtappe, progress, wordId, pathModes, lessonAccess, blitzAvailable, STATIONS, RETRY_BELOW } from '../path.js';
 import { lessonKey, kindOf, targetSide } from '../lessons.js';
 import { markLearned, markMix, setTurnier } from '../store.js';
 import { itemKey } from '../srs.js';
@@ -47,7 +47,10 @@ export function etappeView(el, sid, lid, nr, probe) {
   const box = el.querySelector('.exercise');
 
   // Nach dem Speichern: wie geht es weiter? (Hinweis für die Bilanz)
+  const blitzBefore = blitzAvailable().stock;
   const afterNote = (extra = '') => {
+    const blitz = blitzAvailable().stock > blitzBefore ? '<p class="big">⚡ Blitzrunde verdient! Du findest sie auf der Startseite.</p>' : '';
+    extra = blitz + extra;
     const after = etappenFor(sid, lesson);
     const p = progress(after);
     const next = nextEtappe(after);
