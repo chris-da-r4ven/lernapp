@@ -20,6 +20,8 @@ import { askTyped, askChoice } from './answer.js';
 export { check } from './answer.js';   // für den Selbsttest
 
 const other = otherSide;
+// Antworten der anderen Wörter der Lektion – getippt zählen sie nicht als „Fast richtig“ (where/were).
+const othersOf = (task, side) => task.lesson.items.filter((it) => it !== task.item).map((it) => it[side]).filter(Boolean);
 
 // --- Schreiben und Diktat ----------------------------------------------------
 
@@ -53,6 +55,7 @@ export const writeQuestion = {
       placeholder: listen ? `Was hörst du? Auf ${task.lesson.sides[to]} …` : `${task.lesson.sides[to]} schreiben …`,
       answer: item[to],
       alts: item[to + 'Alt'],
+      others: othersOf(task, to),
       api, test, again: task.attempts > 0,
       solution: () => (listen ? `<p class="meaning muted">${esc(item[to])} = ${esc(item[from])}</p>` : ''),
     });
@@ -128,6 +131,7 @@ export const gapQuestion = {
       placeholder: `Fehlendes Wort auf ${task.lesson.sides[en]} …`,
       answer: g.answer,
       alts: g.alts,
+      others: othersOf(task, en),
       api, test, again: task.attempts > 0,
       solution: () => `
         <div class="gap-solution">

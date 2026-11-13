@@ -11,6 +11,7 @@
   --bad: #d64545;
   --bad-bg: #fbe7e7;
   --warn: #e0a100;
+  --near: #8a5d00;
   --neu: #c9cede;
   --star: #f5b400;
   --radius: 16px;
@@ -30,6 +31,7 @@
     --good-bg: #1b3326;
     --bad: #ef6b6b;
     --bad-bg: #3a1f22;
+    --near: #f0c45a;
     --neu: #4a4f66;
     --shadow: none;
     color-scheme: dark;
@@ -237,6 +239,9 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
 .answer:focus { outline: none; border-color: var(--primary); }
 .answer[readonly] { opacity: 0.8; }
 .copy-form { margin-top: 14px; }
+.result.near { color: var(--near); }
+.cover-hint { margin: 10px 0 0; }
+.cover-actions { margin-top: 6px; }
 .feedback .actions { justify-content: center; }
 .result { font-size: 1.3rem; font-weight: 700; margin: 18px 0 6px; }
 .result.good { color: var(--good); }

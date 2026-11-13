@@ -118,6 +118,24 @@ try {
   });
   await test('Satz ohne Lücke ergibt nichts (kein Absturz)', () => { eq(parseGap('No gap here.'), null); eq(parseGap(undefined), null); });
 
+  section('Fast richtig');
+  await test('ein Buchstabe falsch, fehlt, zu viel, vertauscht → fast richtig', () => {
+    eq(['frend', 'friendd', 'freind', 'frieno'].map((t) => check(t, 'friend').near), [true, true, true, true]);
+  });
+  await test('zwei Fehler → nicht fast richtig', () => eq(check('frnd', 'friend').near, false));
+  await test('kurze Wörter (unter 4 Buchstaben) nie fast richtig', () => {
+    eq([check('cat', 'hat').near, check('an', 'on').near, check('tn', 'ten').near], [false, false, false]);
+  });
+  await test('nur Groß/klein → fast richtig', () => eq(check('monday', 'Monday').near, true));
+  await test('Antwort eines anderen Worts der Lektion → nicht fast richtig', () => {
+    eq([check('were', 'where', [], null, ['were']).near, check('were', 'where').near], [false, true]);
+  });
+  await test('Varianten und Teile zählen mit', () => {
+    eq([check('Freundn', 'Freund / Freundin').near, check('lisen', 'to listen', ['listen']).near], [true, true]);
+  });
+  await test('Mehrwort-Ausdruck: fehlendes Leerzeichen ist fast richtig', () => eq(check('goodbye', 'good bye').near, true));
+  await test('Mathe (eigene Vereinheitlichung): nie fast richtig', () => eq(check('4801', '4800', [], mathNorm).near, undefined));
+
   // --- Sternchen und Stufen ---------------------------------------------------------
   section('Sternchen, Stufen, Tagesziel-Gewicht');
   await test('Glitzer-Stufen 100 / 300 / 1000 / 4500', () => eq([0, 99, 100, 300, 1000, 4500].map(levelFor), [1, 1, 2, 3, 5, 10]));
@@ -128,6 +146,14 @@ try {
     eq(record('t/a/x|ab', { correct: true, firstTry: true, weight: 1 }), 5);
     eq(record('t/a/y|ab', { correct: true, firstTry: false, weight: 1 }), 3);
     eq(record('t/a/z|hoeren-wahl', { correct: true, firstTry: true, weight: 0.225 }), 1);
+  });
+  await test('Fast richtig korrigiert: Fach bleibt, neues Wort Fach 1, Punkte wie 2. Versuch', () => {
+    record('t/h/a|ab', { correct: true, firstTry: true }); record('t/h/a|ab', { correct: true, firstTry: true });
+    eq(itemState('t/h/a|ab').box, 2, 'vorher');
+    eq(record('t/h/a|ab', { correct: true, firstTry: false, hold: true, weight: 1 }), 3);
+    eq(itemState('t/h/a|ab').box, 2, 'Fach bleibt');
+    record('t/h/b|ab', { correct: true, firstTry: false, hold: true });
+    eq(itemState('t/h/b|ab').box, 1, 'neues Wort');
   });
   await test('Tagesziel: Schreiben zählt 1, Antippen 0,2, auch falsche Antworten', () => {
     replaceState(empty());

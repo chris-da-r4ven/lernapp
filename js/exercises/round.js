@@ -51,10 +51,11 @@ export function runRound(el, { tasks, test = false, chosen = true, onAgain, onBa
   }
 
   const api = {
-    right() {
+    // hold: „Fast richtig“ selbst korrigiert – zählt als richtig, aber nicht als „auf Anhieb“, Fach bleibt.
+    right({ hold = false } = {}) {
       const task = queue[0];
-      const isFirst = task.attempts === 0;
-      points += record(task.key, { correct: true, firstTry: isFirst, weight: weight(task), effort: weightFor(task.dir, task.item) });
+      const isFirst = task.attempts === 0 && !hold;
+      points += record(task.key, { correct: true, firstTry: isFirst, hold, weight: weight(task), effort: weightFor(task.dir, task.item) });
       if (isFirst) firstTry++;
       queue.shift();
       done++;

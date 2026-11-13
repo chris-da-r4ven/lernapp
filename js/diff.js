@@ -26,6 +26,31 @@ function table(a, b) {
   return d;
 }
 
+// Abstand mit Vertauschung benachbarter Buchstaben als EIN Fehler (Damerau, „optimal string alignment“).
+// Für „Fast richtig“: Bei distance() oben kostet „freind“ statt „friend“ zwei Schritte.
+export function osa(a, b) {
+  a = [...a]; b = [...b];
+  const d = Array.from({ length: a.length + 1 }, (_, i) => [i, ...Array(b.length).fill(0)]);
+  for (let j = 1; j <= b.length; j++) d[0][j] = j;
+  for (let i = 1; i <= a.length; i++) {
+    for (let j = 1; j <= b.length; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + cost);
+      if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1);
+    }
+  }
+  return d[a.length][b.length];
+}
+
+// Genau ein Buchstabe daneben (fehlt, zu viel, falsch, vertauscht) – oder nur Groß/Klein falsch.
+// Kurze Wörter (unter NEAR_MIN Buchstaben) nie: in/on, a/an, cat/hat wären sonst „fast richtig“.
+export const NEAR_MIN = 4;
+export function nearMiss(typed, target) {
+  if ([...target].length < NEAR_MIN || typed === target) return false;
+  if (typed.toLowerCase() === target.toLowerCase()) return true;
+  return osa(typed, target) === 1;
+}
+
 export function align(typed, target) {
   const a = [...typed];
   const b = [...target];

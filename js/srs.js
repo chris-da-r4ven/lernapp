@@ -38,12 +38,13 @@ export function status(st) {
 // Ein Ergebnis eintragen. firstTry: ohne vorherigen Fehler in dieser Runde.
 // typed: die falsche Schreibweise (wird für "schwere Wörter" gemerkt).
 // weight: Sternchen-Faktor (Übungsart, ggf. weniger bei Medaille), effort: zählt fürs Tagesziel.
-export function record(key, { correct, firstTry, typed, weight = 1, effort = 1 }) {
+// hold: richtig nach „Fast richtig“ – das Fach bleibt (neues Wort: Fach 1), kein Aufstieg, kein Absturz.
+export function record(key, { correct, firstTry, hold = false, typed, weight = 1, effort = 1 }) {
   const st = { ...itemState(key) };
   const now = Date.now();
   if (correct) {
     st.right++;
-    st.box = firstTry ? Math.min(st.box + 1, 5) : 1;
+    st.box = hold ? Math.max(st.box, 1) : firstTry ? Math.min(st.box + 1, 5) : 1;
     st.due = now + INTERVAL_DAYS[st.box] * DAY;
     addPoints(pointsFor(firstTry, weight));
   } else {
