@@ -20,6 +20,7 @@ import { kindOf, targetSide, towardTarget, langOf, KINDS, isSupported, masteryMo
 import { APP_VERSION } from '../js/version.js';
 import { dayKey } from '../js/util.js';
 import { sanitizeState, SCHEMA, LEGACY_DEVICE } from '../js/validate.js';
+import { chunk, etappenFor, progress, nextEtappe, tasksForEtappe, interleave, spreadModes, adoptable, wordId } from '../js/path.js';
 
 const results = [];
 let group = '';
@@ -284,6 +285,57 @@ try {
     migrateLessons('t', { alt: 'neu' });
     eq(getState().path, { 't/neu': { learned: { v: 2, w: 1 }, mix: {} } });
   });
+  section('Lernweg (path.js)');
+  const vocab = (n, extra = {}) => ({ id: 'v', kind: 'vokabeln', sides: { a: 'Deutsch', b: 'Englisch' },
+    items: Array.from({ length: n }, (_, i) => ({ id: `w${i + 1}`, a: `Wort ${i + 1}`, b: `word${i + 1}`, ex: `A {word${i + 1}} here.` })), ...extra });
+  const mathL = (levels) => ({ id: 'm', kind: 'mathe', items: levels.map((l, i) => ({ id: `a${i + 1}`, a: `${i}+1`, b: `${i + 1}`, level: l })) });
+  const none = () => ({ box: 0, due: 0, right: 0, wrong: 0 });
+  const E = (learned = [], mix = []) => ({ learned: Object.fromEntries(learned.map((w) => [w, 1])), mix: Object.fromEntries(mix.map((m) => [m, 1])) });
+  await test('Gruppen möglichst gleich groß (11 → 6+5, 13 → 5+4+4, 30 → 5×6)', () => {
+    const sizes = (n) => chunk(Array.from({ length: n }), 6).map((g) => g.length);
+    eq([sizes(11), sizes(13), sizes(30), sizes(0)], [[6, 5], [5, 4, 4], [6, 6, 6, 6, 6], []]);
+  });
+  await test('Etappen: 11 Wörter → Pflege, Dressur, Springen; 30 Wörter → 7 Etappen', () => {
+    eq(etappenFor('t', vocab(11), { entry: E(), stateOf: none }).map((s) => s.station), ['pflege', 'dressur', 'springen']);
+    const st = etappenFor('t', vocab(30), { entry: E(), stateOf: none });
+    eq([st.length, st.map((s) => s.type).join(',')], [7, 'gruppe,gruppe,gruppe,springen,gruppe,gruppe,springen']);
+  });
+  await test('nur die erste offene Etappe ist frei, geschaffte zählen', () => {
+    const st = etappenFor('t', vocab(11), { entry: E(['w1', 'w2', 'w3', 'w4', 'w5', 'w6']), stateOf: none });
+    eq([st.map((s) => s.done), st.map((s) => s.open), progress(st), nextEtappe(st).station], [[true, false, false], [true, true, false], { done: 1, total: 3, complete: false }, 'dressur']);
+  });
+  await test('gelernte Wörter bilden die ersten Gruppen – neue Wörter ändern Geschafftes nicht', () => {
+    const entry = E(['w1', 'w2', 'w3', 'w4', 'w5', 'w6'], ['springen-1-6']);
+    const before = etappenFor('t', vocab(6), { entry, stateOf: none });
+    const after = etappenFor('t', vocab(9), { entry, stateOf: none });
+    eq([progress(before).complete, after[0].done, after[0].items.map(wordId), after[1].items.map(wordId), after[2].done, nextEtappe(after).n],
+      [true, true, ['w1', 'w2', 'w3', 'w4', 'w5', 'w6'], ['w7', 'w8', 'w9'], false, 1]);
+  });
+  await test('Gruppe: jedes Wort einmal abrufen, 2 Wörter der vorigen Gruppe beigemischt', () => {
+    const L = vocab(11);
+    const st = etappenFor('t', L, { entry: E(), stateOf: none });
+    const tasks = tasksForEtappe('t', L, st[1], st, { stateOf: none });
+    const recall = tasks.filter((t) => t.dir === 'ab').map((t) => t.item.id);
+    const fromPrev = tasks.filter((t) => st[0].items.includes(t.item)).length;
+    eq([new Set(recall).size >= 5, fromPrev, tasks.every((t) => t.key.startsWith('t/v/'))], [true, 2, true]);
+  });
+  await test('Verschränken: Abrufen kurz nach dem Erkennen', () => eq(interleave(['E1', 'E2', 'E3'], ['A1', 'A2', 'A3']), ['E1', 'E2', 'A1', 'E3', 'A2', 'A3']));
+  await test('höchstens zwei gleiche Übungsarten hintereinander, wenn möglich', () => {
+    const t = (d) => ({ dir: d });
+    eq(spreadModes(['a', 'a', 'a', 'b', 'a'].map(t)).map((x) => x.dir).join(''), 'aabaa');
+    eq(spreadModes(['a', 'a', 'a'].map(t)).map((x) => x.dir).join(''), 'aaa');
+  });
+  await test('Mathe: Koppel nur solange Basis nicht sicher, Experte nicht im Weg', () => {
+    const L = mathL([1, 1, 2, 2, 2, 3]);
+    const st = etappenFor('t', L, { entry: E(), stateOf: none });
+    const safe = etappenFor('t', L, { entry: E(), stateOf: () => ({ box: 3 }) });
+    eq([st.map((s) => s.type).join(','), st[0].optional, st[1].open, st[1].items.length, safe[0].type, progress(st).total], ['koppel,gruppe,springen', true, true, 3, 'gruppe', 2]);
+  });
+  await test('Übernahme: Wörter mit Abruf-Fach ≥ 2 gelten als gelernt', () => {
+    const L = vocab(3);
+    const st = (k) => ({ box: k.includes('/w1|ab') ? 2 : k.includes('/w2|hoeren-wahl') ? 5 : 0 });
+    eq(adoptable([{ sid: 't', lesson: L }], { stateOf: st }), { 't/v': ['w1'] });
+  });
   await test('neueres Format wird erkannt (Sicherung lehnt es ab)', () => {
     eq([sanitizeState({ v: SCHEMA + 1 }).newer, sanitizeState({ v: SCHEMA }).newer, sanitizeState({}).newer], [true, false, false]);
   });
@@ -333,7 +385,7 @@ try {
   await test('Lern-Reihenfolge eindeutig', () => eq(new Set(MODES.map((m) => m.learnOrder)).size, MODES.length));
   await test('vereinbarte Gewichte (Sternchen und Tagesziel)', () => eq(
     Object.fromEntries(MODES.map((m) => [m.id, Math.round(weightFor(m.id, m.id === 'experte' ? { level: 3 } : {}) * 100) / 100])),
-    { ab: 1, ba: 1, hoeren: 1.2, 'hoeren-wahl': 0.22, satz: 0.8, form: 0.33, rechnen: 1, experte: 1.5 },
+    { ab: 1, ba: 1, hoeren: 1.2, 'hoeren-wahl': 0.22, satz: 0.8, form: 0.33, 'form-tippen': 0.5, rechnen: 1, experte: 1.5 },
   ));
   await test('Lernstand-Kennungen unverändert (ab, ba, hoeren, hoeren-wahl, satz, form, rechnen, experte)', () =>
     ok(['ab', 'ba', 'hoeren', 'hoeren-wahl', 'satz', 'form', 'rechnen', 'experte'].every((id) => modeById(id)), 'Kennung fehlt'));

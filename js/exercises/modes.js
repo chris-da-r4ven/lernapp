@@ -24,7 +24,7 @@
 //   storeAs    Lernstand unter dieser Übungsart ablegen (statt der eigenen id)
 //   question   Fragetyp aus questions.js
 
-import { writeQuestion, chooseQuestion, gapQuestion, formQuestion, parseGap, CHOICE_OPTIONS } from './questions.js';
+import { writeQuestion, chooseQuestion, gapQuestion, formQuestion, formTypedQuestion, parseGap, CHOICE_OPTIONS } from './questions.js';
 import { ANSWER, THINK, choiceFactor } from '../weights.js';
 import { mathQuestion } from './math.js';
 import { targetSide } from '../lessons.js';
@@ -119,6 +119,19 @@ export const MODES = [
     learnOrder: 2,
     usable: (item) => Boolean(parseGap(item.ex) && item.choices?.length),
     question: formQuestion,
+  },
+  {
+    id: 'form-tippen',
+    name: 'Form eintippen',
+    kinds: ['grammatik'],
+    group: 'form',
+    label: () => '✍️ Richtige Form eintippen',
+    short: () => '✍️ Form',
+    answer: () => ANSWER.tippen,
+    think: () => THINK.routine,
+    learnOrder: 9,
+    usable: (item) => Boolean(parseGap(item.ex) && item.choices?.length),
+    question: formTypedQuestion,
   },
   {
     ...MATH,

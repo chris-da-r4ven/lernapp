@@ -182,3 +182,28 @@ export const formQuestion = {
     });
   },
 };
+
+// --- Grammatik: richtige Form selbst eintippen (form-tippen) -------------------------
+// Gleiche Sätze wie formQuestion, aber ohne Auswahl – die Form wird geschrieben.
+export const formTypedQuestion = {
+  describe: () => '✍️ Form eintippen',
+  pair: formQuestion.pair,
+  render(card, task, api, { test }) {
+    const item = task.item;
+    const g = parseGap(item.ex);
+    const atStart = !g.before.trim();
+    const lang = langOf(task.lesson);
+    card.innerHTML = `
+      <p class="gap-sentence">${esc(g.before)}<span class="gap">?</span>${esc(g.after)}</p>
+      ${item.exDe ? `<p class="muted small">${esc(item.exDe)}</p>` : ''}
+      <div class="answer-area"></div>`;
+    askTyped(card.querySelector('.answer-area'), {
+      placeholder: 'Richtige Form …',
+      answer: atStart ? cap(g.answer) : g.answer,
+      alts: [g.answer, ...(g.alts ?? [])],
+      api, test, again: task.attempts > 0,
+      solution: () => `<p class="gap-full">${esc(g.before)}<strong>${esc(g.answer)}</strong>${esc(g.after)}</p>`,
+      onAnswered: () => speak(g.full, lang),
+    });
+  },
+};

@@ -1,14 +1,15 @@
 {
-  "version": 20,
-  "updated": "2026-11-12",
+  "version": 21,
+  "updated": "2026-11-13",
   "hash": "5edb3837a2c8abf9",
-  "minApp": 3,
+  "minApp": 4,
   "app": {
     "modes": [
       "ab",
       "ba",
       "experte",
       "form",
+      "form-tippen",
       "hoeren",
       "hoeren-wahl",
       "rechnen",
