@@ -1,5 +1,6 @@
 // ⚡ Blitzrunde: 8 schnelle Antipp-Aufgaben aus geschafften Etappen. Keine Uhr, keine Wertung –
-// die Rennbahn ist nur Kulisse: Fanny galoppiert mit jeder gelösten Aufgabe ein Stück weiter.
+// die Rennbahn ist nur Kulisse: Fanny galoppiert mit jeder gelösten Aufgabe ein Stück weiter
+// und springt über ein Hindernis nach 5 gelösten Aufgaben und im Ziel (Wunsch der Tochter).
 
 import { allLessons } from '../content.js';
 import { blitzAvailable, blitzTasks } from '../path.js';
@@ -15,6 +16,7 @@ export function blitzView(el) {
     <a class="back" href="#/">← Start</a>
     <div class="race" aria-hidden="true">
       <div class="race-sky"></div><div class="race-hills"></div><div class="race-fence"></div><div class="race-track"></div>
+      <div class="race-hurdle"><i></i><i></i></div>
       <div class="race-fanny">${fannyPixel(84)}</div>
     </div>
     <p class="muted small race-note">Keine Uhr, keine Wertung – Fanny galoppiert nur als Kulisse mit.</p>
@@ -32,15 +34,27 @@ export function blitzView(el) {
   const fanny = el.querySelector('.race-fanny');
   let lastDone = 0;
   const race = el.querySelector('.race');
+  const hurdle = el.querySelector('.race-hurdle');
+  const JUMP_AT = 5;
+  const posOf = (done, total) => 4 + (done / total) * 78;
+  // Hindernis zwischen alter und neuer Stelle aufstellen, Fanny springt darüber
+  const jump = (from, to) => {
+    hurdle.style.left = `${(from + to) / 2 + 6}%`;
+    race.classList.remove('jump'); void race.offsetWidth; race.classList.add('jump');
+  };
   runRound(box, {
+    trail: false,   // die Rennbahn ist hier die Kulisse
     tasks,
     chosen: false,
     art: 'blitz',
     title: 'Ziel erreicht! ⚡',
     onProgress: (done, total) => {
-      fanny.style.left = `${4 + (done / total) * 78}%`;
+      fanny.style.left = `${posOf(done, total)}%`;
       // nur bei einer neu gelösten Aufgabe galoppieren, nicht nach einem Fehler
-      if (done > lastDone) { race.classList.remove('gallop'); void race.offsetWidth; race.classList.add('gallop'); }
+      if (done > lastDone) {
+        if (done === Math.min(JUMP_AT, total - 1) || done === total) jump(posOf(lastDone, total), posOf(done, total));
+        else { race.classList.remove('gallop'); void race.offsetWidth; race.classList.add('gallop'); }
+      }
       lastDone = done;
     },
     onComplete: () => { addBlitz(); return ''; },
