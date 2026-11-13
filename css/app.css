@@ -532,8 +532,10 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
 @media (prefers-reduced-motion: reduce) { .hof-st.now { animation: none; } }
 
 /* Fachseite: Banner und Stallboxen (oben offen = Lektion offen, ganz zu = kommt als Nächstes) */
-.fach-banner { position: relative; height: 96px; border-radius: 18px; overflow: hidden; background: #bfe3ff; margin: 4px 0 10px; }
+.fach-banner { position: relative; aspect-ratio: 4 / 1; min-height: 96px; max-height: 240px; border-radius: 18px; overflow: hidden; background: #bfe3ff; margin: 4px 0 10px; }
 .fach-banner img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 52%; }
+.fach-banner.banner-own { aspect-ratio: 5 / 1; }   /* Bild ist 5:1 – auf Tablet und Desktop ganz zu sehen */
+.fach-banner.banner-own img { object-position: 62% 100%; }
 .fach-banner h1 { position: absolute; left: 12px; bottom: 10px; margin: 0; background: #fffffff0; color: #1d2233; padding: 4px 14px; border-radius: 999px; font-size: 1.3rem; }
 .stall-group { margin: 18px 0 8px; font-size: 0.95rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
 .stalls { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }

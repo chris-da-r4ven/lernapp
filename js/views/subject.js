@@ -74,7 +74,7 @@ export function subjectView(el, sid) {
 
   el.innerHTML = `
     <a class="back" href="#/">← Start</a>
-    <div class="fach-banner"><img src="img/hof-neutral.svg" alt=""><h1>${esc(subject.icon ?? '')} ${esc(subject.name)}</h1></div>
+    <div class="fach-banner${Object.hasOwn(BANNERS, sid) ? ` ${BANNERS[sid]}` : ''}"><img src="${Object.hasOwn(BANNERS, sid) ? `img/banner-${sid}.svg` : 'img/hof-neutral.svg'}" alt=""><h1>${esc(subject.icon ?? '')} ${esc(subject.name)}</h1></div>
     <p class="muted small">${esc(MEDAL_RULE)}</p>
     ${[...groups].map(([name, list]) => {
       const open = list.filter((x) => !x.medal.medal);
@@ -92,6 +92,10 @@ export function subjectView(el, sid) {
       <a class="btn" href="#/test/${encodeURIComponent(sid)}">📝 Test-Modus${testLabel ? ` – ${esc(testLabel)}` : ''}</a>
     </div>`;
 }
+
+// Fächer mit eigenem Banner (img/banner-<fach>.svg aus tools/hofkarte), sonst der Hof. Feste Liste:
+// Bildadressen nie aus Inhaltsdaten.
+const BANNERS = { englisch: 'banner-own' };
 
 // Symbol der Lektion (Feld "icon"), sonst nach Art
 const KIND_ICON = { vokabeln: '📖', mathe: '🔢', grammatik: '🧩' };
