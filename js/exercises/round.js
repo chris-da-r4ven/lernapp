@@ -5,6 +5,7 @@
 // Medaillen-Regeln: medal.js · Hinweise in der Bilanz: round-notes.js · Bilanz: summary.js
 
 import { esc } from '../util.js';
+import { fannyPixel } from '../fanny-pixel.js';
 import { record, roundBonus, MASTERED_FACTOR, MEDAL_BONUS } from '../srs.js';
 import { weightFor, questionFor, modeById } from './registry.js';
 import { getState, addPoints, save, streak } from '../store.js';
@@ -25,7 +26,8 @@ const RETRY_GAP = 3;
 // title, againLabel: Überschrift und Hauptknopf der Bilanz.
 // once: jede Aufgabe nur einmal, falsche kommen nicht wieder (Probe „Ich kann das schon“) – mit Hilfe, ohne Testergebnis.
 // onProgress(done, total): nach jeder Aufgabe (z. B. Fanny auf der Rennbahn weiterlaufen lassen).
-export function runRound(el, { tasks, test = false, once = false, onProgress = null, chosen = true, art = test ? 'test' : 'frei', onComplete = null, title, againLabel, onAgain, onBack, backLabel }) {
+// trail: Fortschritt als Sandweg mit Pixel-Fanny (aus, wenn die Seite schon eine eigene Kulisse hat).
+export function runRound(el, { tasks, test = false, once = false, onProgress = null, chosen = true, art = test ? 'test' : 'frei', trail = true, onComplete = null, title, againLabel, onAgain, onBack, backLabel }) {
   const queue = tasks.map((t) => ({ ...t, attempts: 0 }));
   const total = queue.length;
   let done = 0;
@@ -92,16 +94,34 @@ export function runRound(el, { tasks, test = false, once = false, onProgress = n
     },
   };
 
+  // Sandweg: Fanny steht beim letzten Stand und trabt nach dem Zeichnen zum neuen (nur nach einer gelösten Aufgabe).
+  let shownPct = 0;
+  const progressHtml = (pct) => (trail
+    ? `<div class="trail" aria-hidden="true"><div class="trail-way"></div><span class="trail-goal">🏁</span>
+        <div class="trail-in"><div class="trail-done" style="width:${shownPct}%"></div>
+        <div class="trail-fanny" style="left:${shownPct}%">${fannyPixel(52)}</div></div></div>`
+    : `<div class="round-progress"><div style="width:${pct}%"></div></div>`);
+  function moveTrail(pct) {
+    if (!trail || pct === shownPct) return;
+    shownPct = pct;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      el.querySelector('.trail-done')?.style.setProperty('width', `${pct}%`);
+      el.querySelector('.trail-fanny')?.style.setProperty('left', `${pct}%`);
+    }));
+  }
+
   function next() {
     onProgress?.(done, total);
     if (!queue.length) return summary();
     const task = queue[0];
     const q = questionFor(task.dir);
+    const pct = (done / total) * 100;
     el.innerHTML = `
-      <div class="round-progress"><div style="width:${(done / total) * 100}%"></div></div>
+      ${progressHtml(pct)}
       <p class="muted small">${done} von ${total} · ${test ? '📝 Test · ' : ''}${esc(q.describe(task))}</p>
       <div class="card prompt-card"></div>`;
     q.render(el.querySelector('.prompt-card'), task, api, { test });
+    moveTrail(pct);
   }
 
   function summary() {

@@ -507,6 +507,18 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
 @keyframes race-scroll { from { transform: translateX(0); } to { transform: translateX(-160px); } }
 @keyframes hop { 50% { transform: translateY(-6px); } }
 .race-note { text-align: center; margin: 0 0 8px; }
+/* Sprung über ein Hindernis (nach 5 gelösten Aufgaben und im Ziel) */
+.race > .race-hurdle { left: 50%; right: auto; bottom: 22px; width: 44px; height: 40px; opacity: 0; transform: translateX(-50%); }
+.race-hurdle i { position: absolute; left: 0; right: 0; height: 7px; background: repeating-linear-gradient(90deg, #e5484d 0 11px, #ffffff 11px 22px); }
+.race-hurdle i:first-child { top: 6px; } .race-hurdle i:last-child { top: 22px; }
+.race-hurdle::before, .race-hurdle::after { content: ''; position: absolute; top: 0; bottom: 0; width: 5px; background: #ffffff; }
+.race-hurdle::before { left: -3px; } .race-hurdle::after { right: -3px; }
+.race.jump .race-hurdle { animation: hurdle-show 1.6s ease-out forwards; }
+.race.jump .race-fanny svg { animation: big-jump 0.75s ease-in-out; }
+.race.jump .race-hills { animation: race-scroll 0.9s ease-out; }
+@keyframes big-jump { 0% { transform: none; } 40% { transform: translateY(-46px) rotate(-12deg); } 70% { transform: translateY(-30px) rotate(6deg); } 100% { transform: none; } }
+@keyframes hurdle-show { 0% { opacity: 0; } 10%, 70% { opacity: 1; } 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .race.jump .race-fanny svg, .race.jump .race-hills { animation: none; } }
 @media (prefers-reduced-motion: reduce) {
   .race.gallop .race-hills, .race.gallop .race-fence, .race.gallop .race-fanny svg { animation: none; }
   .race > .race-fanny { transition: none; }
@@ -560,3 +572,54 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
 .stall.locked { filter: saturate(0.5) brightness(0.85); }
 .stall:focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
 .mastered .stalls { margin-top: 4px; }
+
+/* Aufgaben: fröhlicher und auf dem Tablet größer (ruhige Kulisse, der Inhalt bleibt im Mittelpunkt) */
+.prompt-card { position: relative; overflow: hidden; border: 0; border-radius: 24px; padding-top: 40px; background: #fffaf0; color: #3b2a1a; box-shadow: 0 4px 0 #e9d8b4; }
+.prompt-card::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 14px; background: repeating-linear-gradient(90deg, #7fc672 0 22px, #73bd66 22px 44px); }
+.prompt-card .muted { color: #8a7660; }
+.choice { border: 0; border-bottom: 4px solid rgba(0, 0, 0, 0.15); color: #2b2233; }
+.choice:nth-child(4n+1) { background: #dcecff; }
+.choice:nth-child(4n+2) { background: #e3f6d8; }
+.choice:nth-child(4n+3) { background: #fff0cc; }
+.choice:nth-child(4n+4) { background: #f6e2f7; }
+.choice.right, .choice.right:disabled { background: #1f9d55; color: #ffffff; }
+.choice.wrong, .choice.wrong:disabled { background: #c0613f; color: #ffffff; }
+.listen-play { box-shadow: 0 0 0 8px #f5d24a; }
+.result.bad { color: #c0613f; }
+.result.good::before, .result.bad::before, .result.near::before {
+  content: ''; display: inline-block; width: 52px; height: 52px; margin-right: 10px; vertical-align: middle;
+  background: center / cover no-repeat url(../img/fanny-happy.webp); border-radius: 50%; border: 3px solid #f5d24a;
+}
+.result.bad::before, .result.near::before { background-image: url(../img/fanny.webp); border-color: #e9d8b4; }
+/* Fortschritt: Sandweg, Pixel-Fanny trabt zur Zielflagge */
+.trail { position: relative; height: 56px; margin: 4px 0 2px; }
+.trail-way { position: absolute; left: 0; right: 0; bottom: 6px; height: 14px; border-radius: 999px; background: #ead3a0; }
+.trail-in { position: absolute; left: 26px; right: 40px; bottom: 0; top: 0; }
+.trail-done { position: absolute; left: -26px; bottom: 6px; height: 14px; border-radius: 999px; min-width: 26px;
+  background: repeating-linear-gradient(90deg, #f5b400 0 10px, #ead3a0 10px 18px); transition: width 0.7s ease-out; }
+.trail-fanny { position: absolute; bottom: 10px; transform: translateX(-50%); transition: left 0.7s ease-out; line-height: 0; }
+.trail-goal { position: absolute; right: 0; bottom: 12px; font-size: 1.6rem; line-height: 1; }
+@media (prefers-reduced-motion: reduce) { .trail-done, .trail-fanny { transition: none; } }
+@media (prefers-color-scheme: dark) {
+  .prompt-card { background: #2b2620; color: #f6ecd9; box-shadow: 0 4px 0 #1b1712; }
+  .prompt-card .muted { color: #c9b89c; }
+  .choice { color: #f2eee8; border-bottom-color: rgba(0, 0, 0, 0.35); }
+  .choice:nth-child(4n+1) { background: #2e4466; }
+  .choice:nth-child(4n+2) { background: #2f4f34; }
+  .choice:nth-child(4n+3) { background: #5a4824; }
+  .choice:nth-child(4n+4) { background: #4f3354; }
+  .result.bad { color: #e08a64; }
+}
+@media (min-width: 700px) {
+  body { font-size: 21px; }
+  .btn { min-height: 58px; font-size: 1.15rem; }
+  .btn.small { min-height: 48px; font-size: 1rem; }
+  .choice { min-height: 84px; font-size: 1.45rem; }
+  .choices:not(.form-choices) { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }   /* 2 × 2 statt 4 enge Spalten */
+  .prompt { font-size: 2.8rem; }
+  .answer { min-height: 70px; font-size: 1.9rem; }
+  .answer-form { max-width: 640px; }
+  .listen-play { width: 128px; height: 128px; font-size: 3.4rem; }
+  .result { font-size: 1.7rem; }
+  .gap-sentence { font-size: 1.9rem; }
+}
