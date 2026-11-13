@@ -21,7 +21,7 @@ const routes = [
   [/^#\/fach\/([^/]+)$/, subjectView, 'home'],
   [/^#\/lektion\/([^/]+)\/([^/]+)$/, lessonView, 'home'],
   [/^#\/ueben\/([^/]+)\/([^/]+)\/([a-z-]+)(\/alle)?$/, practiceView, 'home'],   // Übungsart wird in der Ansicht geprüft
-  [/^#\/etappe\/([^/]+)\/([^/]+)\/(\d{1,2})$/, etappeView, 'home'],
+  [/^#\/etappe\/([^/]+)\/([^/]+)\/(\d{1,3})(?:\/(probe))?(?:\?.*)?$/, etappeView, 'home'],
   [/^#\/ausritt$/, ausrittView, 'home'],
   [/^#\/jetzt$/, () => { location.replace('#/ausritt'); }, 'home'],   // alte Adresse (Lesezeichen)
   [/^#\/test\/([^/]+)(?:\/([^/]+))?$/, testView, 'home'],

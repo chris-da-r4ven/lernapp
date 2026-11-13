@@ -181,6 +181,8 @@ WORD_ID = re.compile(r'^[^\x00-\x1f<>]{1,80}$')
 def check_lesson(where, l):
     """Was für jede Lektion gilt – dann die Prüfung ihrer Art."""
     errors, warnings = [], []
+    if 'neu' in l and not (isinstance(l['neu'], str) and re.match(r'^\d{4}-\d{2}-\d{2}$', l['neu'])):
+        errors.append(f'{where}: "neu" muss ein Datum JJJJ-MM-TT sein (wann die Lektion dazukam)')
     if not LESSON_ID.match(str(l.get('id', ''))):
         errors.append(f'{where}: "id" darf nur a–z, A–Z, 0–9, - und _ enthalten (höchstens 60 Zeichen)')
     if not l.get('title'):
@@ -543,6 +545,8 @@ def new_lesson(args):
     if args.gruppe:
         lesson['group'] = args.gruppe
     lesson['order'] = (max(orders) if orders else 0) + 10
+    # Neueste Lektion eines Fachs ist in der App immer offen (js/path.js lessonAccess).
+    lesson['neu'] = datetime.date.today().isoformat()
     lesson['kind'] = 'grammatik' if args.grammatik else 'vokabeln'
     lesson.update({'sides': {'a': 'Deutsch', 'b': 'Englisch'}})
     lesson['items'] = items

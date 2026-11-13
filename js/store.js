@@ -240,3 +240,18 @@ export function adoptLearned(byLesson, at = Date.now()) {
   state.pathSince = at;
   save();
 }
+
+// Turnier zu Ende gespielt: Ergebnis und die falschen Wörter (für das Nachtraining).
+export function setTurnier(lk, pct, retry = [], at = Date.now()) {
+  const e = entryFor(lk);
+  e.turnier = { day: dayKey(new Date(at)), at, pct: Math.round(pct) };
+  if (retry.length) e.retry = retry.slice(0, 100); else delete e.retry;
+  save();
+}
+
+// Lektion von den Eltern geöffnet (bleibt offen).
+export function openLesson(lk, at = Date.now()) {
+  state.opened ??= {};
+  if (!Object.hasOwn(state.opened, lk)) state.opened[lk] = at;
+  save();
+}

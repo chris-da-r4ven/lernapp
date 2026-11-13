@@ -20,7 +20,7 @@ import { kindOf, targetSide, towardTarget, langOf, KINDS, isSupported, masteryMo
 import { APP_VERSION } from '../js/version.js';
 import { dayKey } from '../js/util.js';
 import { sanitizeState, SCHEMA, LEGACY_DEVICE } from '../js/validate.js';
-import { chunk, etappenFor, progress, nextEtappe, tasksForEtappe, interleave, spreadModes, adoptable, wordId } from '../js/path.js';
+import { chunk, etappenFor, progress, nextEtappe, tasksForEtappe, interleave, spreadModes, adoptable, wordId, lessonAccess } from '../js/path.js';
 
 const results = [];
 let group = '';
@@ -296,25 +296,25 @@ try {
     eq([sizes(11), sizes(13), sizes(30), sizes(0)], [[6, 5], [5, 4, 4], [6, 6, 6, 6, 6], []]);
   });
   await test('Etappen: 11 Wörter → Pflege, Dressur, Springen; 30 Wörter → 7 Etappen', () => {
-    eq(etappenFor('t', vocab(11), { entry: E(), stateOf: none }).map((s) => s.station), ['pflege', 'dressur', 'springen']);
-    const st = etappenFor('t', vocab(30), { entry: E(), stateOf: none });
-    eq([st.length, st.map((s) => s.type).join(',')], [7, 'gruppe,gruppe,gruppe,springen,gruppe,gruppe,springen']);
+    eq(etappenFor('t', vocab(11), { entry: E(), stateOf: none, tests: [] }).map((s) => s.station), ['pflege', 'dressur', 'springen', 'turnier']);
+    const st = etappenFor('t', vocab(30), { entry: E(), stateOf: none, tests: [] });
+    eq([st.length, st.map((s) => s.type).join(',')], [8, 'gruppe,gruppe,gruppe,springen,gruppe,gruppe,springen,turnier']);
   });
   await test('nur die erste offene Etappe ist frei, geschaffte zählen', () => {
-    const st = etappenFor('t', vocab(11), { entry: E(['w1', 'w2', 'w3', 'w4', 'w5', 'w6']), stateOf: none });
-    eq([st.map((s) => s.done), st.map((s) => s.open), progress(st), nextEtappe(st).station], [[true, false, false], [true, true, false], { done: 1, total: 3, complete: false }, 'dressur']);
+    const st = etappenFor('t', vocab(11), { entry: E(['w1', 'w2', 'w3', 'w4', 'w5', 'w6']), stateOf: none, tests: [] });
+    eq([st.map((s) => s.done), st.map((s) => s.open), progress(st), nextEtappe(st).station], [[true, false, false, false], [true, true, false, false], { done: 1, total: 4, complete: false }, 'dressur']);
   });
   await test('gelernte Wörter bilden die ersten Gruppen – neue Wörter ändern Geschafftes nicht', () => {
     const entry = E(['w1', 'w2', 'w3', 'w4', 'w5', 'w6'], ['springen-1-6']);
-    const before = etappenFor('t', vocab(6), { entry, stateOf: none });
-    const after = etappenFor('t', vocab(9), { entry, stateOf: none });
+    const before = etappenFor('t', vocab(6), { entry, stateOf: none, tests: [{ day: '2026-11-01', pct: 100 }] });
+    const after = etappenFor('t', vocab(9), { entry, stateOf: none, tests: [] });
     eq([progress(before).complete, after[0].done, after[0].items.map(wordId), after[1].items.map(wordId), after[2].done, nextEtappe(after).n],
       [true, true, ['w1', 'w2', 'w3', 'w4', 'w5', 'w6'], ['w7', 'w8', 'w9'], false, 1]);
   });
   await test('Gruppe: jedes Wort einmal abrufen, 2 Wörter der vorigen Gruppe beigemischt', () => {
     const L = vocab(11);
-    const st = etappenFor('t', L, { entry: E(), stateOf: none });
-    const tasks = tasksForEtappe('t', L, st[1], st, { stateOf: none });
+    const st = etappenFor('t', L, { entry: E(), stateOf: none, tests: [] });
+    const tasks = tasksForEtappe('t', L, st[1], st, { stateOf: none, tests: [] });
     const recall = tasks.filter((t) => t.dir === 'ab').map((t) => t.item.id);
     const fromPrev = tasks.filter((t) => st[0].items.includes(t.item)).length;
     eq([new Set(recall).size >= 5, fromPrev, tasks.every((t) => t.key.startsWith('t/v/'))], [true, 2, true]);
@@ -327,24 +327,49 @@ try {
   });
   await test('Mathe: Koppel nur solange Basis nicht sicher, Experte nicht im Weg', () => {
     const L = mathL([1, 1, 2, 2, 2, 3]);
-    const st = etappenFor('t', L, { entry: E(), stateOf: none });
-    const safe = etappenFor('t', L, { entry: E(), stateOf: () => ({ box: 3 }) });
-    eq([st.map((s) => s.type).join(','), st[0].optional, st[1].open, st[1].items.length, safe[0].type, progress(st).total], ['koppel,gruppe,springen', true, true, 3, 'gruppe', 2]);
+    const st = etappenFor('t', L, { entry: E(), stateOf: none, tests: [] });
+    const safe = etappenFor('t', L, { entry: E(), stateOf: () => ({ box: 3 }), tests: [] });
+    eq([st.map((s) => s.type).join(','), st[0].optional, st[1].open, st[1].items.length, safe[0].type, progress(st).total], ['koppel,gruppe,springen,turnier', true, true, 3, 'gruppe', 3]);
   });
   await test('Grammatik: Gruppe nur antippen (+ 2 der vorigen eintippen), Springen nur eintippen', () => {
     const G = { id: 'g', kind: 'grammatik', sides: { a: 'Deutsch', b: 'Englisch' },
       items: Array.from({ length: 12 }, (_, i) => ({ id: `s${i}`, a: `Satz ${i}`, b: `I am ${i}.`, ex: `I {am} ${i}.`, choices: ['am', 'is', 'are'] })) };
-    const st = etappenFor('t', G, { entry: E(), stateOf: none });
-    const g2 = tasksForEtappe('t', G, st[1], st, { stateOf: none });
-    const spr = tasksForEtappe('t', G, st[2], st, { stateOf: none });
+    const st = etappenFor('t', G, { entry: E(), stateOf: none, tests: [] });
+    const g2 = tasksForEtappe('t', G, st[1], st, { stateOf: none, tests: [] });
+    const spr = tasksForEtappe('t', G, st[2], st, { stateOf: none, tests: [] });
     const same = g2.some((t) => t.dir === 'form-tippen' && g2.some((u) => u.dir === 'form' && u.item === t.item));
     eq([g2.filter((t) => t.dir === 'form').length, g2.filter((t) => t.dir === 'form-tippen').length, same, [...new Set(spr.map((t) => t.dir))]],
       [6, 2, false, ['form-tippen']]);
   });
   await test('Koppel allein ist kein „Weiter“, wenn der Lernweg fertig ist', () => {
     const L = mathL([1, 2, 2]);
-    const st = etappenFor('t', L, { entry: E(['a2', 'a3'], ['springen-1-2']), stateOf: none });
+    const st = etappenFor('t', L, { entry: E(['a2', 'a3'], ['springen-1-2']), stateOf: none, tests: [{ day: '2026-11-01', pct: 100 }] });
     eq([st[0].type, progress(st).complete, nextEtappe(st)], ['koppel', true, null]);
+  });
+  await test('Turnier am Ende (Vokabeln), frühere Tests zählen als Turnier', () => {
+    const st = etappenFor('t', vocab(11), { entry: E(), stateOf: none, tests: [] });
+    const withTest = etappenFor('t', vocab(11), { entry: E(), stateOf: none, tests: [{ day: '2026-11-01', pct: 50 }] });
+    eq([st.map((x) => x.type).join(','), st.at(-1).done, withTest.at(-1).done], ['gruppe,gruppe,springen,turnier', false, true]);
+  });
+  await test('Turnier unter 90 % → Nachtraining mit den falschen Wörtern; danach geschafft', () => {
+    const all = ['w1', 'w2', 'w3', 'w4', 'w5', 'w6'];
+    const e = { ...E(all, ['springen-1-6']), turnier: { day: '2026-11-13', at: 7, pct: 60 }, retry: ['w2', 'w5'] };
+    const st = etappenFor('t', vocab(6), { entry: e, stateOf: none, tests: [] });
+    const done = etappenFor('t', vocab(6), { entry: { ...e, mix: { ...e.mix, 'nach-7': 9 } }, stateOf: none, tests: [] });
+    const good = etappenFor('t', vocab(6), { entry: { ...e, turnier: { ...e.turnier, pct: 95 } }, stateOf: none, tests: [] });
+    eq([st.at(-1).type, st.at(-1).items.map(wordId), progress(st).complete, progress(done).complete, good.at(-1).type],
+      ['nachtraining', ['w2', 'w5'], false, true, 'turnier']);
+  });
+  await test('Lektionen nacheinander: erste, nach geschafften, neueste, geübte und geöffnete offen; nur ein Geheimnis-Feld', () => {
+    const ls = ['a', 'b', 'c', 'd', 'e'].map((id) => ({ id }));
+    const ctx = (o = {}) => ({ opened: {}, items: {}, pathOf: () => ({ learned: {} }), complete: () => false, ...o });
+    const acc = (o) => ls.map((l) => lessonAccess('t', ls, ctx(o)).get(l.id)).join(',');
+    eq(acc(), 'open,secret,hidden,hidden,open');
+    eq(acc({ complete: (l) => l.id === 'a' }), 'open,open,secret,hidden,open');
+    eq(acc({ items: { 't/c/x|ab': { box: 1 } } }), 'open,secret,open,hidden,open');
+    eq(acc({ opened: { 't/b': 5 } }), 'open,open,secret,hidden,open');
+    const dated = [{ id: 'a' }, { id: 'b', neu: '2026-11-10' }, { id: 'c' }];
+    eq(dated.map((l) => lessonAccess('t', dated, ctx()).get(l.id)).join(','), 'open,open,secret');
   });
   await test('Übernahme: Wörter mit Abruf-Fach ≥ 2 gelten als gelernt', () => {
     const L = vocab(3);

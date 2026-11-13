@@ -8,7 +8,7 @@ import { updateContent } from '../updates.js';
 import { portrait, bigPortrait } from './portrait.js';
 import { dueSummary } from '../ausritt.js';
 import { etappenFor, nextEtappe, progress, etappeNo, STATIONS } from '../path.js';
-import { etappeHref } from './etappe.js';
+import { etappeHref, lessonOpen } from './etappe.js';
 import { lessonKey } from '../lessons.js';
 import { pathEntry } from '../store.js';
 
@@ -110,6 +110,7 @@ function lastActivity(sid, lesson, items) {
 function continueCard() {
   const items = getState().items;
   const open = allLessons()
+    .filter(({ sid, lesson }) => lessonOpen(sid, lesson.id))
     .map(({ sid, lesson }) => ({ sid, lesson, stages: etappenFor(sid, lesson) }))
     .filter((x) => nextEtappe(x.stages));
   if (!open.length) {

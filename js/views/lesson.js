@@ -7,7 +7,7 @@ import { levelInfo, hasLevels, LEVELS } from '../levels.js';
 import { esc } from '../util.js';
 import { lessonMedal, testReady } from '../medal.js';
 import { etappenFor, tasksForEtappe, nextEtappe, progress, minutesFor, pathModes, etappeNo, STATIONS } from '../path.js';
-import { etappeHref } from './etappe.js';
+import { etappeHref, lessonOpen } from './etappe.js';
 import { kindOf, nativeSide } from '../lessons.js';
 
 const STATUS_LABEL = { neu: 'neu', wackelt: 'wackelt', sicher: 'sicher' };
@@ -17,6 +17,8 @@ function stageText(lesson, stage) {
   const kind = kindOf(lesson);
   const pm = pathModes(lesson);
   if (stage.type === 'koppel') return { what: 'Aufwärmen mit Basis-Aufgaben', how: 'eintippen' };
+  if (stage.type === 'turnier') return { what: kind === 'mathe' ? 'Alle Aufgaben einmal, ohne Hilfe – wie in der Klassenarbeit' : 'Alle Wörter einmal, ohne Hilfe – wie im Vokabeltest', how: 'eintippen' };
+  if (stage.type === 'nachtraining') return { what: 'Nur die Wörter aus dem Turnier, die noch nicht saßen', how: 'eintippen' };
   if (kind === 'mathe') return stage.type === 'springen'
     ? { what: 'Gemischte Aufgaben aus allen Etappen', how: 'eintippen' }
     : { what: 'Aufgaben lösen', how: 'eintippen' };
@@ -33,6 +35,7 @@ export function lessonView(el, sid, lid) {
   const subject = getSubject(sid);
   const lesson = getLesson(sid, lid);
   if (!subject || !lesson) { location.hash = '#/'; return; }
+  if (!lessonOpen(sid, lid)) { location.hash = `#/fach/${encodeURIComponent(sid)}`; return; }
 
   const base = `#/ueben/${encodeURIComponent(sid)}/${encodeURIComponent(lid)}`;
   const modes = modesFor(lesson);
@@ -80,6 +83,7 @@ export function lessonView(el, sid, lid) {
           <span class="chip">${esc(t.how)}</span>
         </div>
         <a class="btn primary big-btn" href="${etappeHref(sid, lid, next.n)}">Los geht’s</a>
+        ${next.type === 'gruppe' ? `<a class="btn ghost small probe-btn" href="${etappeHref(sid, lid, next.n, true)}">Ich kann das schon – zeig’s mir</a>` : ''}
       </section>`;
   };
   // Knobel-Parcours (Experten-Aufgaben): gleichwertig neben dem Weg, ab der ersten geschafften Etappe

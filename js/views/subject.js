@@ -6,25 +6,45 @@ import { starsFor } from '../srs.js';
 import { masteryOf, unitWord, kindInfo, coreItems } from '../lessons.js';
 import { lessonMedal, MEDAL_RULE, testReady } from '../medal.js';
 import { esc, stars } from '../util.js';
-import { etappenFor, progress } from '../path.js';
+import { etappenFor, progress, lessonAccess } from '../path.js';
 
 export function subjectView(el, sid) {
   const subject = getSubject(sid);
   if (!subject) { location.hash = '#/'; return; }
 
+  // Lektionen nacheinander: offen, Geheimnis-Feld (die nächste) oder noch unsichtbar.
+  const access = lessonAccess(sid, subject.lessons.map((l) => getLesson(sid, l.id)).filter(Boolean));
   // Gruppen in der Reihenfolge, in der sie im Inhaltsverzeichnis vorkommen.
   const groups = new Map();
   for (const l of subject.lessons) {
     const lesson = getLesson(sid, l.id);
     if (!lesson) continue;
+    const a = access.get(l.id);
+    if (a === 'hidden') continue;
+    if (a === 'secret') {
+      // Geheimnis-Feld an seinem Platz: Vorgänger = die Lektion davor in der Reihenfolge
+      const i = subject.lessons.indexOf(l);
+      const g = l.group ?? 'Lektionen';
+      if (!groups.has(g)) groups.set(g, []);
+      groups.get(g).push({ secret: true, prev: i > 0 ? subject.lessons[i - 1].title : null, medal: { medal: false } });
+      continue;
+    }
     const g = l.group ?? 'Lektionen';
     if (!groups.has(g)) groups.set(g, []);
     groups.get(g).push({ l, lesson, medal: lessonMedal(sid, lesson) });
   }
 
-  const testLabel = [...groups.values()].flat().map((x) => kindInfo(x.lesson)).find((k) => k.testable)?.testLabel;
+  const testLabel = [...groups.values()].flat().filter((x) => x.lesson).map((x) => kindInfo(x.lesson)).find((k) => k.testable)?.testLabel;
 
-  const tile = ({ l, lesson, medal }) => {
+  const secretTile = ({ prev }) => `
+      <div class="card row secret-tile" aria-label="Nächste Lektion, noch verborgen">
+        <span class="knobel-icon" aria-hidden="true">❓</span>
+        <span class="grow"><strong>Was kommt wohl als Nächstes?</strong><br>
+          <span class="muted small">${prev ? `Wenn du den Lernweg von „${esc(prev)}“ geschafft hast, öffnet sich dieses Feld.` : 'Diese Lektion öffnet sich bald.'}</span></span>
+      </div>`;
+  const tile = (x) => {
+    if (x.secret) return secretTile(x);
+    const { l, lesson, medal } = x;
     const m = masteryOf(sid, lesson);
     const way = progress(etappenFor(sid, lesson));
     return `

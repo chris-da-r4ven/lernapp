@@ -23,7 +23,8 @@ const RETRY_GAP = 3;
 // onComplete({ mistakes, firstTry, total }): Runde zu Ende gespielt – vor der Bilanz (z. B. Etappe als
 // geschafft speichern). Kann HTML für einen Hinweis in der Bilanz zurückgeben.
 // title, againLabel: Überschrift und Hauptknopf der Bilanz.
-export function runRound(el, { tasks, test = false, chosen = true, art = test ? 'test' : 'frei', onComplete = null, title, againLabel, onAgain, onBack, backLabel }) {
+// once: jede Aufgabe nur einmal, falsche kommen nicht wieder (Probe „Ich kann das schon“) – mit Hilfe, ohne Testergebnis.
+export function runRound(el, { tasks, test = false, once = false, chosen = true, art = test ? 'test' : 'frei', onComplete = null, title, againLabel, onAgain, onBack, backLabel }) {
   const queue = tasks.map((t) => ({ ...t, attempts: 0 }));
   const total = queue.length;
   let done = 0;
@@ -81,7 +82,7 @@ export function runRound(el, { tasks, test = false, chosen = true, art = test ? 
     // Nach einem Fehler weiter: normal später nochmal, im Test einfach das nächste Wort.
     retry() {
       const task = queue[0];
-      if (test) { queue.shift(); done++; } else requeue(task);
+      if (test || once) { queue.shift(); done++; } else requeue(task);
       next();
     },
     peek() {

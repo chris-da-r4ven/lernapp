@@ -39,7 +39,9 @@ python3 tools/inhalte.py neu englisch weihnachten --titel "Weihnachten" --gruppe
 python3 tools/inhalte.py bauen
 ```
 
-- `neu` legt `content/englisch/weihnachten.json` an (nie überschreiben, Reihenfolge ans Ende).
+- `neu` legt `content/englisch/weihnachten.json` an (nie überschreiben, Reihenfolge ans Ende) und setzt
+  `"neu": "JJJJ-MM-TT"` – die neueste Lektion eines Fachs ist in der App immer offen, auch wenn der
+  Lernweg der vorigen noch nicht geschafft ist.
   Grammatik: `--grammatik` dazu.
 - `bauen` prüft alles, ergänzt IDs und Varianten, baut `content/index.json` und erhöht die
   Inhalts-Version nur, wenn sich wirklich etwas geändert hat. Bei Fehlern wird nichts gebaut.

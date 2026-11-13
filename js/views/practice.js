@@ -5,11 +5,13 @@ import { modesFor, tasksFor } from '../exercises/registry.js';
 import { buildRound } from '../srs.js';
 import { runRound } from '../exercises/round.js';
 import { esc } from '../util.js';
+import { lessonOpen } from './etappe.js';
 
 export function practiceView(el, sid, lid, modeId, all) {
   const lesson = getLesson(sid, lid);
   const mode = lesson && modesFor(lesson).find((m) => m.id === modeId);
   if (!lesson || !mode) { location.hash = '#/'; return; }
+  if (!lessonOpen(sid, lid)) { location.hash = `#/fach/${encodeURIComponent(sid)}`; return; }
   const back = `#/lektion/${encodeURIComponent(sid)}/${encodeURIComponent(lid)}`;
 
   el.innerHTML = `

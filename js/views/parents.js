@@ -1,7 +1,10 @@
 // Bereich „Für Eltern“ auf der Fortschrittsseite: zum Ausklappen,
 // mit Rückmeldungen des Kindes, Statistik zurücksetzen, Sicherung des Spielstands und Geräte-Tests.
 
-import { resetProgress, getState } from '../store.js';
+import { resetProgress, getState, openLesson } from '../store.js';
+import { getSubjects, getLesson } from '../content.js';
+import { lessonAccess } from '../path.js';
+import { lessonKey } from '../lessons.js';
 import { modeById } from '../exercises/registry.js';
 import { RATINGS } from '../exercises/summary.js';
 import { syncStatus, connect, disconnect, syncNow, setTokenUntil, DEFAULT_REPO } from '../sync.js';
@@ -14,6 +17,9 @@ export function parentsSection(open = false) {
 
       <h3>Rückmeldungen</h3>
       ${feedbackBlock()}
+
+      <h3>Lektionen öffnen</h3>
+      ${unlockBlock()}
 
       <h3>Statistik zurücksetzen</h3>
       <p class="muted small">Setzt Sternchen, Serie und den ganzen Lernstand auf null. Die Lektionen bleiben da.</p>
@@ -37,6 +43,23 @@ export function parentsSection(open = false) {
         <a class="btn small" href="#/handschrift-test">✍️ Handschrift-Test</a>
       </div>
     </details>`;
+}
+
+// Gesperrte Lektionen (noch nicht an der Reihe) öffnen – z. B. wenn in der Schule etwas anderes dran ist.
+function unlockBlock() {
+  const opened = getState().opened ?? {};
+  const rows = [];
+  for (const s of getSubjects()) {
+    const lessons = s.lessons.map((l) => getLesson(s.id, l.id)).filter(Boolean);
+    const access = lessonAccess(s.id, lessons);
+    for (const l of lessons) {
+      const lk = lessonKey(s.id, l);
+      if (access.get(l.id) !== 'open') rows.push(`<li><span>${esc(s.name)}: ${esc(l.title)}</span><button class="btn small" type="button" data-open="${esc(lk)}">Öffnen</button></li>`);
+      else if (Object.hasOwn(opened, lk)) rows.push(`<li><span>${esc(s.name)}: ${esc(l.title)}</span><span class="muted small">geöffnet am ${esc(new Date(opened[lk]).toLocaleDateString('de-DE'))}</span></li>`);
+    }
+  }
+  return `<p class="muted small">Lektionen werden nacheinander frei: die erste, die nach einem geschafften Lernweg, die neueste und alle, die schon geübt wurden. Hier können Sie weitere öffnen.</p>
+    ${rows.length ? `<ul class="word-list unlock-list">${rows.join('')}</ul>` : '<p class="muted small">Alle Lektionen sind offen.</p>'}`;
 }
 
 function syncBlock() {
@@ -72,6 +95,11 @@ function syncBlock() {
 // rerender(open): Seite neu zeichnen, Bereich dabei offen lassen.
 export function bindParents(el, rerender) {
   const box = el.querySelector('.parents');
+  box.querySelectorAll('[data-open]').forEach((b) => b.addEventListener('click', () => {
+    openLesson(b.dataset.open);
+    toast('Lektion geöffnet.');
+    rerender(true);
+  }));
   const startBtn = box.querySelector('[data-act=reset-start]');
   const form = box.querySelector('.reset-form');
 

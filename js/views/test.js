@@ -9,12 +9,13 @@ import { tasksFor } from '../exercises/registry.js';
 import { runRound } from '../exercises/round.js';
 import { esc, shuffle } from '../util.js';
 import { lessonMedal } from '../medal.js';
+import { lessonOpen } from './etappe.js';
 
 // preselect: Lektion, die schon angehakt ist (z. B. aus „Teste dich doch mal!“).
 export function testView(el, sid, preselect) {
   const subject = getSubject(sid);
   if (!subject) { location.hash = '#/'; return; }
-  const lessons = subject.lessons.map((l) => getLesson(sid, l.id)).filter((l) => l && kindInfo(l).testable && coreItems(l).length);
+  const lessons = subject.lessons.map((l) => getLesson(sid, l.id)).filter((l) => l && kindInfo(l).testable && coreItems(l).length && lessonOpen(sid, l.id));
   const back = `#/fach/${encodeURIComponent(sid)}`;
 
   el.innerHTML = `

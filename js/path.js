@@ -9,6 +9,13 @@
 //              Kennung „springen-<nr>-<wortzahl>“.
 //   Koppel   – nur Mathe: Basis-Aufgaben zum Aufwärmen, solange sie nicht sicher sitzen (freiwillig,
 //              zählt nicht im „x von n“).
+//   Turnier  – Lektionen mit Test-Modus: alle Einträge ohne Hilfe (= Test, zählt für die Medaille).
+//              Geschafft, sobald einmal zu Ende gespielt (auch ein früherer Test zählt).
+//   Nachtraining – nach einem Turnier unter 90 %: nur die falschen Wörter, in anderer Form.
+//
+// Lektionen eines Fachs werden nacheinander freigeschaltet (lessonAccess): offen sind die erste, die nach
+// einer geschafften, die neueste (Feld "neu"), alle mit Lernstand und die von den Eltern geöffneten.
+// Die nächste gesperrte ist ein Geheimnis-Feld, spätere bleiben unsichtbar.
 //
 // Gespeichert wird pro Wort (store.path[lektion].learned), nicht pro Etappe: Die Gruppen werden jedes Mal
 // neu gebildet – erst die gelernten Wörter (in Datei-Reihenfolge), dann die übrigen. So bleiben geschaffte
@@ -19,9 +26,9 @@
 // damit der Selbsttest sie prüfen kann.
 
 import { itemKey, SAFE_BOX } from './srs.js';
-import { itemState, pathEntry } from './store.js';
+import { itemState, pathEntry, testResults, getState } from './store.js';
 import { modesFor, modeById, storeMode, usableFor } from './exercises/registry.js';
-import { kindOf, towardTarget, lessonKey, masteryMode } from './lessons.js';
+import { kindOf, towardTarget, lessonKey, masteryMode, kindInfo, coreItems } from './lessons.js';
 import { levelOf } from './levels.js';
 import { shuffle } from './util.js';
 
@@ -38,7 +45,10 @@ export const STATIONS = {
   pflege: { name: 'Pflege', icon: '🪮' },
   dressur: { name: 'Dressur', icon: '🎠' },
   springen: { name: 'Springen', icon: '🐎' },
+  turnier: { name: 'Turnier', icon: '🏆' },
+  nachtraining: { name: 'Nachtraining', icon: '🔁' },
 };
+export const RETRY_BELOW = 90;   // Turnier unter diesem Prozentwert → Nachtraining
 
 export const wordId = (item) => String(item.id ?? item.b);
 const has = (o, k) => Boolean(o) && Object.hasOwn(o, k);
@@ -80,7 +90,8 @@ export function pathModes(lesson) {
 
 // Alle Etappen einer Lektion mit Stand.
 // opts.entry: Lernweg-Eintrag der Lektion ({ learned, mix }), opts.stateOf(key): Karteikasten-Stand.
-export function etappenFor(sid, lesson, { entry = pathEntry(lessonKey(sid, lesson)), stateOf = itemState } = {}) {
+// opts.tests: frühere Testergebnisse der Lektion (zählen als Turnier).
+export function etappenFor(sid, lesson, { entry = pathEntry(lessonKey(sid, lesson)), stateOf = itemState, tests = testResults(lessonKey(sid, lesson)) } = {}) {
   const pm = pathModes(lesson);
   if (!pm.recall) return [];
   const poolMode = modeById(pm.pool);
@@ -112,6 +123,20 @@ export function etappenFor(sid, lesson, { entry = pathEntry(lessonKey(sid, lesso
       since = [];
     }
   });
+  // Turnier (Test) und ggf. Nachtraining
+  if (stages.length && kindInfo(lesson)?.testable) {
+    const mode = masteryMode(lesson);
+    const testItems = coreItems(lesson).filter((it) => canUse(mode, it));
+    if (testItems.length) {
+      stages.push({ type: 'turnier', id: 'turnier', station: 'turnier', items: testItems, done: Boolean(entry.turnier) || tests.length > 0 });
+      const t = entry.turnier;
+      if (t && t.pct < RETRY_BELOW && entry.retry?.length && !has(entry.mix, `nach-${t.at}`)) {
+        const retry = new Set(entry.retry);
+        const items = lesson.items.filter((it) => retry.has(wordId(it)));
+        if (items.length) stages.push({ type: 'nachtraining', id: `nach-${t.at}`, station: 'nachtraining', items, done: false });
+      }
+    }
+  }
   // Verfügbar: alle Pflicht-Etappen davor geschafft. Nummer = Position (für die Adresse).
   let blocked = false;
   stages.forEach((s, n) => {
@@ -176,7 +201,12 @@ export function tasksForEtappe(sid, lesson, stage, stages = etappenFor(sid, less
   const pm = pathModes(lesson);
   if (stage.type === 'koppel') return shuffle(stage.items).map((it) => task(sid, lesson, it, 'rechnen'));
 
-  if (stage.type === 'springen') {
+  if (stage.type === 'turnier') {
+    const mode = masteryMode(lesson);
+    return shuffle(stage.items).map((it) => task(sid, lesson, it, mode));
+  }
+
+  if (stage.type === 'springen' || stage.type === 'nachtraining') {
     const modes = pm.extra;
     const words = [...stage.items]
       .sort((a, b) => bestBox(sid, lesson, a, [pm.recall], stateOf) - bestBox(sid, lesson, b, [pm.recall], stateOf))
@@ -237,5 +267,32 @@ export function adoptable(lessons, { stateOf = itemState } = {}) {
       .map(wordId);
     if (ids.length) out[lessonKey(sid, lesson)] = ids;
   }
+  return out;
+}
+
+// --- Lektionen freischalten ------------------------------------------------------------
+// lessons: Lektionen eines Fachs in Reihenfolge. Ergebnis: Map lektions-id → 'open' | 'secret' | 'hidden'.
+// ctx: opened (von den Eltern geöffnet), items (Lernstand), pathOf(lesson) → Lernweg-Eintrag,
+// complete(lesson) → Lernweg geschafft?
+export function lessonAccess(sid, lessons, { opened = getState().opened ?? {}, items = getState().items, pathOf = (l) => pathEntry(lessonKey(sid, l)), complete = (l) => progress(etappenFor(sid, l)).complete } = {}) {
+  const out = new Map();
+  if (!lessons.length) return out;
+  // neueste: höchstes "neu"-Datum, ohne Angaben die letzte in der Reihenfolge
+  const dated = lessons.filter((l) => typeof l.neu === 'string');
+  const newest = dated.length ? dated.reduce((a, b) => (b.neu > a.neu ? b : a)) : lessons[lessons.length - 1];
+  const started = (l) => {
+    const prefix = `${sid}/${l.id}/`;
+    const e = pathOf(l);
+    return Object.keys(e.learned ?? {}).length > 0 || Object.keys(items).some((k) => k.startsWith(prefix) && items[k].box > 0);
+  };
+  let secretShown = false;
+  lessons.forEach((l, i) => {
+    const open = i === 0 || complete(lessons[i - 1]) || l === newest || started(l) || has(opened, lessonKey(sid, l));
+    if (open) { out.set(l.id, 'open'); return; }
+    // Geheimnis-Feld: die erste gesperrte Lektion nach einer offenen
+    const prevOpen = out.get(lessons[i - 1].id) === 'open';
+    out.set(l.id, !secretShown && prevOpen ? 'secret' : 'hidden');
+    if (out.get(l.id) === 'secret') secretShown = true;
+  });
   return out;
 }
