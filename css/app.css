@@ -314,12 +314,16 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
 .hw-pad { width: 100%; height: auto; aspect-ratio: 700 / 220; border: 2px dashed var(--line); border-radius: 12px; background: var(--bg); touch-action: none; }
 
 /* Für Eltern */
-.parents summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: 8px; }
-.parents summary::-webkit-details-marker { display: none; }
-.parents summary::before { content: '▸'; color: var(--muted); transition: transform 0.2s; }
-.parents[open] summary::before { transform: rotate(90deg); }
-.parents summary h2 { margin: 0; }
-.parents h3 { margin: 18px 0 4px; font-size: 1rem; }
+.fold-card > summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.fold-card > summary::-webkit-details-marker { display: none; }
+.fold-card > summary::before { content: '▸'; color: var(--muted); transition: transform 0.2s; }
+.fold-card[open] > summary::before { transform: rotate(90deg); }
+.fold-card > summary h2, .fold-card > summary h3 { margin: 0; }
+.fold-card[open] > summary { margin-bottom: 10px; }
+.sub-fold { margin-top: 12px; }
+.sub-fold > summary { min-height: 40px; }
+.parents h3 { margin: 0; font-size: 1rem; }
+@media (prefers-reduced-motion: reduce) { .fold-card > summary::before { transition: none; } }
 .parents .reset-form .answer { width: 100%; max-width: 260px; }
 .parents label { display: block; margin-bottom: 8px; }
 .parents label .answer { display: block; width: 100%; margin-top: 4px; }

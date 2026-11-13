@@ -10,6 +10,7 @@ import { status, itemKey } from '../srs.js';
 import { masteryMode, coreItems, unitOf, countWord } from '../lessons.js';
 import { esc, dayKey, addDays } from '../util.js';
 import { DAY_GOAL } from '../streak.js';
+import { fold, bindFolds } from '../fold.js';
 
 const HISTORY_DAYS = 14;
 const HARD_WORDS = 10;
@@ -40,8 +41,7 @@ export function statsView(el, openParents = false) {
       <div class="card kpi"><strong>${Number(st.points) || 0} ✦</strong><span>Sternchen</span></div>
     </section>
 
-    <section class="card">
-      <h2>Fächer</h2>
+    ${fold('faecher', '<h2>Fächer</h2>', `
       ${subjects.map((s) => `
         <div class="lesson-line">
           <div class="lesson-name"><strong>${esc(s.icon ?? '📘')} ${esc(s.name)}</strong></div>
@@ -51,22 +51,13 @@ export function statsView(el, openParents = false) {
             <div class="neu" style="width:${(s.neu / (s.total || 1)) * 100}%"></div>
           </div>
           <span class="small muted">${countWord(s.unit, s.sicher)} sicher · ${s.wackelt} wackeln · ${s.neu} neu</span>
-        </div>`).join('') || '<p class="muted">Noch keine Fächer.</p>'}
-    </section>
+        </div>`).join('') || '<p class="muted">Noch keine Fächer.</p>'}`, { open: true })}
 
-    <section class="card">
-      <h2>Letzte ${HISTORY_DAYS} Tage</h2>
-      ${historyChart(st.days, serie.rescued)}
-    </section>
+    ${fold('tage', `<h2>Letzte ${HISTORY_DAYS} Tage</h2>`, historyChart(st.days, serie.rescued), { open: true })}
 
-    <section class="card">
-      <h2>Bereit für den Test?</h2>
-      ${lessonTable()}
-    </section>
+    ${fold('test', '<h2>Bereit für den Test?</h2>', lessonTable())}
 
-    <section class="card">
-      <h2>Schwere ${esc(unit[1])}</h2>
-      ${hard.length ? `
+    ${fold('schwer', `<h2>Schwere ${esc(unit[1])}</h2>`, hard.length ? `
         <div class="table-wrap"><table class="table">
           <thead><tr><th>Gefragt</th><th>Richtig</th><th>Übung</th><th>Fehler</th><th>Zuletzt falsch</th></tr></thead>
           <tbody>${hard.map((r) => `
@@ -78,13 +69,13 @@ export function statsView(el, openParents = false) {
               <td class="muted">${(r.st.wrongs ?? []).slice(0, 3).map(esc).join(', ') || '–'}</td>
             </tr>`).join('')}
           </tbody>
-        </table></div>` : '<p class="muted">Noch keine Fehler gesammelt.</p>'}
-    </section>
+        </table></div>` : '<p class="muted">Noch keine Fehler gesammelt.</p>')}
 
     ${parentsSection(openParents)}
 
     <p class="muted small status-line">${statusLine()}</p>`;
   fillAppVersion(el);
+  bindFolds(el);
 
   bindParents(el, (open) => {
     statsView(el, open);
@@ -140,11 +131,12 @@ function lessonTable() {
           <span class="small muted">${c.sicher} sicher · ${c.wackelt} wackeln · ${c.neu} neu</span>
         </div>`;
     });
-    blocks.push(`
-      <div class="lesson-line">
-        <div class="lesson-name"><strong>${esc(lesson.title)}</strong> <span class="muted small">${esc(s.name)}</span></div>
-        ${lines.join('')}
-      </div>`);
+    const mode = masteryMode(lesson);
+    const core = coreItems(lesson);
+    const safe = core.filter((it) => status(itemState(itemKey(sid, lesson.id, it, mode))) === 'sicher').length;
+    blocks.push(fold(`test:${sid}/${lesson.id}`,
+      `<strong>${esc(lesson.title)}</strong> <span class="muted small">${esc(s.name)} · ${pct(safe, core.length)} sicher</span>`,
+      lines.join(''), { cls: 'lesson-line sub-fold' }));
   }
   return `
     <div class="legend small"><span class="dot sicher"></span>sicher <span class="dot wackelt"></span>wackelt <span class="dot neu"></span>neu</div>

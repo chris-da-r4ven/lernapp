@@ -9,20 +9,18 @@ import { modeById } from '../exercises/registry.js';
 import { RATINGS } from '../exercises/summary.js';
 import { syncStatus, connect, disconnect, syncNow, setTokenUntil, DEFAULT_REPO } from '../sync.js';
 import { esc, toast } from '../util.js';
+import { fold, isOpen } from '../fold.js';
 
 export function parentsSection(open = false) {
   return `
-    <details class="card parents"${open ? ' open' : ''}>
+    <details class="card parents fold-card" data-fold="eltern"${open || isOpen('eltern') ? ' open' : ''}>
       <summary><h2>Für Eltern</h2></summary>
 
-      <h3>Rückmeldungen</h3>
-      ${feedbackBlock()}
+      ${fold('eltern:rueckmeldungen', '<h3>Rückmeldungen</h3>', feedbackBlock(), { cls: 'sub-fold' })}
 
-      <h3>Lektionen öffnen</h3>
-      ${unlockBlock()}
+      ${fold('eltern:lektionen', '<h3>Lektionen öffnen</h3>', unlockBlock(), { cls: 'sub-fold' })}
 
-      <h3>Statistik zurücksetzen</h3>
-      <p class="muted small">Setzt Sternchen, Serie und den ganzen Lernstand auf null. Die Lektionen bleiben da.</p>
+      ${fold('eltern:zuruecksetzen', '<h3>Statistik zurücksetzen</h3>', `<p class="muted small">Setzt Sternchen, Serie und den ganzen Lernstand auf null. Die Lektionen bleiben da.</p>
       <button class="btn danger" data-act="reset-start" type="button">Statistik zurücksetzen</button>
       <form class="reset-form" autocomplete="off" hidden>
         <p class="small">Wirklich alles löschen? Zum Bestätigen <strong>LÖSCHEN</strong> eintippen:</p>
@@ -32,16 +30,14 @@ export function parentsSection(open = false) {
           <button class="btn danger" type="submit">Statistik jetzt zurücksetzen</button>
           <button class="btn ghost" type="button" data-act="reset-cancel">Abbrechen</button>
         </div>
-      </form>
+      </form>`, { cls: 'sub-fold' })}
 
-      <h3>Sicherung</h3>
-      ${syncBlock()}
+      ${fold('eltern:sicherung', '<h3>Sicherung</h3>', syncBlock(), { cls: 'sub-fold' })}
 
-      <h3>Geräte-Tests</h3>
-      <div class="actions">
+      ${fold('eltern:geraete', '<h3>Geräte-Tests</h3>', `<div class="actions">
         <a class="btn small" href="#/vorlese-test">🔊 Vorlese-Test</a>
         <a class="btn small" href="#/handschrift-test">✍️ Handschrift-Test</a>
-      </div>
+      </div>`, { cls: 'sub-fold' })}
     </details>`;
 }
 
