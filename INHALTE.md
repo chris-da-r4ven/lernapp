@@ -39,9 +39,9 @@ python3 tools/inhalte.py neu englisch weihnachten --titel "Weihnachten" --gruppe
 python3 tools/inhalte.py bauen
 ```
 
-- `neu` legt `content/englisch/weihnachten.json` an (nie überschreiben, Reihenfolge ans Ende) und setzt
-  `"neu": "JJJJ-MM-TT"` – die neueste Lektion eines Fachs ist in der App immer offen, auch wenn der
-  Lernweg der vorigen noch nicht geschafft ist.
+- `neu` legt `content/englisch/weihnachten.json` an (nie überschreiben, Reihenfolge ans Ende). In der App
+  öffnet sich eine Lektion erst, wenn der Lernweg der vorigen geschafft ist – vorher nur über
+  Fortschritt → Für Eltern → „Lektionen öffnen“ (z. B. wenn das Thema in der Schule schon dran ist).
   Grammatik: `--grammatik` dazu.
 - Hofkarte: optional `"hof": "halloween"` oder `"schule"` in der Lektion wählt das Thema der Karte auf der
   Lektionsseite (sonst `neutral`). Neue Themen entstehen in `tools/hofkarte/` (`python3 tools/hofkarte/hofkarte.py`).

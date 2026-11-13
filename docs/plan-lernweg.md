@@ -12,7 +12,7 @@ Künftig sieht das Kind **wo es steht, was als Nächstes kommt und wie lange es 
 - Nach je 2 geschafften Etappen gibt es eine **⚡ Blitzrunde** (schnell, antippen, höchstens 2 auf Vorrat).
 - **🌳 Ausritt (Auffrischen)** ersetzt „Jetzt üben“: nur Wiederholungen, keine neuen Wörter.
 - Lektionen eines Fachs werden **nacheinander freigeschaltet**. Die nächste ist ein **Geheimnis-Feld**.
-  Die **neueste Lektion eines Fachs ist immer offen**, Eltern können weitere öffnen.
+  Streng von alt nach neu; Eltern können Lektionen vorher öffnen (Chris, 13.11.: keine Ausnahme für die neueste).
 - Bildliche Folie: **Fannys Reiterhof**. Eine Lektion ist ein Tag auf dem Hof, Etappen sind Stationen mit steigendem
   Anspruch. Klartext steht immer daneben. Die Grafik ist Kulisse, nie Bedingung fürs Verstehen.
 
@@ -69,7 +69,7 @@ erlaubt, nicht Hauptkost · keine Uhr, keine Bestenliste · keine weiteren Beloh
 
 Reihenfolge = `order` im Inhaltsverzeichnis. Eine Lektion ist **offen**, wenn
 1. sie die erste ihres Fachs ist, oder der Lernweg der vorigen geschafft ist (alle Etappen, Turnier, ggf. Nachtraining), oder
-2. sie die **neueste** des Fachs ist (neues Feld `neu: "JJJJ-MM-TT"` in der Lektion, setzt `tools/inhalte.py neu` automatisch), oder
+2. ~~sie die neueste des Fachs ist (Feld `neu`)~~ – gestrichen (Chris, 13.11.): streng von alt nach neu, oder
 3. sie schon Lernstand hat (nichts wird wieder zugesperrt), oder
 4. die Eltern sie unter „Für Eltern“ geöffnet haben (eigener Bereich, optisch getrennt von Sicherung und Zurücksetzen).
    Kein Kind-Knopf zum Selbst-Öffnen (Chris, 13.11.) – nach der ersten Woche anhand der Rückmeldungen prüfen.

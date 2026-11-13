@@ -58,7 +58,7 @@ function unlockBlock() {
       else if (Object.hasOwn(opened, lk)) rows.push(`<li><span>${esc(s.name)}: ${esc(l.title)}</span><span class="muted small">geöffnet am ${esc(new Date(opened[lk]).toLocaleDateString('de-DE'))}</span></li>`);
     }
   }
-  return `<p class="muted small">Lektionen werden nacheinander frei: die erste, die nach einem geschafften Lernweg, die neueste und alle, die schon geübt wurden. Hier können Sie weitere öffnen.</p>
+  return `<p class="muted small">Lektionen werden von alt nach neu frei: die erste, dann jede nach einem geschafften Lernweg; schon geübte bleiben offen. Hier können Sie eine Lektion vorher öffnen (z. B. vor einer Klassenarbeit).</p>
     ${rows.length ? `<ul class="word-list unlock-list">${rows.join('')}</ul>` : '<p class="muted small">Alle Lektionen sind offen.</p>'}`;
 }
 

@@ -13,8 +13,8 @@
 //              Geschafft, sobald einmal zu Ende gespielt (auch ein früherer Test zählt).
 //   Nachtraining – nach einem Turnier unter 90 %: nur die falschen Wörter, in anderer Form.
 //
-// Lektionen eines Fachs werden nacheinander freigeschaltet (lessonAccess): offen sind die erste, die nach
-// einer geschafften, die neueste (Feld "neu"), alle mit Lernstand und die von den Eltern geöffneten.
+// Lektionen eines Fachs werden streng von alt nach neu freigeschaltet (lessonAccess): offen sind die erste,
+// die nach einer geschafften, die von den Eltern geöffneten – und alle mit Lernstand (nichts wird wieder zugesperrt).
 // Die nächste gesperrte ist ein Geheimnis-Feld, spätere bleiben unsichtbar.
 //
 // Gespeichert wird pro Wort (store.path[lektion].learned), nicht pro Etappe: Die Gruppen werden jedes Mal
@@ -281,9 +281,6 @@ export function lessonAccess(sid, lessons, { opened = getState().opened ?? {}, i
 } } = {}) {
   const out = new Map();
   if (!lessons.length) return out;
-  // neueste: höchstes "neu"-Datum, ohne Angaben die letzte in der Reihenfolge
-  const dated = lessons.filter((l) => typeof l.neu === 'string');
-  const newest = dated.length ? dated.reduce((a, b) => (b.neu > a.neu ? b : a)) : lessons[lessons.length - 1];
   const started = (l) => {
     const prefix = `${sid}/${l.id}/`;
     const e = pathOf(l);
@@ -291,7 +288,7 @@ export function lessonAccess(sid, lessons, { opened = getState().opened ?? {}, i
   };
   let secretShown = false;
   lessons.forEach((l, i) => {
-    const open = i === 0 || complete(lessons[i - 1]) || l === newest || started(l) || has(opened, lessonKey(sid, l));
+    const open = i === 0 || complete(lessons[i - 1]) || started(l) || has(opened, lessonKey(sid, l));
     if (open) { out.set(l.id, 'open'); return; }
     // Geheimnis-Feld: die erste gesperrte Lektion nach einer offenen
     const prevOpen = out.get(lessons[i - 1].id) === 'open';

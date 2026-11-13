@@ -361,20 +361,20 @@ try {
     eq([st.at(-1).type, st.at(-1).items.map(wordId), progress(st).complete, progress(done).complete, good.at(-1).type],
       ['nachtraining', ['w2', 'w5'], false, true, 'turnier']);
   });
-  await test('Lektionen nacheinander: erste, nach geschafften, neueste, geübte und geöffnete offen; nur ein Geheimnis-Feld', () => {
+  await test('Lektionen nacheinander: erste, nach geschafften, geübte und geöffnete offen (streng von alt nach neu); nur ein Geheimnis-Feld', () => {
     const ls = ['a', 'b', 'c', 'd', 'e'].map((id) => ({ id }));
     const ctx = (o = {}) => ({ opened: {}, items: {}, pathOf: () => ({ learned: {} }), complete: () => false, ...o });
     const acc = (o) => ls.map((l) => lessonAccess('t', ls, ctx(o)).get(l.id)).join(',');
-    eq(acc(), 'open,secret,hidden,hidden,open');
-    eq(acc({ complete: (l) => l.id === 'a' }), 'open,open,secret,hidden,open');
-    eq(acc({ items: { 't/c/x|ab': { box: 1 } } }), 'open,secret,open,hidden,open');
-    eq(acc({ opened: { 't/b': 5 } }), 'open,open,secret,hidden,open');
+    eq(acc(), 'open,secret,hidden,hidden,hidden');
+    eq(acc({ complete: (l) => l.id === 'a' }), 'open,open,secret,hidden,hidden');
+    eq(acc({ items: { 't/c/x|ab': { box: 1 } } }), 'open,secret,open,hidden,hidden');
+    eq(acc({ opened: { 't/b': 5 } }), 'open,open,secret,hidden,hidden');
     // einmal geschafft bleibt geschafft (Standard-Prüfung über den gemerkten Zeitpunkt)
     const vl = ['xa', 'xb', 'xc'].map((id) => ({ ...vocab(3), id }));
     const kept = vl.map((l) => lessonAccess('t', vl, { opened: {}, items: {}, pathOf: (x) => (x.id === 'xa' ? { learned: {}, complete: 5 } : { learned: {} }) }).get(l.id)).join(',');
-    eq(kept, 'open,open,open', 'gemerkt (xc ist die neueste)');
+    eq(kept, 'open,open,secret', 'gemerkt');
     const dated = [{ id: 'a' }, { id: 'b', neu: '2026-11-10' }, { id: 'c' }];
-    eq(dated.map((l) => lessonAccess('t', dated, ctx()).get(l.id)).join(','), 'open,open,secret');
+    eq(dated.map((l) => lessonAccess('t', dated, ctx()).get(l.id)).join(','), 'open,secret,hidden', 'neu-Datum öffnet nichts');
   });
   await test('Blitzrunde: 1 pro 2 Etappen, Vorrat höchstens 2, Übernahme zählt nicht', () => {
     const path = (stamps) => ({ 'e/l': { learned: Object.fromEntries(stamps.map((t, i) => [`w${i}`, t])), mix: {} } });
