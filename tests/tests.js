@@ -78,19 +78,27 @@ try {
   await test(`Tagesziel ist ${DAY_GOAL}`, () => eq(DAY_GOAL, 10));
   await test('Joker: gerissene Serie wird angeboten, verpasste Tage bis gestern', () => {
     const d = days({ '-4': 10, '-3': 10 });
-    eq(jokerOffer(d, T), { missed: [key(-2), key(-1)], count: 2 });
+    eq(jokerOffer(d, T), { missed: [key(-2), key(-1), key(0)], rescue: 'morgen', count: 2 });
+    eq(jokerOffer(days({ '-4': 10, '-3': 10, 0: 10 }), T), { missed: [key(-2), key(-1)], rescue: 'heute', count: 2 }, 'heute schon geübt');
     eq(jokerOffer(days({ '-2': 10, '-1': 3 }), T), null, 'ein verpasster Tag: normale Rettung');
     eq(jokerOffer(days({ '-1': 10 }), T), null, 'gestern geschafft');
+  });
+  await test('Joker auch für heute: Serie läuft, Rettung morgen', () => {
+    const j = { [key(-2)]: 1, [key(-1)]: 1, [key(0)]: 1 };
+    const s = streakInfo(days({ '-4': 10, '-3': 10 }), T, j);
+    eq([s.state, s.joker, s.count, s.todayDone], ['active', 'morgen', 2, false]);
+    const practiced = streakInfo(days({ '-4': 10, '-3': 10, 0: 10 }), T, j);
+    eq([practiced.joker, practiced.count, practiced.todayDone], ['morgen', 3, true], 'heute geübt zählt trotzdem');
   });
   await test('Joker gesetzt: heute Rettungstag mit 2 × Tagesziel, Joker-Tage zählen nicht mit', () => {
     const d = days({ '-4': 10, '-3': 10 });
     const j = { [key(-2)]: 1, [key(-1)]: 1 };
     const s = streakInfo(d, T, j);
-    eq([s.state, s.joker, s.count, s.need], ['danger', true, 2, JOKER_GOAL]);
+    eq([s.state, s.joker, s.count, s.need], ['danger', 'heute', 2, JOKER_GOAL]);
     const half = streakInfo(days({ '-4': 10, '-3': 10, 0: 12 }), T, j);
     eq([half.state, half.todayDone], ['danger', false], '12 reichen nicht');
     const done = streakInfo(days({ '-4': 10, '-3': 10, 0: 20 }), T, j);
-    eq([done.state, done.count, done.todayDone], ['active', 3, true]);
+    eq([done.state, done.joker, done.count, done.todayDone], ['active', 'gerettet', 3, true]);
     ok(done.jokered.has(key(-1)), 'gestern als Joker-Tag markiert');
   });
   await test('Joker verfällt, wenn der Rettungstag nicht reicht', () => {

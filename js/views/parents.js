@@ -49,14 +49,15 @@ export function parentsSection(open = false) {
 const dayLabel = (k) => { const [y, m, d] = k.split('-').map(Number); return new Date(y, m - 1, d).toLocaleDateString('de-DE', { weekday: 'short', day: 'numeric', month: 'numeric' }); };
 function jokerBlock() {
   const s = streak();
-  if (s.joker) {
-    return `<p class="small">🃏 Joker ist gesetzt. Heute braucht es ${JOKER_GOAL} 🎯, dann ist die Serie von ${s.count} ${s.count === 1 ? 'Tag' : 'Tagen'} gerettet (bisher ${Math.round(s.todayWords * 10) / 10}).</p>`;
-  }
+  const serie = `${s.count} ${s.count === 1 ? 'Tag' : 'Tagen'}`;
+  if (s.joker === 'morgen') return `<p class="small">🃏 Joker ist gesetzt. Morgen braucht es ${JOKER_GOAL} 🎯, dann ist die Serie von ${serie} gerettet.</p>`;
+  if (s.joker === 'heute') return `<p class="small">🃏 Joker ist gesetzt. Heute braucht es ${JOKER_GOAL} 🎯, dann ist die Serie von ${serie} gerettet (bisher ${Math.round(s.todayWords * 10) / 10}).</p>`;
+  if (s.joker === 'gerettet') return `<p class="small">🃏 Mit Joker gerettet – die Serie steht bei ${serie}. 🎉</p>`;
   const offer = jokerOffer(getState().days, new Date(), getState().jokers ?? {});
   if (!offer) return '<p class="muted small">Gerade ist keine Serie zu retten. Einen verpassten Tag kann sie selbst am Tag danach retten (🛟); einen Joker gibt es hier, wenn eine Serie nach mehreren verpassten Tagen gerissen ist.</p>';
   return `<p class="small">Die Serie von <strong>${offer.count} ${offer.count === 1 ? 'Tag' : 'Tagen'}</strong> ist gerissen. Verpasst: ${offer.missed.map((k) => esc(dayLabel(k))).join(', ')}</p>
-    <p class="muted small">Mit dem Joker zählen diese Tage nicht mit, reißen die Serie aber nicht – wenn sie <strong>heute ${JOKER_GOAL} 🎯</strong> schafft (doppeltes Tagesziel). Also am besten am Tag setzen, an dem sie retten soll.</p>
-    <button class="btn" type="button" data-act="joker">🃏 Joker für heute setzen</button>`;
+    <p class="muted small">Mit dem Joker zählen diese Tage${offer.rescue === 'morgen' ? ' (auch heute)' : ''} nicht mit, reißen die Serie aber nicht – wenn sie <strong>${offer.rescue} ${JOKER_GOAL} 🎯</strong> schafft (doppeltes Tagesziel). Auf der Startseite steht dazu ein Hinweis.</p>
+    <button class="btn" type="button" data-act="joker">🃏 Joker setzen</button>`;
 }
 
 // Gesperrte Lektionen (noch nicht an der Reihe) öffnen – z. B. wenn in der Schule etwas anderes dran ist.

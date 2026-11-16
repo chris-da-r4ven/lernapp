@@ -1,7 +1,7 @@
 import { getSubjects, hasContent, allLessons } from '../content.js';
 import { unitOf, countWord } from '../lessons.js';
 import { getState, streak } from '../store.js';
-import { mood, DAY_GOAL } from '../streak.js';
+import { mood, DAY_GOAL, JOKER_GOAL } from '../streak.js';
 import { petStatus, PET } from '../pet.js';
 import { esc, fmt1 } from '../util.js';
 import { updateContent } from '../updates.js';
@@ -38,6 +38,7 @@ export function homeView(el) {
       </div>
     </section>
 
+    ${jokerNote(serie)}
     ${hasContent() ? `<div class="home-actions">${continueCard()}${blitzCard()}${ausrittCard()}</div>` : ''}
 
     <h2 class="section-title home-sign">Fächer</h2>
@@ -80,6 +81,15 @@ function subjectTile(s) {
     </a>`;
 }
 
+// Störer, solange ein Joker der Eltern offen ist (und am Tag, an dem er die Serie gerettet hat).
+function jokerNote(s) {
+  if (!s.joker) return '';
+  const serie = `${s.count} ${s.count === 1 ? 'Tag' : 'Tagen'}`;
+  const text = s.joker === 'gerettet' ? `<strong>Serie mit Joker gerettet!</strong> Sie steht bei ${serie}. 🎉`
+    : `<strong>Joker eingesetzt!</strong> Die verpassten Tage zählen nicht gegen deine Serie. Schaff <strong>${s.joker} ${JOKER_GOAL} 🎯</strong> – dann ist deine Serie von ${serie} gerettet.${s.joker === 'heute' ? ` <span class="small">(bisher ${fmt1(s.todayWords)})</span>` : ''}`;
+  return `<div class="joker-note" role="status"><span class="joker-card" aria-hidden="true">🃏</span><p>${text}</p></div>`;
+}
+
 function streakMessage(s) {
   // Tagesziel nach Schwierigkeit (Eintippen zählt 1, Antippen weniger, Experte mehr) – deshalb in
   // Tagesziel-Punkten 🎯 statt „Aufgaben“: Mathe, Englisch, alles zählt zusammen.
@@ -89,7 +99,6 @@ function streakMessage(s) {
     case 'active':
       return s.todayDone ? 'Heute geschafft! 🎉' : `Heute noch ${w(left)} von ${s.need} für deine Serie – egal in welchem Fach.`;
     case 'danger':
-      if (s.joker) return `🃏 ${esc(PET_NAME)} hat einen Joker für dich! Schaff heute ${w(left)} – dann ist deine Serie von ${s.count} ${s.count === 1 ? 'Tag' : 'Tagen'} gerettet.`;
       return `${esc(PET_NAME)} vermisst dich! Noch ${w(left)} heute, dann ist deine Serie von ${s.count} ${s.count === 1 ? 'Tag' : 'Tagen'} gerettet.`;
     case 'broken':
       return `${esc(PET_NAME)} vermisst dich! Mit ${w(left)} ${left < DAY_GOAL ? 'mehr ' : ''}startest du eine neue Serie.`;
