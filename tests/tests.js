@@ -108,6 +108,18 @@ try {
     const s = streakInfo(days({ '-5': 10, '-4': 10, '-1': 20 }), T, j);
     eq([s.state, s.count], ['active', 3]);
   });
+  await test('Joker hat nicht gereicht: am Tag danach neuer Joker, als hätte es den alten nicht gegeben', () => {
+    const j = { [key(-3)]: 1, [key(-2)]: 1 };   // gekauft am Tag -1, dort nur 12 geschafft
+    const d = days({ '-5': 10, '-4': 10, '-1': 12 });
+    eq(jokerOffer(d, T, j), { missed: [key(-3), key(-2), key(-1)], rescue: 'heute', count: 2, again: true });
+    const j2 = { ...j, [key(-1)]: 2 };
+    const open = streakInfo(d, T, j2);
+    eq([open.state, open.joker, open.count, open.need], ['danger', 'heute', 3, JOKER_GOAL], 'Tag -1 zählt mit');
+    const saved = streakInfo(days({ '-5': 10, '-4': 10, '-1': 12, 0: 20 }), T, j2);
+    eq([saved.state, saved.joker, saved.count], ['active', 'gerettet', 4]);
+    const lazy = days({ '-5': 10, '-4': 10, '-1': 3 });   // am Joker-Tag kaum geübt
+    eq(jokerOffer(lazy, T, j)?.missed, [key(-3), key(-2), key(-1)]);
+  });
   await test('Joker im Spielstand: geprüft und beim Zusammenführen vereinigt', () => {
     const clean = sanitizeState({ jokers: { '2026-11-14': 5, 'kaputt': 1, '__proto__': 2, '2026-11-15': 'x' } }).state.jokers;
     eq(clean, { '2026-11-14': 5 });

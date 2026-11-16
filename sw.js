@@ -9,7 +9,7 @@
 //   installiert die neue Version komplett, die App lädt sich dann einmal neu (app.js).
 // Lerninhalte (content/) lädt die App selbst und speichert sie lokal – die laufen hier nicht durch.
 
-const CACHE = 'lernapp-d8bd01fd2f';
+const CACHE = 'lernapp-db53aaf1dc';
 const SHELL = [
   './',
   'index.html',
