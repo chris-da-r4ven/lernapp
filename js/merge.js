@@ -10,7 +10,7 @@
 // bleibt nur, was nach diesem Zeitpunkt geübt wurde.
 
 import { dayKey } from './util.js';
-import { sanitizeState, sumDay, sumPoints, LEGACY_DEVICE, FEEDBACK_MAX, BLITZ_MAX } from './validate.js';
+import { sanitizeState, sumDay, sumPoints, LEGACY_DEVICE, FEEDBACK_MAX, BLITZ_MAX, SPENT_MAX } from './validate.js';
 
 const total = (d) => (d ? d.right + d.wrong : 0);
 
@@ -77,6 +77,7 @@ function mergeSame(a, b) {
     opened: mergeStamps(a.opened, b.opened),
     blitz: mergeBlitz(a.blitz, b.blitz),
     jokers: mergeStamps(a.jokers, b.jokers),
+    spent: mergeSpent(a.spent, b.spent),
   };
 }
 
@@ -119,6 +120,13 @@ function mergeBlitz(a = [], b = [], since = -Infinity) {
   return [...byId.values()].sort((x, y) => x.at - y.at).slice(-BLITZ_MAX);
 }
 
+// Ausgaben: alle sammeln (gleiche id = derselbe Kauf).
+function mergeSpent(a = [], b = []) {
+  const byId = new Map();
+  for (const x of [...a, ...b]) if (!byId.has(x.id)) byId.set(x.id, x);
+  return [...byId.values()].sort((x, y) => x.at - y.at).slice(-SPENT_MAX);
+}
+
 // Ein Tag: pro Gerät der Eintrag mit mehr Antworten (die Zähler wachsen nur).
 function mergeDay(a, b) {
   if (!a) return b;
@@ -151,6 +159,7 @@ function mergeAfterReset(newer, older) {
     opened: mergeStamps(newer.opened, older.opened, since),
     blitz: mergeBlitz(newer.blitz, older.blitz.filter((x) => x.at > since)),
     jokers: mergeStamps(newer.jokers, older.jokers, since),
+    spent: mergeSpent(newer.spent, (older.spent ?? []).filter((x) => x.at > since)),
   };
 }
 

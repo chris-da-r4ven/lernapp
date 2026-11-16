@@ -17,7 +17,9 @@
 //   pathSince  Zeitpunkt der einmaligen Übernahme des bisherigen Lernstands in den Lernweg (0 = noch nicht)
 //   opened     { "<fach>/<lektion>": ms } – von den Eltern geöffnete Lektionen
 //   blitz      [{ id, at }] – gespielte Blitzrunden
-//   jokers     { "JJJJ-MM-TT": ms } – von den Eltern per Joker überbrückte Tage (Serie)
+//   jokers     { "JJJJ-MM-TT": ms } – per Joker überbrückte Tage (Serie)
+//   spent      [{ id, at, cost, what }] – ausgegebene Sternchen (z. B. Joker). Der Glitzer zählt alle
+//              gesammelten (points), ausgeben lässt sich points minus spent.
 // Ältere Stände (ohne v) werden umgewandelt: bisherige Werte zählen als Gerät "alt".
 //
 // Ziel: Ein vertippter, beschädigter oder manipulierter Stand darf die App weder lahmlegen
@@ -45,6 +47,8 @@ const MAX_LESSONS = 300;
 const MAX_WORDS = 500;
 const MAX_RETRY = 100;
 export const BLITZ_MAX = 500;
+export const SPENT_MAX = 500;
+const SPENT_WHAT = new Set(['joker']);
 
 function cleanItem(v) {
   if (!isObj(v)) return null;
@@ -162,6 +166,14 @@ export function cleanPath(raw) {
   return { path: out, dropped };
 }
 
+export function cleanSpent(list) {
+  if (!Array.isArray(list)) return [];
+  return list.filter((x) => isObj(x) && typeof x.id === 'string' && /^[\w-]{1,60}$/.test(x.id) && num(x.at) !== null
+      && Number.isInteger(x.cost) && x.cost > 0 && x.cost <= 100000 && SPENT_WHAT.has(x.what))
+    .map((x) => ({ id: x.id, at: num(x.at), cost: x.cost, what: x.what }))
+    .slice(-SPENT_MAX);
+}
+
 function cleanJokers(raw) {
   const out = {};
   if (!isObj(raw)) return out;
@@ -242,6 +254,7 @@ export function sanitizeState(raw) {
       opened: cleanOpened(raw.opened),
       blitz: cleanBlitz(raw.blitz),
       jokers: cleanJokers(raw.jokers),
+      spent: cleanSpent(raw.spent),
     },
   };
 }

@@ -1,8 +1,8 @@
 // Bereich „Für Eltern“ auf der Fortschrittsseite: zum Ausklappen,
 // mit Rückmeldungen des Kindes, Statistik zurücksetzen, Sicherung des Spielstands und Geräte-Tests.
 
-import { resetProgress, getState, openLesson, setJokers, streak } from '../store.js';
-import { jokerOffer, JOKER_GOAL } from '../streak.js';
+import { resetProgress, getState, openLesson, streak, spendable } from '../store.js';
+import { jokerOffer, JOKER_GOAL, JOKER_PRICE } from '../streak.js';
 import { getSubjects, getLesson } from '../content.js';
 import { lessonAccess } from '../path.js';
 import { lessonKey } from '../lessons.js';
@@ -44,20 +44,19 @@ export function parentsSection(open = false) {
     </details>`;
 }
 
-// Joker 🃏: eine gerissene Serie retten lassen – die verpassten Tage zählen nicht, reißen aber nicht,
-// wenn am Tag des Jokers das Rettungsziel geschafft wird (streak.js).
+// Joker 🃏: kauft das Kind selbst auf der Startseite mit Sternchen (streak.js, store.buyJoker).
+// Hier nur, wie es gerade steht.
 const dayLabel = (k) => { const [y, m, d] = k.split('-').map(Number); return new Date(y, m - 1, d).toLocaleDateString('de-DE', { weekday: 'short', day: 'numeric', month: 'numeric' }); };
 function jokerBlock() {
   const s = streak();
   const serie = `${s.count} ${s.count === 1 ? 'Tag' : 'Tagen'}`;
-  if (s.joker === 'morgen') return `<p class="small">🃏 Joker ist gesetzt. Morgen braucht es ${JOKER_GOAL} 🎯, dann ist die Serie von ${serie} gerettet.</p>`;
-  if (s.joker === 'heute') return `<p class="small">🃏 Joker ist gesetzt. Heute braucht es ${JOKER_GOAL} 🎯, dann ist die Serie von ${serie} gerettet (bisher ${Math.round(s.todayWords * 10) / 10}).</p>`;
+  if (s.joker === 'morgen') return `<p class="small">🃏 Joker ist gekauft. Morgen braucht es ${JOKER_GOAL} 🎯, dann ist die Serie von ${serie} gerettet.</p>`;
+  if (s.joker === 'heute') return `<p class="small">🃏 Joker ist gekauft. Heute braucht es ${JOKER_GOAL} 🎯, dann ist die Serie von ${serie} gerettet (bisher ${Math.round(s.todayWords * 10) / 10}).</p>`;
   if (s.joker === 'gerettet') return `<p class="small">🃏 Mit Joker gerettet – die Serie steht bei ${serie}. 🎉</p>`;
   const offer = jokerOffer(getState().days, new Date(), getState().jokers ?? {});
-  if (!offer) return '<p class="muted small">Gerade ist keine Serie zu retten. Einen verpassten Tag kann sie selbst am Tag danach retten (🛟); einen Joker gibt es hier, wenn eine Serie nach mehreren verpassten Tagen gerissen ist.</p>';
+  if (!offer) return `<p class="muted small">Gerade ist keine Serie zu retten. Einen verpassten Tag kann sie selbst am Tag danach retten (🛟). Reißt eine Serie nach mehreren verpassten Tagen, kann sie auf der Startseite einen Joker für ${JOKER_PRICE} ✦ kaufen.</p>`;
   return `<p class="small">Die Serie von <strong>${offer.count} ${offer.count === 1 ? 'Tag' : 'Tagen'}</strong> ist gerissen. Verpasst: ${offer.missed.map((k) => esc(dayLabel(k))).join(', ')}</p>
-    <p class="muted small">Mit dem Joker zählen diese Tage${offer.rescue === 'morgen' ? ' (auch heute)' : ''} nicht mit, reißen die Serie aber nicht – wenn sie <strong>${offer.rescue} ${JOKER_GOAL} 🎯</strong> schafft (doppeltes Tagesziel). Auf der Startseite steht dazu ein Hinweis.</p>
-    <button class="btn" type="button" data-act="joker">🃏 Joker setzen</button>`;
+    <p class="muted small">Auf der Startseite kann sie einen Joker für ${JOKER_PRICE} ✦ kaufen (zum Ausgeben hat sie ${spendable()} ✦; Fannys Glitzer bleibt). Dann zählen diese Tage nicht mit, reißen die Serie aber nicht – wenn sie ${offer.rescue} ${JOKER_GOAL} 🎯 schafft.</p>`;
 }
 
 // Gesperrte Lektionen (noch nicht an der Reihe) öffnen – z. B. wenn in der Schule etwas anderes dran ist.
@@ -115,12 +114,6 @@ export function bindParents(el, rerender) {
     toast('Lektion geöffnet.');
     rerender(true);
   }));
-  box.querySelector('[data-act=joker]')?.addEventListener('click', () => {
-    const offer = jokerOffer(getState().days, new Date(), getState().jokers ?? {});
-    if (offer) setJokers(offer.missed);
-    toast('Joker gesetzt 🃏');
-    rerender(true);
-  });
   const startBtn = box.querySelector('[data-act=reset-start]');
   const form = box.querySelector('.reset-form');
 

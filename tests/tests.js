@@ -2,13 +2,13 @@
 // Auf dieser Seite arbeitet store.js mit einem eigenen Profil (lernapp.p.test.progress) –
 // der echte Lernstand des Geräts wird nie angefasst. Das prüft der letzte Test.
 
-import { streakInfo, mood, DAY_GOAL, jokerOffer, JOKER_GOAL } from '../js/streak.js';
+import { streakInfo, mood, DAY_GOAL, jokerOffer, JOKER_GOAL, JOKER_PRICE } from '../js/streak.js';
 import { mergeStates } from '../js/merge.js';
 import { check, parseGap } from '../js/exercises/questions.js';
 import { mathNorm } from '../js/exercises/math.js';
 import { levelFor, glitterFor } from '../js/pet.js';
 import { record, roundBonus, buildRound } from '../js/srs.js';
-import { getState, replaceState, migrateLessons, addTestResult, itemState, addPoints, addDayStat, profileId, resetProgress } from '../js/store.js';
+import { getState, replaceState, migrateLessons, addTestResult, itemState, addPoints, addDayStat, profileId, resetProgress, spendable, buyJoker } from '../js/store.js';
 import { medalStatus } from '../js/medal.js';
 import { unitOf, lessonKey } from '../js/lessons.js';
 import { deviceId } from '../js/device.js';
@@ -113,6 +113,17 @@ try {
     eq(clean, { '2026-11-14': 5 });
     const m = mergeStates({ v: 3, resetAt: 0, jokers: { '2026-11-14': 9 } }, { v: 3, resetAt: 0, jokers: { '2026-11-14': 5, '2026-11-15': 6 } });
     eq(m.jokers, { '2026-11-14': 5, '2026-11-15': 6 });
+  });
+  await test('Joker kaufen: kostet Sternchen zum Ausgeben, der Glitzer (points) bleibt', () => {
+    replaceState({ ...empty(), v: 3, points: 100, pointsBy: { a: 100 } });
+    eq([buyJoker([key(-1)], JOKER_PRICE), spendable()], [false, 100], 'zu wenig Sternchen');
+    replaceState({ ...empty(), v: 3, points: 400, pointsBy: { a: 400 } });
+    eq(buyJoker([key(-2), key(-1)], JOKER_PRICE), true);
+    eq([getState().points, spendable(), Object.keys(getState().jokers)], [400, 400 - JOKER_PRICE, [key(-2), key(-1)]]);
+    const clean = sanitizeState({ spent: [{ id: 'g-1', at: 5, cost: 150, what: 'joker' }, { id: 'x', at: 1, cost: -5, what: 'joker' }, { id: 'y', at: 1, cost: 5, what: 'pony' }] }).state.spent;
+    eq(clean, [{ id: 'g-1', at: 5, cost: 150, what: 'joker' }]);
+    const m = mergeStates({ v: 3, resetAt: 0, spent: [{ id: 'a-1', at: 1, cost: 150, what: 'joker' }] }, { v: 3, resetAt: 0, spent: [{ id: 'a-1', at: 1, cost: 150, what: 'joker' }, { id: 'b-1', at: 2, cost: 150, what: 'joker' }] });
+    eq(m.spent.map((x) => x.id), ['a-1', 'b-1'], 'gleicher Kauf nur einmal');
   });
 
   // --- Zusammenführen -------------------------------------------------------------

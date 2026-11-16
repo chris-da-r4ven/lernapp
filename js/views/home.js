@@ -1,7 +1,7 @@
 import { getSubjects, hasContent, allLessons } from '../content.js';
 import { unitOf, countWord } from '../lessons.js';
-import { getState, streak } from '../store.js';
-import { mood, DAY_GOAL, JOKER_GOAL } from '../streak.js';
+import { getState, streak, spendable, buyJoker } from '../store.js';
+import { mood, DAY_GOAL, JOKER_GOAL, JOKER_PRICE, jokerOffer } from '../streak.js';
 import { petStatus, PET } from '../pet.js';
 import { esc, fmt1 } from '../util.js';
 import { updateContent } from '../updates.js';
@@ -56,6 +56,20 @@ export function homeView(el) {
       <button class="btn" data-act="pet-close">Schließen</button>
     </dialog>`;
 
+  // Joker kaufen: erst nachfragen
+  el.querySelector('[data-act=joker-ask]')?.addEventListener('click', () => {
+    el.querySelector('.joker-buy').hidden = true;
+    el.querySelector('.joker-confirm').hidden = false;
+  });
+  el.querySelector('[data-act=joker-no]')?.addEventListener('click', () => {
+    el.querySelector('.joker-buy').hidden = false;
+    el.querySelector('.joker-confirm').hidden = true;
+  });
+  el.querySelector('[data-act=joker-buy]')?.addEventListener('click', () => {
+    const offer = jokerOffer(getState().days, new Date(), getState().jokers ?? {});
+    if (offer && buyJoker(offer.missed, JOKER_PRICE)) homeView(el);
+  });
+
   const dialog = el.querySelector('.pet-dialog');
   el.querySelector('[data-act=pet]').addEventListener('click', () => dialog.showModal());
   el.querySelector('[data-act=pet-close]').addEventListener('click', () => dialog.close());
@@ -81,9 +95,23 @@ function subjectTile(s) {
     </a>`;
 }
 
-// Störer, solange ein Joker der Eltern offen ist (und am Tag, an dem er die Serie gerettet hat).
+// Störer: Joker kaufen (Serie gerissen), Joker offen, mit Joker gerettet.
 function jokerNote(s) {
-  if (!s.joker) return '';
+  if (!s.joker) {
+    const offer = jokerOffer(getState().days, new Date(), getState().jokers ?? {});
+    if (!offer) return '';
+    const have = spendable();
+    const serie = `${offer.count} ${offer.count === 1 ? 'Tag' : 'Tagen'}`;
+    return `<div class="joker-note joker-offer"><span class="joker-card" aria-hidden="true">🃏</span><div>
+      <p><strong>Deine Serie von ${serie} ist gerissen.</strong> Mit einem Joker zählen die verpassten Tage nicht – dann ${offer.rescue} ${JOKER_GOAL} 🎯 schaffen und die Serie ist gerettet.</p>
+      ${have >= JOKER_PRICE
+        ? `<div class="actions joker-buy"><button class="btn" type="button" data-act="joker-ask">Joker kaufen für ${JOKER_PRICE} ✦</button>
+           <span class="small">Du hast ${have} ✦ zum Ausgeben – Fannys Glitzer bleibt.</span></div>
+           <div class="actions joker-confirm" hidden><button class="btn primary" type="button" data-act="joker-buy">Ja, für ${JOKER_PRICE} ✦ kaufen</button>
+           <button class="btn ghost" type="button" data-act="joker-no">Lieber nicht</button></div>`
+        : `<p class="small">Ein Joker kostet ${JOKER_PRICE} ✦ – dir fehlen noch ${JOKER_PRICE - have} ✦.</p>`}
+    </div></div>`;
+  }
   const serie = `${s.count} ${s.count === 1 ? 'Tag' : 'Tagen'}`;
   const text = s.joker === 'gerettet' ? `<strong>Serie mit Joker gerettet!</strong> Sie steht bei ${serie}. 🎉`
     : `<strong>Joker eingesetzt!</strong> Die verpassten Tage zählen nicht gegen deine Serie. Schaff <strong>${s.joker} ${JOKER_GOAL} 🎯</strong> – dann ist deine Serie von ${serie} gerettet.${s.joker === 'heute' ? ` <span class="small">(bisher ${fmt1(s.todayWords)})</span>` : ''}`;
@@ -97,6 +125,7 @@ function streakMessage(s) {
   const w = (n) => `${fmt1(n)} 🎯`;
   switch (s.state) {
     case 'active':
+      if (s.joker === 'morgen' && !s.todayDone) return 'Heute darfst du Pause machen – morgen geht’s weiter! Wenn du heute übst, zählt es trotzdem.';
       return s.todayDone ? 'Heute geschafft! 🎉' : `Heute noch ${w(left)} von ${s.need} für deine Serie – egal in welchem Fach.`;
     case 'danger':
       return `${esc(PET_NAME)} vermisst dich! Noch ${w(left)} heute, dann ist deine Serie von ${s.count} ${s.count === 1 ? 'Tag' : 'Tagen'} gerettet.`;

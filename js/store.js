@@ -28,7 +28,7 @@ if (!TESTING && PROFILE === 'standard' && readKey(KEY) === null && readKey(OLD_K
 
 // resetAt: Zeitpunkt des letzten Zurücksetzens (für das Zusammenführen mit der Sicherung).
 const empty = () => ({ v: SCHEMA, items: {}, days: {}, points: 0, pointsBy: {}, pet: null, tests: {}, feedback: [], resetAt: 0,
-  path: {}, pathSince: 0, opened: {}, blitz: [], jokers: {} });
+  path: {}, pathSince: 0, opened: {}, blitz: [], jokers: {}, spent: [] });
 
 // Konnte der gespeicherte Stand nicht (vollständig) gelesen werden? Dann hebt load() den
 // Rohtext auf, und die Sicherung führt beim nächsten Abgleich zusammen statt zu überschreiben.
@@ -198,11 +198,17 @@ export function streak() {
   return streakInfo(state.days, new Date(), state.jokers ?? {});
 }
 
-// Joker 🃏 der Eltern: verpasste Tage überbrücken (siehe streak.js).
-export function setJokers(dayKeys, at = Date.now()) {
+// Sternchen zum Ausgeben: alle gesammelten minus die ausgegebenen (der Glitzer zählt weiter alle).
+export const spendable = () => Math.max(0, (Number(state.points) || 0) - (state.spent ?? []).reduce((n, x) => n + x.cost, 0));
+
+// Joker 🃏 kaufen: verpasste Tage überbrücken (siehe streak.js). false, wenn die Sternchen nicht reichen.
+export function buyJoker(dayKeys, cost, at = Date.now()) {
+  if (!dayKeys.length || spendable() < cost) return false;
+  state.spent = [...(state.spent ?? []), { id: `${deviceId()}-${at.toString(36)}`, at, cost, what: 'joker' }];
   state.jokers ??= {};
   for (const k of dayKeys) if (!Object.hasOwn(state.jokers, k)) state.jokers[k] = at;
   save();
+  return true;
 }
 
 // Rückmeldung nach einer Runde (Spaß / weitergebracht, je 1–5). Gleiche id = dieselbe Runde, die

@@ -667,3 +667,4 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
 .joker-note p { margin: 0; }
 .joker-card { flex: none; font-size: 2rem; transform: rotate(-8deg); }
 @media (prefers-color-scheme: dark) { .joker-note { background: #4a3a1c; color: #fff3d6; border-color: #f0c45a; } }
+.joker-offer .actions { margin-top: 8px; align-items: center; }

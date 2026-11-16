@@ -23,6 +23,7 @@ export const dayValue = (x) => (x ? (x.e != null ? x.e / 10 : x.right + x.wrong)
 const words = (days, d) => dayValue(days[dayKey(d)]);
 
 export const JOKER_GOAL = 2 * DAY_GOAL;
+export const JOKER_PRICE = 150;   // ✦ Sternchen – kauft das Kind selbst (Startseite)
 
 // Für jeden Tag bis heute: zählt er (ok: true), hält ein Joker die Serie (ok: 'joker'), reißt sie (false)?
 // rescued: gerettete Tage (🛟), jokered: per Joker überbrückte Tage (🃏),
