@@ -103,7 +103,7 @@ function jokerNote(s) {
     const have = spendable();
     const serie = `${offer.count} ${offer.count === 1 ? 'Tag' : 'Tagen'}`;
     return `<div class="joker-note joker-offer"><span class="joker-card" aria-hidden="true">🃏</span><div>
-      <p><strong>Deine Serie von ${serie} ist gerissen.</strong> Mit einem Joker zählen die verpassten Tage nicht – dann ${offer.rescue} ${JOKER_GOAL} 🎯 schaffen und die Serie ist gerettet.</p>
+      <p><strong>Deine Serie von ${serie} ist gerissen.</strong> Mit einem Joker zählen die verpassten Tage nicht gegen dich. Schaffst du dann heute ${JOKER_GOAL} 🎯, ist deine Serie gerettet.</p>
       ${have >= JOKER_PRICE
         ? `<div class="actions joker-buy"><button class="btn" type="button" data-act="joker-ask">Joker kaufen für ${JOKER_PRICE} ✦</button>
            <span class="small">Du hast ${have} ✦ zum Ausgeben – Fannys Glitzer bleibt.</span></div>

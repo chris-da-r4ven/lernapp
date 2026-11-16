@@ -88,9 +88,9 @@ function countBack(ok, from) {
   return n;
 }
 
-// Für die Eltern: Ist eine Serie gerissen, aber noch per Joker zu retten? Dann die Tage, die der Joker
-// überbrückt (die verpassten bis gestern, dazu heute, wenn heute noch nicht geschafft – höchstens 8),
-// der Rettungstag ('heute' oder 'morgen') und wie lang die Serie war.
+// Ist eine Serie gerissen, aber noch per Joker zu retten? Dann die Tage, die der Joker überbrückt
+// (die verpassten bis gestern, höchstens 7), der Rettungstag ('heute': sie kauft den Joker, wenn sie
+// die gerissene Serie sieht, und übt gleich weiter) und wie lang die Serie war.
 export function jokerOffer(days, today = new Date(), jokers = {}) {
   // Auch wenn heute schon geübt wurde (dann läuft eine neue Serie ab 1) – Hauptsache, gestern fehlt
   // und es ist keine normale Rettung (ein verpasster Tag) möglich.
@@ -101,8 +101,7 @@ export function jokerOffer(days, today = new Date(), jokers = {}) {
   let d = addDays(today, -1);
   while (!ok.get(dayKey(d)) && missed.length < 8) { missed.unshift(dayKey(d)); d = addDays(d, -1); }
   if (!ok.get(dayKey(d)) || missed.length > 7) return null;
-  const todayOk = ok.get(dayKey(today)) === true;
-  return { missed: todayOk ? missed : [...missed, dayKey(today)], rescue: todayOk ? 'heute' : 'morgen', count: countBack(ok, d) };
+  return { missed, rescue: 'heute', count: countBack(ok, d) };
 }
 
 // state:

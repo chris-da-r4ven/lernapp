@@ -78,7 +78,7 @@ try {
   await test(`Tagesziel ist ${DAY_GOAL}`, () => eq(DAY_GOAL, 10));
   await test('Joker: gerissene Serie wird angeboten, verpasste Tage bis gestern', () => {
     const d = days({ '-4': 10, '-3': 10 });
-    eq(jokerOffer(d, T), { missed: [key(-2), key(-1), key(0)], rescue: 'morgen', count: 2 });
+    eq(jokerOffer(d, T), { missed: [key(-2), key(-1)], rescue: 'heute', count: 2 });
     eq(jokerOffer(days({ '-4': 10, '-3': 10, 0: 10 }), T), { missed: [key(-2), key(-1)], rescue: 'heute', count: 2 }, 'heute schon geübt');
     eq(jokerOffer(days({ '-2': 10, '-1': 3 }), T), null, 'ein verpasster Tag: normale Rettung');
     eq(jokerOffer(days({ '-1': 10 }), T), null, 'gestern geschafft');
