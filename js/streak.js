@@ -91,30 +91,24 @@ function countBack(ok, from) {
   return n;
 }
 
-// Ist eine Serie gerissen, aber noch per Joker zu retten? Dann die Tage, die der Joker überbrückt
-// (die verpassten bis gestern, höchstens 7), der Rettungstag ('heute': sie kauft den Joker, wenn sie
-// die gerissene Serie sieht, und übt gleich weiter) und wie lang die Serie war.
-// Hat gestern ein Joker nicht gereicht, gibt es heute einen neuen – so, als hätte es den gestrigen
-// nicht gegeben: Er überbrückt alles ab der ursprünglichen Lücke bis gestern.
+// Ist eine Serie gerissen, aber noch per Joker zu retten? Gesucht wird die jüngste Lücke (nicht geschaffte
+// Tage) mit einer Serie davor; danach darf schon eine neue, kürzere Serie laufen. Alles von der Lücke bis
+// gestern (höchstens 7 Tage) überbrückt der Joker – geschaffte Tage darin zählen weiter mit. Rettungstag ist
+// heute ('heute': sie kauft den Joker, wenn sie die gerissene Serie sieht, und übt gleich weiter).
+// Hat gestern ein Joker nicht gereicht, ergibt sich daraus von selbst ein neuer – so, als hätte es den
+// gestrigen nicht gegeben (again: für den Hinweis).
+export const JOKER_SPAN = 7;
 export function jokerOffer(days, today = new Date(), jokers = {}) {
-  // Auch wenn heute schon geübt wurde (dann läuft eine neue Serie ab 1) – Hauptsache, gestern fehlt
-  // und es ist keine normale Rettung (ein verpasster Tag) möglich.
-  if (streakInfo(days, today, jokers).state === 'danger') return null;
+  if (streakInfo(days, today, jokers).state === 'danger') return null;   // normale Rettung reicht
   const { ok, jokerFailed } = evaluate(days, today, jokers);
   const y = dayKey(addDays(today, -1));
-  if (jokerFailed && jokerFailed.due === y) {
-    const [fy, fm, fd] = jokerFailed.from.split('-').map(Number);
-    const missed = [];
-    for (let d = new Date(fy, fm - 1, fd); dayKey(d) <= y; d = addDays(d, 1)) missed.push(dayKey(d));
-    if (missed.length > 8) return null;
-    return { missed, rescue: 'heute', count: countBack(ok, addDays(new Date(fy, fm - 1, fd), -1)), again: true };
-  }
-  if (ok.get(y)) return null;
-  const missed = [];
+  const span = [];
   let d = addDays(today, -1);
-  while (!ok.get(dayKey(d)) && missed.length < 8) { missed.unshift(dayKey(d)); d = addDays(d, -1); }
-  if (!ok.get(dayKey(d)) || missed.length > 7) return null;
-  return { missed, rescue: 'heute', count: countBack(ok, d) };
+  while (ok.get(dayKey(d)) && span.length < JOKER_SPAN) { span.unshift(dayKey(d)); d = addDays(d, -1); }   // neue Serie
+  let gap = 0;
+  while (!ok.get(dayKey(d)) && span.length < JOKER_SPAN) { span.unshift(dayKey(d)); gap++; d = addDays(d, -1); }   // Lücke
+  if (!gap || !ok.get(dayKey(d))) return null;   // keine Lücke, zu lang her oder keine Serie davor
+  return { missed: span, rescue: 'heute', count: countBack(ok, d), since: span.length - gap, again: Boolean(jokerFailed && jokerFailed.due === y) };
 }
 
 // state:

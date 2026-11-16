@@ -105,7 +105,9 @@ function jokerNote(s) {
     return `<div class="joker-note joker-offer"><span class="joker-card" aria-hidden="true">🃏</span><div>
       <p>${offer.again
         ? `<strong>Gestern hat es mit dem Joker nicht ganz gereicht.</strong> Mit einem neuen Joker kannst du es heute nochmal versuchen: Schaffst du heute ${JOKER_GOAL} 🎯, ist deine Serie von ${serie} gerettet.`
-        : `<strong>Deine Serie von ${serie} ist gerissen.</strong> Mit einem Joker zählen die verpassten Tage nicht gegen dich. Schaffst du dann heute ${JOKER_GOAL} 🎯, ist deine Serie gerettet.`}</p>
+        : offer.since
+          ? `<strong>Deine alte Serie von ${serie} ist vor ein paar Tagen gerissen.</strong> Mit einem Joker zählt die Lücke nicht gegen dich. Schaffst du dann heute ${JOKER_GOAL} 🎯, hängen alte und neue Serie zusammen.`
+          : `<strong>Deine Serie von ${serie} ist gerissen.</strong> Mit einem Joker zählen die verpassten Tage nicht gegen dich. Schaffst du dann heute ${JOKER_GOAL} 🎯, ist deine Serie gerettet.`}</p>
       ${have >= JOKER_PRICE
         ? `<div class="actions joker-buy"><button class="btn" type="button" data-act="joker-ask">Joker kaufen für ${JOKER_PRICE} ✦</button>
            <span class="small">Du hast ${have} ✦ zum Ausgeben – Fannys Glitzer bleibt.</span></div>

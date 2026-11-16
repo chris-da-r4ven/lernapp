@@ -78,8 +78,8 @@ try {
   await test(`Tagesziel ist ${DAY_GOAL}`, () => eq(DAY_GOAL, 10));
   await test('Joker: gerissene Serie wird angeboten, verpasste Tage bis gestern', () => {
     const d = days({ '-4': 10, '-3': 10 });
-    eq(jokerOffer(d, T), { missed: [key(-2), key(-1)], rescue: 'heute', count: 2 });
-    eq(jokerOffer(days({ '-4': 10, '-3': 10, 0: 10 }), T), { missed: [key(-2), key(-1)], rescue: 'heute', count: 2 }, 'heute schon geübt');
+    eq(jokerOffer(d, T), { missed: [key(-2), key(-1)], rescue: 'heute', count: 2, since: 0, again: false });
+    eq(jokerOffer(days({ '-4': 10, '-3': 10, 0: 10 }), T), { missed: [key(-2), key(-1)], rescue: 'heute', count: 2, since: 0, again: false }, 'heute schon geübt');
     eq(jokerOffer(days({ '-2': 10, '-1': 3 }), T), null, 'ein verpasster Tag: normale Rettung');
     eq(jokerOffer(days({ '-1': 10 }), T), null, 'gestern geschafft');
   });
@@ -111,7 +111,7 @@ try {
   await test('Joker hat nicht gereicht: am Tag danach neuer Joker, als hätte es den alten nicht gegeben', () => {
     const j = { [key(-3)]: 1, [key(-2)]: 1 };   // gekauft am Tag -1, dort nur 12 geschafft
     const d = days({ '-5': 10, '-4': 10, '-1': 12 });
-    eq(jokerOffer(d, T, j), { missed: [key(-3), key(-2), key(-1)], rescue: 'heute', count: 2, again: true });
+    eq(jokerOffer(d, T, j), { missed: [key(-3), key(-2), key(-1)], rescue: 'heute', count: 2, since: 1, again: true });
     const j2 = { ...j, [key(-1)]: 2 };
     const open = streakInfo(d, T, j2);
     eq([open.state, open.joker, open.count, open.need], ['danger', 'heute', 3, JOKER_GOAL], 'Tag -1 zählt mit');
@@ -119,6 +119,19 @@ try {
     eq([saved.state, saved.joker, saved.count], ['active', 'gerettet', 4]);
     const lazy = days({ '-5': 10, '-4': 10, '-1': 3 });   // am Joker-Tag kaum geübt
     eq(jokerOffer(lazy, T, j)?.missed, [key(-3), key(-2), key(-1)]);
+  });
+  await test('Joker auch, wenn nach der Lücke schon eine neue Serie läuft (bis 7 Tage)', () => {
+    // 9er-Serie bis -3, -2 verpasst, -1 nur 12 (Rettung nicht geschafft) → neue Serie ab -1
+    const d = days({ '-11': 10, '-10': 10, '-9': 10, '-8': 10, '-7': 10, '-6': 10, '-5': 10, '-4': 10, '-3': 10, '-1': 12 });
+    eq(streakInfo(d, T).count, 1, 'ohne Joker: neue Serie 1');
+    const offer = jokerOffer(d, T);
+    eq([offer.missed, offer.count, offer.since], [[key(-2), key(-1)], 9, 1]);
+    const j = Object.fromEntries(offer.missed.map((k) => [k, 1]));
+    eq([streakInfo(d, T, j).state, streakInfo(d, T, j).need], ['danger', JOKER_GOAL]);
+    const done = streakInfo(days({ '-11': 10, '-10': 10, '-9': 10, '-8': 10, '-7': 10, '-6': 10, '-5': 10, '-4': 10, '-3': 10, '-1': 12, 0: 20 }), T, j);
+    eq([done.state, done.count], ['active', 11], '9 + gestern + heute');
+    eq(jokerOffer(days({ '-12': 10, '-11': 10, '-7': 10, '-6': 10, '-5': 10, '-4': 10, '-3': 10, '-2': 10, '-1': 10 }), T), null, 'Lücke zu lange her');
+    eq(jokerOffer(days({ '-3': 10, '-2': 10, '-1': 10 }), T), null, 'keine Lücke');
   });
   await test('Joker im Spielstand: geprüft und beim Zusammenführen vereinigt', () => {
     const clean = sanitizeState({ jokers: { '2026-11-14': 5, 'kaputt': 1, '__proto__': 2, '2026-11-15': 'x' } }).state.jokers;
