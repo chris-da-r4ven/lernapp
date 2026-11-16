@@ -76,6 +76,7 @@ function mergeSame(a, b) {
     pathSince: Math.max(a.pathSince ?? 0, b.pathSince ?? 0),
     opened: mergeStamps(a.opened, b.opened),
     blitz: mergeBlitz(a.blitz, b.blitz),
+    jokers: mergeStamps(a.jokers, b.jokers),
   };
 }
 
@@ -149,6 +150,7 @@ function mergeAfterReset(newer, older) {
     path: mergePath(newer.path, older.path, since),
     opened: mergeStamps(newer.opened, older.opened, since),
     blitz: mergeBlitz(newer.blitz, older.blitz.filter((x) => x.at > since)),
+    jokers: mergeStamps(newer.jokers, older.jokers, since),
   };
 }
 

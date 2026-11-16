@@ -2,7 +2,7 @@
 // Auf dieser Seite arbeitet store.js mit einem eigenen Profil (lernapp.p.test.progress) –
 // der echte Lernstand des Geräts wird nie angefasst. Das prüft der letzte Test.
 
-import { streakInfo, mood, DAY_GOAL } from '../js/streak.js';
+import { streakInfo, mood, DAY_GOAL, jokerOffer, JOKER_GOAL } from '../js/streak.js';
 import { mergeStates } from '../js/merge.js';
 import { check, parseGap } from '../js/exercises/questions.js';
 import { mathNorm } from '../js/exercises/math.js';
@@ -76,6 +76,36 @@ try {
     eq(streakInfo(days({ '-4': 10, '-3': 10 }), T).state, 'broken');
   });
   await test(`Tagesziel ist ${DAY_GOAL}`, () => eq(DAY_GOAL, 10));
+  await test('Joker: gerissene Serie wird angeboten, verpasste Tage bis gestern', () => {
+    const d = days({ '-4': 10, '-3': 10 });
+    eq(jokerOffer(d, T), { missed: [key(-2), key(-1)], count: 2 });
+    eq(jokerOffer(days({ '-2': 10, '-1': 3 }), T), null, 'ein verpasster Tag: normale Rettung');
+    eq(jokerOffer(days({ '-1': 10 }), T), null, 'gestern geschafft');
+  });
+  await test('Joker gesetzt: heute Rettungstag mit 2 × Tagesziel, Joker-Tage zählen nicht mit', () => {
+    const d = days({ '-4': 10, '-3': 10 });
+    const j = { [key(-2)]: 1, [key(-1)]: 1 };
+    const s = streakInfo(d, T, j);
+    eq([s.state, s.joker, s.count, s.need], ['danger', true, 2, JOKER_GOAL]);
+    const half = streakInfo(days({ '-4': 10, '-3': 10, 0: 12 }), T, j);
+    eq([half.state, half.todayDone], ['danger', false], '12 reichen nicht');
+    const done = streakInfo(days({ '-4': 10, '-3': 10, 0: 20 }), T, j);
+    eq([done.state, done.count, done.todayDone], ['active', 3, true]);
+    ok(done.jokered.has(key(-1)), 'gestern als Joker-Tag markiert');
+  });
+  await test('Joker verfällt, wenn der Rettungstag nicht reicht', () => {
+    const j = { [key(-3)]: 1, [key(-2)]: 1 };
+    const fail = streakInfo(days({ '-5': 10, '-4': 10, '-1': 12 }), T, j);
+    eq([fail.state, fail.count], ['active', 1], 'neue Serie ab gestern, die alte ist weg');
+    const s = streakInfo(days({ '-5': 10, '-4': 10, '-1': 20 }), T, j);
+    eq([s.state, s.count], ['active', 3]);
+  });
+  await test('Joker im Spielstand: geprüft und beim Zusammenführen vereinigt', () => {
+    const clean = sanitizeState({ jokers: { '2026-11-14': 5, 'kaputt': 1, '__proto__': 2, '2026-11-15': 'x' } }).state.jokers;
+    eq(clean, { '2026-11-14': 5 });
+    const m = mergeStates({ v: 3, resetAt: 0, jokers: { '2026-11-14': 9 } }, { v: 3, resetAt: 0, jokers: { '2026-11-14': 5, '2026-11-15': 6 } });
+    eq(m.jokers, { '2026-11-14': 5, '2026-11-15': 6 });
+  });
 
   // --- Zusammenführen -------------------------------------------------------------
   section('Sicherung zusammenführen');

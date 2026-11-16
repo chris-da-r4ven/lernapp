@@ -53,7 +53,7 @@ export function statsView(el, openParents = false) {
           <span class="small muted">${countWord(s.unit, s.sicher)} sicher · ${s.wackelt} wackeln · ${s.neu} neu</span>
         </div>`).join('') || '<p class="muted">Noch keine Fächer.</p>'}`, { open: true })}
 
-    ${fold('tage', `<h2>Letzte ${HISTORY_DAYS} Tage</h2>`, historyChart(st.days, serie.rescued), { open: true })}
+    ${fold('tage', `<h2>Letzte ${HISTORY_DAYS} Tage</h2>`, historyChart(st.days, serie.rescued, serie.jokered), { open: true })}
 
     ${fold('test', '<h2>Bereit für den Test?</h2>', lessonTable())}
 
@@ -143,27 +143,27 @@ function lessonTable() {
     ${blocks.join('') || '<p class="muted">Noch keine Lektionen.</p>'}`;
 }
 
-function historyChart(days, rescued) {
+function historyChart(days, rescued, jokered = new Set()) {
   const list = [];
   for (let i = HISTORY_DAYS - 1; i >= 0; i--) {
     const d = addDays(new Date(), -i);
     const day = days[dayKey(d)] ?? {};
-    list.push({ d, rescued: rescued.has(dayKey(d)), right: Number(day.right) || 0, wrong: Number(day.wrong) || 0 });
+    list.push({ d, rescued: rescued.has(dayKey(d)), joker: jokered.has(dayKey(d)), right: Number(day.right) || 0, wrong: Number(day.wrong) || 0 });
   }
   const max = Math.max(1, ...list.map((x) => x.right + x.wrong));
   return `
     <div class="bars" role="img" aria-label="Geübte Aufgaben pro Tag">
       ${list.map((x) => `
-        <div class="bar${x.rescued ? ' rescued' : ''}" title="${x.d.toLocaleDateString('de-DE')}: ${x.right} richtig, ${x.wrong} falsch${x.rescued ? ' – am Tag danach gerettet' : ''}">
+        <div class="bar${x.rescued ? ' rescued' : ''}" title="${x.d.toLocaleDateString('de-DE')}: ${x.right} richtig, ${x.wrong} falsch${x.rescued ? ' – am Tag danach gerettet' : ''}${x.joker ? ' – per Joker überbrückt' : ''}">
           <div class="bar-stack" style="height:${((x.right + x.wrong) / max) * 100}%">
             <div class="wrong" style="flex:${x.wrong}"></div>
             <div class="right" style="flex:${x.right}"></div>
           </div>
-          <span>${x.rescued ? '🛟' : x.d.toLocaleDateString('de-DE', { weekday: 'narrow' })}</span>
+          <span>${x.rescued ? '🛟' : x.joker ? '🃏' : x.d.toLocaleDateString('de-DE', { weekday: 'narrow' })}</span>
         </div>`).join('')}
     </div>
     <div class="legend small"><span class="dot right"></span>richtig <span class="dot wrong"></span>falsch</div>
-    <p class="muted small">Ein Tag zählt für die Serie ab ${DAY_GOAL} 🎯. Jede Aufgabe zählt nach ihrer Schwere: Antwortform (Eintippen 1, Antippen weniger – Raten ist herausgerechnet) mal Denkaufwand (Wiedererkennen 0,3 bis Knobeln 2). Wörter schreiben zählt 1. 🛟 = verpasst, aber am Tag danach gerettet.</p>`;
+    <p class="muted small">Ein Tag zählt für die Serie ab ${DAY_GOAL} 🎯. Jede Aufgabe zählt nach ihrer Schwere: Antwortform (Eintippen 1, Antippen weniger – Raten ist herausgerechnet) mal Denkaufwand (Wiedererkennen 0,3 bis Knobeln 2). Wörter schreiben zählt 1. 🛟 = verpasst, aber am Tag danach gerettet. 🃏 = per Joker überbrückt.</p>`;
 }
 
 // Für die Eltern: Stand von App, Inhalten und Sicherung auf einen Blick.

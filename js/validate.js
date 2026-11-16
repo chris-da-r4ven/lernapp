@@ -17,6 +17,7 @@
 //   pathSince  Zeitpunkt der einmaligen Übernahme des bisherigen Lernstands in den Lernweg (0 = noch nicht)
 //   opened     { "<fach>/<lektion>": ms } – von den Eltern geöffnete Lektionen
 //   blitz      [{ id, at }] – gespielte Blitzrunden
+//   jokers     { "JJJJ-MM-TT": ms } – von den Eltern per Joker überbrückte Tage (Serie)
 // Ältere Stände (ohne v) werden umgewandelt: bisherige Werte zählen als Gerät "alt".
 //
 // Ziel: Ein vertippter, beschädigter oder manipulierter Stand darf die App weder lahmlegen
@@ -161,6 +162,16 @@ export function cleanPath(raw) {
   return { path: out, dropped };
 }
 
+function cleanJokers(raw) {
+  const out = {};
+  if (!isObj(raw)) return out;
+  for (const [k, v] of Object.entries(raw).slice(0, 400)) {
+    const n = num(v);
+    if (/^\d{4}-\d{2}-\d{2}$/.test(k) && n !== null) out[k] = n;
+  }
+  return out;
+}
+
 function cleanOpened(raw) {
   const out = {};
   if (!isObj(raw)) return out;
@@ -230,6 +241,7 @@ export function sanitizeState(raw) {
       pathSince: num(raw.pathSince) ?? 0,
       opened: cleanOpened(raw.opened),
       blitz: cleanBlitz(raw.blitz),
+      jokers: cleanJokers(raw.jokers),
     },
   };
 }

@@ -28,7 +28,7 @@ if (!TESTING && PROFILE === 'standard' && readKey(KEY) === null && readKey(OLD_K
 
 // resetAt: Zeitpunkt des letzten Zurücksetzens (für das Zusammenführen mit der Sicherung).
 const empty = () => ({ v: SCHEMA, items: {}, days: {}, points: 0, pointsBy: {}, pet: null, tests: {}, feedback: [], resetAt: 0,
-  path: {}, pathSince: 0, opened: {}, blitz: [] });
+  path: {}, pathSince: 0, opened: {}, blitz: [], jokers: {} });
 
 // Konnte der gespeicherte Stand nicht (vollständig) gelesen werden? Dann hebt load() den
 // Rohtext auf, und die Sicherung führt beim nächsten Abgleich zusammen statt zu überschreiben.
@@ -195,7 +195,14 @@ export function addPoints(n) {
 
 // Serie mit Tagesziel und Rettungstag – siehe streak.js.
 export function streak() {
-  return streakInfo(state.days);
+  return streakInfo(state.days, new Date(), state.jokers ?? {});
+}
+
+// Joker 🃏 der Eltern: verpasste Tage überbrücken (siehe streak.js).
+export function setJokers(dayKeys, at = Date.now()) {
+  state.jokers ??= {};
+  for (const k of dayKeys) if (!Object.hasOwn(state.jokers, k)) state.jokers[k] = at;
+  save();
 }
 
 // Rückmeldung nach einer Runde (Spaß / weitergebracht, je 1–5). Gleiche id = dieselbe Runde, die

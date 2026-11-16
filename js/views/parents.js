@@ -1,7 +1,8 @@
 // Bereich „Für Eltern“ auf der Fortschrittsseite: zum Ausklappen,
 // mit Rückmeldungen des Kindes, Statistik zurücksetzen, Sicherung des Spielstands und Geräte-Tests.
 
-import { resetProgress, getState, openLesson } from '../store.js';
+import { resetProgress, getState, openLesson, setJokers, streak } from '../store.js';
+import { jokerOffer, JOKER_GOAL } from '../streak.js';
 import { getSubjects, getLesson } from '../content.js';
 import { lessonAccess } from '../path.js';
 import { lessonKey } from '../lessons.js';
@@ -19,6 +20,8 @@ export function parentsSection(open = false) {
       ${fold('eltern:rueckmeldungen', '<h3>Rückmeldungen</h3>', feedbackBlock(), { cls: 'sub-fold' })}
 
       ${fold('eltern:lektionen', '<h3>Lektionen öffnen</h3>', unlockBlock(), { cls: 'sub-fold' })}
+
+      ${fold('eltern:joker', '<h3>Serie retten (Joker 🃏)</h3>', jokerBlock(), { cls: 'sub-fold', open: Boolean(jokerOffer(getState().days, new Date(), getState().jokers ?? {})) })}
 
       ${fold('eltern:zuruecksetzen', '<h3>Statistik zurücksetzen</h3>', `<p class="muted small">Setzt Sternchen, Serie und den ganzen Lernstand auf null. Die Lektionen bleiben da.</p>
       <button class="btn danger" data-act="reset-start" type="button">Statistik zurücksetzen</button>
@@ -39,6 +42,21 @@ export function parentsSection(open = false) {
         <a class="btn small" href="#/handschrift-test">✍️ Handschrift-Test</a>
       </div>`, { cls: 'sub-fold' })}
     </details>`;
+}
+
+// Joker 🃏: eine gerissene Serie retten lassen – die verpassten Tage zählen nicht, reißen aber nicht,
+// wenn am Tag des Jokers das Rettungsziel geschafft wird (streak.js).
+const dayLabel = (k) => { const [y, m, d] = k.split('-').map(Number); return new Date(y, m - 1, d).toLocaleDateString('de-DE', { weekday: 'short', day: 'numeric', month: 'numeric' }); };
+function jokerBlock() {
+  const s = streak();
+  if (s.joker) {
+    return `<p class="small">🃏 Joker ist gesetzt. Heute braucht es ${JOKER_GOAL} 🎯, dann ist die Serie von ${s.count} ${s.count === 1 ? 'Tag' : 'Tagen'} gerettet (bisher ${Math.round(s.todayWords * 10) / 10}).</p>`;
+  }
+  const offer = jokerOffer(getState().days, new Date(), getState().jokers ?? {});
+  if (!offer) return '<p class="muted small">Gerade ist keine Serie zu retten. Einen verpassten Tag kann sie selbst am Tag danach retten (🛟); einen Joker gibt es hier, wenn eine Serie nach mehreren verpassten Tagen gerissen ist.</p>';
+  return `<p class="small">Die Serie von <strong>${offer.count} ${offer.count === 1 ? 'Tag' : 'Tagen'}</strong> ist gerissen. Verpasst: ${offer.missed.map((k) => esc(dayLabel(k))).join(', ')}</p>
+    <p class="muted small">Mit dem Joker zählen diese Tage nicht mit, reißen die Serie aber nicht – wenn sie <strong>heute ${JOKER_GOAL} 🎯</strong> schafft (doppeltes Tagesziel). Also am besten am Tag setzen, an dem sie retten soll.</p>
+    <button class="btn" type="button" data-act="joker">🃏 Joker für heute setzen</button>`;
 }
 
 // Gesperrte Lektionen (noch nicht an der Reihe) öffnen – z. B. wenn in der Schule etwas anderes dran ist.
@@ -96,6 +114,12 @@ export function bindParents(el, rerender) {
     toast('Lektion geöffnet.');
     rerender(true);
   }));
+  box.querySelector('[data-act=joker]')?.addEventListener('click', () => {
+    const offer = jokerOffer(getState().days, new Date(), getState().jokers ?? {});
+    if (offer) setJokers(offer.missed);
+    toast('Joker gesetzt 🃏');
+    rerender(true);
+  });
   const startBtn = box.querySelector('[data-act=reset-start]');
   const form = box.querySelector('.reset-form');
 

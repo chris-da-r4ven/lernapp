@@ -89,6 +89,7 @@ function streakMessage(s) {
     case 'active':
       return s.todayDone ? 'Heute geschafft! 🎉' : `Heute noch ${w(left)} von ${s.need} für deine Serie – egal in welchem Fach.`;
     case 'danger':
+      if (s.joker) return `🃏 ${esc(PET_NAME)} hat einen Joker für dich! Schaff heute ${w(left)} – dann ist deine Serie von ${s.count} ${s.count === 1 ? 'Tag' : 'Tagen'} gerettet.`;
       return `${esc(PET_NAME)} vermisst dich! Noch ${w(left)} heute, dann ist deine Serie von ${s.count} ${s.count === 1 ? 'Tag' : 'Tagen'} gerettet.`;
     case 'broken':
       return `${esc(PET_NAME)} vermisst dich! Mit ${w(left)} ${left < DAY_GOAL ? 'mehr ' : ''}startest du eine neue Serie.`;
