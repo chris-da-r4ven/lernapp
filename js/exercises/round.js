@@ -13,7 +13,7 @@ import { levelFor } from '../pet.js';
 import { roundSummary } from './summary.js';
 import { lessonMedal, saveTest } from '../medal.js';
 import { lessonKey, unitOf } from '../lessons.js';
-import { recordBroken, dayAnswers } from '../records.js';
+import { recordBroken, dayPoints, fmtPoints } from '../records.js';
 import { celebrate } from '../celebrate.js';
 import { dayKey } from '../util.js';
 import { newMedalsHtml, medalProgressHtml, readyNoticeHtml, MASTERED_HTML } from './round-notes.js';
@@ -40,7 +40,7 @@ export function runRound(el, { tasks, test = false, once = false, onProgress = n
   let points = 0;
   const startLevel = levelFor(getState().points);
   const goalBefore = streak().todayWords;   // Tagesziel-Stand vor der Runde (für die Bilanz)
-  const answersBefore = dayAnswers(getState().days[dayKey()]);   // für den Tagesrekord
+  const pointsBefore = dayPoints(getState().days[dayKey()]);   // für den Tagesrekord (🎯)
   const mistakes = new Map(); // key → { task, typed }
 
   // Medaillen vor der Runde – für Bonus bei neuen Medaillen und den Faktor bei alten.
@@ -164,7 +164,7 @@ export function runRound(el, { tasks, test = false, once = false, onProgress = n
     addPoints(roundBonus(tasks.map(weight)));   // „fürs Durchhalten“ – auch wenn danach niemand „Weiter“ tippt
     save();
     const today = dayKey();
-    const record = recordBroken(getState().days, today, answersBefore, dayAnswers(getState().days[today]));
+    const record = recordBroken(getState().days, today, pointsBefore, dayPoints(getState().days[today]));
     result = { completeNotice, progress, newMedals, record };
     return result;
   }
@@ -202,7 +202,7 @@ export function runRound(el, { tasks, test = false, once = false, onProgress = n
       onAgain, onBack, backLabel,
     });
     if (record) {
-      celebrate({ icon: '🏆', title: 'Neuer Rekord!', text: `Heute schon ${record.now} Aufgaben – so viele wie noch nie! Dein alter Rekord waren ${record.best}.` });
+      celebrate({ icon: '🏆', title: 'Neuer Rekord!', text: `Heute schon ${fmtPoints(record.now)} 🎯 Punkte – so viele wie noch nie! Dein alter Rekord waren ${fmtPoints(record.best)} 🎯.` });
     }
   }
 

@@ -643,13 +643,13 @@ try {
     eq(hofkarte(lesson, [], null, () => ''), '');
   });
   section('Tagesrekord');
-  await test('Rekord: nur beim Überholen des alten Rekords, und erst ab 10 Aufgaben', () => {
-    const d = { '2026-11-10': { right: 20, wrong: 5 }, '2026-11-11': { right: 8, wrong: 0 }, '2026-11-17': { right: 30, wrong: 0 } };
+  await test('Rekord in 🎯 Punkten: nur beim Überholen, erst ab einem vollen Tagesziel', () => {
+    const d = { '2026-11-10': { right: 20, wrong: 5, e: 250 }, '2026-11-11': { right: 8, wrong: 0, e: 80 }, '2026-11-17': { right: 30, wrong: 0, e: 300 } };
     eq(bestDay(d, '2026-11-17'), { key: '2026-11-10', n: 25 });
     eq(recordBroken(d, '2026-11-17', 20, 30), { best: 25, now: 30 });
     eq(recordBroken(d, '2026-11-17', 26, 30), null, 'schon vorher drüber – nicht nochmal feiern');
     eq(recordBroken(d, '2026-11-17', 20, 25), null, 'gleich viel ist kein Rekord');
-    eq(recordBroken({ '2026-11-10': { right: 6, wrong: 0 } }, '2026-11-17', 0, 12), null, 'alter Rekord zu klein');
+    eq(recordBroken({ '2026-11-10': { right: 6, wrong: 0, e: 60 } }, '2026-11-17', 0, 12), null, 'alter Rekord zu klein');
   });
 
   section('Reitturnier');

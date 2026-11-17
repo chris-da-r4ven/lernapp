@@ -11,7 +11,7 @@ import { masteryMode, coreItems, unitOf, countWord } from '../lessons.js';
 import { esc, dayKey, addDays } from '../util.js';
 import { DAY_GOAL } from '../streak.js';
 import { fold, bindFolds } from '../fold.js';
-import { bestDay } from '../records.js';
+import { dayPoints, fmtPoints } from '../records.js';
 import { dayValue } from '../streak.js';
 import { allExams } from '../store.js';
 import { ribbonWall, RIBBONS, dateLabel, EXAM_NAME } from '../exams.js';
@@ -171,13 +171,14 @@ function historyChart(days, rescued, jokered = new Set()) {
     list.push({ d, key: dayKey(d), rescued: rescued.has(dayKey(d)), joker: jokered.has(dayKey(d)), right: Number(day.right) || 0, wrong: Number(day.wrong) || 0, goal: dayValue(days[dayKey(d)]) });
   }
   const max = Math.max(1, ...list.map((x) => x.right + x.wrong));
-  const record = Math.max(0, ...Object.values(days).map((d) => (Number(d.right) || 0) + (Number(d.wrong) || 0)));
+  const record = Math.max(0, ...Object.values(days).map(dayPoints));   // Rekord in 🎯 Punkten
   // Antippen zeigt die Zahlen des Tages (data-info, siehe bindDayBars)
   const info = (x) => {
     const n = x.right + x.wrong;
     const day = x.d.toLocaleDateString('de-DE', { weekday: 'short', day: 'numeric', month: 'numeric' });
     if (!n) return `${day}: ${x.joker ? 'per Joker überbrückt 🃏' : 'nicht geübt'}`;
-    return `${day}: ${n} Aufgaben (${x.right} richtig, ${x.wrong} falsch) · ${String(Math.round(x.goal * 10) / 10).replace('.', ',')} 🎯${n === record ? ' · 🏆 Rekord!' : ''}${x.rescued ? ' · 🛟 gerettet' : ''}`;
+    const pts = Math.round(x.goal * 10) / 10;
+    return `${day}: ${fmtPoints(pts)} 🎯 Punkte · ${n} Aufgaben (${x.right} richtig, ${x.wrong} falsch)${pts > 0 && pts === record ? ' · 🏆 Rekord!' : ''}${x.rescued ? ' · 🛟 gerettet' : ''}`;
   };
   return `
     <div class="bars" role="group" aria-label="Geübte Aufgaben pro Tag – antippen für die Zahlen">
