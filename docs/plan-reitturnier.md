@@ -109,7 +109,7 @@ exams: [{ id, sid, date: "JJJJ-MM-TT", lessons: [<lektions-id>], by: "kind" | "e
 - Andere Lektionen bleiben in der Turnierwoche sichtbar und wählbar; Ausritt hält sie mit ⅓ warm.
 
 **Architekt**
-- Generalprobe = Test-Modus mit vorausgewählten Turnierlektionen und **zählt** (runRound speichert bei
+- Generalprobe: **zählt nicht** als Test (Entscheidung Chris, 17.11.) – braucht in round.js eine Option `record: false` für Testergebnis/Medaille; Karteikasten zeichnet weiter auf. Rückmeldung mit eigener Rundenart „generalprobe“.
   `test: true` ohnehin; hakt die Probe-Etappe ab, kann die nächste Lektion öffnen, zählt für die Medaille).
 - `exams` bleiben beim Zurücksetzen (wie `feedback`): `mergeAfterReset` ohne `since`, `resetProgress` übernimmt sie.
 - Zusammenführen: neueres `at` gewinnt, bei Gleichstand Entscheidung nach Inhalt (beide Richtungen gleich).

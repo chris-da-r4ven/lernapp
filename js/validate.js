@@ -18,6 +18,8 @@
 //   opened     { "<fach>/<lektion>": ms } – von den Eltern geöffnete Lektionen
 //   blitz      [{ id, at }] – gespielte Blitzrunden
 //   jokers     { "JJJJ-MM-TT": ms } – per Joker überbrückte Tage (Serie)
+//   exams      [{ id, sid, date, lessons: [<lektion>], by: "kind"|"eltern", at, ribbon?, ribbonAt?, deleted? }]
+//              – Reitturniere (Tests in der Schule, siehe exams.js); bleiben beim Zurücksetzen.
 //   spent      [{ id, at, cost, what }] – ausgegebene Sternchen (z. B. Joker). Der Glitzer zählt alle
 //              gesammelten (points), ausgeben lässt sich points minus spent.
 // Ältere Stände (ohne v) werden umgewandelt: bisherige Werte zählen als Gerät "alt".
@@ -48,6 +50,17 @@ const MAX_WORDS = 500;
 const MAX_RETRY = 100;
 export const BLITZ_MAX = 500;
 export const SPENT_MAX = 500;
+export const EXAMS_MAX = 100;
+export const EXAM_LESSONS_MAX = 30;
+export const EXAM_RIBBONS = ['super', 'gut', 'mut'];
+const EXAM_BY = new Set(['kind', 'eltern']);
+// Echtes Kalenderdatum JJJJ-MM-TT (kein 2026-02-31).
+export const realDate = (d) => {
+  if (typeof d !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(d)) return false;
+  const [y, m, t] = d.split('-').map(Number);
+  const x = new Date(y, m - 1, t);
+  return x.getFullYear() === y && x.getMonth() === m - 1 && x.getDate() === t;
+};
 const SPENT_WHAT = new Set(['joker']);
 
 function cleanItem(v) {
@@ -166,6 +179,38 @@ export function cleanPath(raw) {
   return { path: out, dropped };
 }
 
+// Reitturniere: Unbrauchbares verwerfen. „Ab heute“ prüft nur das Formular – vergangene bleiben gültig.
+export function cleanExams(list) {
+  if (!Array.isArray(list)) return [];
+  const seen = new Set();
+  const out = [];
+  for (const x of list) {
+    if (!isObj(x) || typeof x.id !== 'string' || !/^[\w-]{1,60}$/.test(x.id) || seen.has(x.id)) continue;
+    const at = num(x.at);
+    if (at === null || typeof x.sid !== 'string' || !/^[\w-]{1,40}$/.test(x.sid) || !safeKey(x.sid) || !realDate(x.date)) continue;
+    const lessons = Array.isArray(x.lessons)
+      ? [...new Set(x.lessons.filter((l) => typeof l === 'string' && /^[\w-]{1,60}$/.test(l) && safeKey(l)))].slice(0, EXAM_LESSONS_MAX)
+      : [];
+    const deleted = x.deleted === true;
+    if (!deleted && !lessons.length) continue;   // ein Turnier braucht mindestens eine Lektion
+    const e = { id: x.id, sid: x.sid, date: x.date, lessons, by: EXAM_BY.has(x.by) ? x.by : 'kind', at };
+    if (deleted) e.deleted = true;
+    if (EXAM_RIBBONS.includes(x.ribbon) && num(x.ribbonAt) !== null) { e.ribbon = x.ribbon; e.ribbonAt = num(x.ribbonAt); }
+    seen.add(x.id);
+    out.push(e);
+  }
+  return limitExams(out);
+}
+
+// Höchstens EXAMS_MAX, fest sortiert (Datum, id); zuerst fallen alte Einträge ohne Schleife weg.
+export function limitExams(list) {
+  const sorted = [...list].sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
+  if (sorted.length <= EXAMS_MAX) return sorted;
+  const drop = new Set();
+  for (const e of sorted) { if (sorted.length - drop.size <= EXAMS_MAX) break; if (!e.ribbon) drop.add(e.id); }
+  return sorted.filter((e) => !drop.has(e.id)).slice(-EXAMS_MAX);
+}
+
 export function cleanSpent(list) {
   if (!Array.isArray(list)) return [];
   return list.filter((x) => isObj(x) && typeof x.id === 'string' && /^[\w-]{1,60}$/.test(x.id) && num(x.at) !== null
@@ -255,6 +300,7 @@ export function sanitizeState(raw) {
       blitz: cleanBlitz(raw.blitz),
       jokers: cleanJokers(raw.jokers),
       spent: cleanSpent(raw.spent),
+      exams: cleanExams(raw.exams),
     },
   };
 }

@@ -12,6 +12,9 @@ import { etappeHref, lessonOpen } from './etappe.js';
 import { lessonKey } from '../lessons.js';
 import { pathEntry } from '../store.js';
 import { bannerFor, lessonIcon } from './subject.js';
+import { examCards } from './exam-card.js';
+import { allExams } from '../store.js';
+import { examFocus, examPick } from '../exams.js';
 
 const PET_NAME = PET.name;
 
@@ -39,6 +42,7 @@ export function homeView(el) {
     </section>
 
     ${jokerNote(serie)}
+    ${hasContent() ? examCards(allExams()) : ''}
     ${hasContent() ? `<div class="home-actions">${continueCard()}${blitzCard()}${ausrittCard()}</div>` : ''}
 
     <h2 class="section-title home-sign">Fächer</h2>
@@ -150,8 +154,8 @@ function lastActivity(sid, lesson, items) {
   return t;
 }
 
-// Großer Knopf „Weiter“: nächste Etappe der zuletzt geübten Lektion, deren Lernweg noch nicht fertig ist –
-// sonst die erste unfertige Lektion.
+// Großer Knopf „Weiter“: nächste Etappe einer Lektion aus dem nächsten Reitturnier – sonst der zuletzt
+// geübten Lektion, deren Lernweg noch nicht fertig ist – sonst der ersten unfertigen Lektion.
 function continueCard() {
   const items = getState().items;
   const open = allLessons()
@@ -167,7 +171,8 @@ function continueCard() {
   }
   const withTime = open.map((x) => ({ ...x, t: lastActivity(x.sid, x.lesson, items) }));
   const recent = withTime.filter((x) => x.t > 0).sort((a, b) => b.t - a.t)[0];
-  const pick = recent ?? withTime[0];
+  const byExam = examPick(withTime.map((x) => ({ ...x, key: lessonKey(x.sid, x.lesson) })), examFocus(allExams()));
+  const pick = byExam ?? recent ?? withTime[0];
   const next = nextEtappe(pick.stages);
   const st = STATIONS[next.station];
   const p = progress(pick.stages);
@@ -176,7 +181,7 @@ function continueCard() {
     <a class="continue-card go-card" href="${etappeHref(pick.sid, pick.lesson.id, next.n)}">
       <span class="go-window" aria-hidden="true">${esc(lessonIcon(pick.lesson))}</span>
       <span class="go-text">
-        <span class="go-label">WEITER GEHT’S</span>
+        <span class="go-label">${byExam ? 'TRAINING FÜRS REITTURNIER' : 'WEITER GEHT’S'}</span>
         <strong>${esc(pick.lesson.title)}</strong>
         <span class="small">${esc(subject?.icon ?? '')} ${esc(subject?.name ?? '')} · ${next.optional ? 'Aufwärmen' : `Etappe ${etappeNo(pick.stages, next)} von ${p.total}`} · ${st.icon} ${esc(st.name)}</span>
         <span class="go-hay" aria-hidden="true"><span style="width:${p.total ? Math.round((p.done / p.total) * 100) : 0}%"></span></span>

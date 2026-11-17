@@ -8,7 +8,10 @@ import { check, parseGap } from '../js/exercises/questions.js';
 import { mathNorm } from '../js/exercises/math.js';
 import { levelFor, glitterFor } from '../js/pet.js';
 import { record, roundBonus, buildRound } from '../js/srs.js';
-import { getState, replaceState, migrateLessons, addTestResult, itemState, addPoints, addDayStat, profileId, resetProgress, spendable, buyJoker } from '../js/store.js';
+import { getState, replaceState, migrateLessons, addTestResult, itemState, addPoints, addDayStat, profileId, resetProgress, spendable, buyJoker, saveExam, deleteExam, allExams } from '../js/store.js';
+import { daysUntil, upcomingExams, examFocus, hurdleState, recentShare, isTight, examPick } from '../js/exams.js';
+import { mergeExams } from '../js/merge.js';
+import { practicing } from '../js/nav.js';
 import { medalStatus } from '../js/medal.js';
 import { unitOf, lessonKey } from '../js/lessons.js';
 import { deviceId } from '../js/device.js';
@@ -637,6 +640,69 @@ try {
     ok(!html.includes('<b>') && !html.includes('wort') && !html.includes('<script>'), 'keine Inhaltstexte');
     eq(hofkarte(lesson, [], null, () => ''), '');
   });
+  section('Reitturnier');
+  const ex = (o) => ({ id: 'a-1', sid: 'englisch', date: '2026-11-20', lessons: ['hallo'], by: 'kind', at: 10, ...o });
+  await test('Prüfung: Datum, Lektionen, Schleife, Grabstein, doppelte id', () => {
+    const c = sanitizeState({ exams: [
+      ex(), ex({ id: 'b', date: '2026-02-31' }), ex({ id: 'c', lessons: ['__proto__', 'x y'] }),
+      ex({ id: 'd', ribbon: 'gold', ribbonAt: 5 }), ex({ id: 'e', lessons: [], deleted: true }), ex({ id: 'a-1', date: '2026-12-01' }),
+      ex({ id: 'f', ribbon: 'mut', ribbonAt: 7, lessons: ['hallo', 'hallo'] }),
+    ] }).state.exams;
+    eq(c.map((e) => e.id), ['a-1', 'd', 'e', 'f']);
+    ok(!c.find((e) => e.id === 'd').ribbon, 'unbekannte Schleife verworfen');
+    eq([c.find((e) => e.id === 'f').ribbon, c.find((e) => e.id === 'f').lessons], ['mut', ['hallo']]);
+  });
+  await test('Zusammenführen: neuere Änderung gewinnt, Grabstein bei Gleichstand, beide Richtungen gleich', () => {
+    const a = [ex({ at: 10 })], b = [ex({ at: 20, date: '2026-11-25' })];
+    eq(mergeExams(a, b)[0].date, '2026-11-25');
+    eq(mergeExams(b, a), mergeExams(a, b));
+    const t = [ex({ at: 10, deleted: true })];
+    eq([mergeExams(a, t)[0].deleted, mergeExams(t, a)[0].deleted], [true, true]);
+    const r = [ex({ at: 5, ribbon: 'gut', ribbonAt: 30 })];
+    eq([mergeExams(b, r)[0].date, mergeExams(b, r)[0].ribbon], ['2026-11-25', 'gut'], 'Schleife bleibt trotz älterer Bearbeitung');
+    eq(mergeExams(mergeExams(a, b), b), mergeExams(a, b), 'doppelt zusammenführen ändert nichts');
+  });
+  await test('Zurücksetzen behält Turniere (lokal und beim Zusammenführen)', () => {
+    replaceState({ ...empty(), v: 3, exams: [ex()] });
+    resetProgress();
+    eq(allExams().map((e) => e.id), ['a-1']);
+    const m = mergeStates({ v: 3, resetAt: 100, exams: [] }, { v: 3, resetAt: 0, exams: [ex({ at: 50 })] });
+    eq(m.exams.map((e) => e.id), ['a-1']);
+  });
+  await test('Speichern, ändern, löschen; umbenannte Lektion wird mitgeführt', () => {
+    replaceState({ ...empty(), v: 3 });
+    const id = saveExam({ sid: 'englisch', date: '2099-01-10', lessons: ['alt', 'hallo'] }, 1000);
+    saveExam({ id, sid: 'englisch', date: '2099-01-11', lessons: ['alt'] }, 2000);
+    eq(allExams().map((e) => [e.date, e.lessons, e.by]), [['2099-01-11', ['alt'], 'kind']]);
+    migrateLessons('englisch', { alt: 'neu' });
+    eq(allExams()[0].lessons, ['neu']);
+    deleteExam(id, 3000);
+    eq([allExams().length, getState().exams[0].deleted], [0, true]);
+  });
+  await test('Logik: Tage, anstehend, Fokus, Hindernis, eng, Vorrang', () => {
+    const now = new Date(2026, 10, 17, 9);
+    eq([daysUntil('2026-11-17', now), daysUntil('2026-11-20', now), daysUntil('2026-11-16', now)], [0, 3, -1]);
+    const list = [ex({ id: 'x', date: '2026-11-25', lessons: ['a'] }), ex({ id: 'y', date: '2026-11-20', lessons: ['a', 'b'] }), ex({ id: 'z', date: '2026-11-10' })];
+    eq(upcomingExams(list, now).map((e) => e.id), ['y', 'x']);
+    eq([...examFocus(list, now)], [['englisch/a', '2026-11-20'], ['englisch/b', '2026-11-20']]);
+    const w = (done, total) => ({ done, total, complete: done === total });
+    eq([hurdleState({ open: false, way: w(0, 3), recent: 1 }), hurdleState({ open: true, way: w(1, 3), recent: 1 }),
+      hurdleState({ open: true, way: w(3, 3), recent: 0.5 }), hurdleState({ open: true, way: w(3, 3), recent: 0.8 })],
+    ['locked', 'way', 'shaky', 'ready']);
+    eq(recentShare([{ last: 5, box: 3 }, { last: 1, box: 3 }, { last: 6, box: 1 }, { last: 7, box: 2 }], 5, 2), 0.5);
+    eq([isTight(2, ['ready', 'way']), isTight(3, ['way']), isTight(1, ['ready', 'shaky'])], [true, false, false]);
+    const f = new Map([['e/b', '2026-11-25'], ['e/c', '2026-11-20']]);
+    eq(examPick([{ key: 'e/a' }, { key: 'e/b' }, { key: 'e/c' }], f).key, 'e/c');
+    eq(examPick([{ key: 'e/a' }], f), null);
+  });
+  await test('Mitten im Turnier-Formular wird nicht neu gezeichnet', () => {
+    const before = location.hash;
+    location.hash = '#/reitturnier/neu/englisch';
+    const r = practicing();
+    history.replaceState(null, '', location.pathname + before);
+    ok(r, 'practicing() erkennt #/reitturnier');
+  });
+
   section('Schutz des echten Lernstands');
   await test('Selbsttest hat den echten Lernstand nicht angefasst', () =>
     eq(REAL_KEYS.map((k) => localStorage.getItem(k)), realBefore));

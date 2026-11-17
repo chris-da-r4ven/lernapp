@@ -8,6 +8,9 @@ import { masteryOf, kindInfo, kindOf } from '../lessons.js';
 import { lessonMedal, MEDAL_RULE, testReady } from '../medal.js';
 import { esc, stars } from '../util.js';
 import { etappenFor, progress, lessonAccess } from '../path.js';
+import { allExams } from '../store.js';
+import { examFocus, dateLabel, EXAM_NAME } from '../exams.js';
+import { examNewHref } from './exam-edit.js';
 
 export function subjectView(el, sid) {
   const subject = getSubject(sid);
@@ -54,6 +57,7 @@ export function subjectView(el, sid) {
         <div class="stall-hay"><div style="width:0"></div></div>
         <div class="stall-foot">${prev ? `Öffnet sich nach „${esc(prev)}“` : 'Öffnet sich bald'}</div>
       </div>`;
+  const focus = examFocus(allExams());   // Lektion → Datum des nächsten Reitturniers
   const tile = (x) => {
     if (x.secret) return secretTile(x);
     const { l, lesson, medal } = x;
@@ -64,7 +68,7 @@ export function subjectView(el, sid) {
     return `
       <a class="stall${l.id === nowId ? ' now' : ''}${medal.medal ? ' has-medal' : ''}" href="#/lektion/${encodeURIComponent(sid)}/${encodeURIComponent(l.id)}">
         <div class="stall-beam"><span class="stall-plate${/\S{15,}/u.test(l.title) ? ' long' : ''}">${esc(l.title)}</span></div>
-        <div class="stall-top" aria-hidden="true">${esc(lessonIcon(lesson))}</div>
+        <div class="stall-top" aria-hidden="true">${esc(lessonIcon(lesson))}${focus.has(`${sid}/${l.id}`) ? `<span class="stall-exam">🏆 ${esc(dateLabel(focus.get(`${sid}/${l.id}`)))}</span>` : ''}</div>
         <div class="stall-bottom" aria-hidden="true">${way.complete ? '<span class="stall-badge">🎀</span>' : ''}${medal.medal ? '<span class="stall-badge medal">🏅</span>' : ''}</div>
         <div class="stall-hay" aria-hidden="true"><div style="width:${Math.round(share * 100)}%"></div></div>
         <div class="stall-foot"><span>${foot}</span>${stars(starsFor(m))}</div>
@@ -89,6 +93,7 @@ export function subjectView(el, sid) {
           </details>` : ''}`;
     }).join('')}
     <div class="actions">
+      <a class="btn" href="${examNewHref(sid)}">📅 ${esc(EXAM_NAME)} eintragen</a>
       <a class="btn" href="#/test/${encodeURIComponent(sid)}">📝 Test-Modus${testLabel ? ` – ${esc(testLabel)}` : ''}</a>
     </div>`;
 }

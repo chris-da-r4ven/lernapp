@@ -28,7 +28,7 @@ if (!TESTING && PROFILE === 'standard' && readKey(KEY) === null && readKey(OLD_K
 
 // resetAt: Zeitpunkt des letzten Zurücksetzens (für das Zusammenführen mit der Sicherung).
 const empty = () => ({ v: SCHEMA, items: {}, days: {}, points: 0, pointsBy: {}, pet: null, tests: {}, feedback: [], resetAt: 0,
-  path: {}, pathSince: 0, opened: {}, blitz: [], jokers: {}, spent: [] });
+  path: {}, pathSince: 0, opened: {}, blitz: [], jokers: {}, spent: [], exams: [] });
 
 // Konnte der gespeicherte Stand nicht (vollständig) gelesen werden? Dann hebt load() den
 // Rohtext auf, und die Sicherung führt beim nächsten Abgleich zusammen statt zu überschreiben.
@@ -109,8 +109,8 @@ export const getState = () => state;
 
 // Alles zurück auf null: Punkte, Serie, Lernstand. Lektionen bleiben erhalten.
 export function resetProgress() {
-  // Rückmeldungen bleiben. Der Lernweg beginnt neu – ohne erneute Übernahme (pathSince).
-  state = { ...empty(), feedback: state.feedback ?? [], resetAt: Date.now(), pathSince: Date.now() };
+  // Rückmeldungen und Reitturniere bleiben. Der Lernweg beginnt neu – ohne erneute Übernahme (pathSince).
+  state = { ...empty(), feedback: state.feedback ?? [], exams: state.exams ?? [], resetAt: Date.now(), pathSince: Date.now() };
   save();
 }
 
@@ -141,6 +141,12 @@ export function migrateLessons(sid, moved = {}) {
       state.path = mergePath(state.path, { [tTo]: state.path[tFrom] });
       delete state.path[tFrom];
       changed = true;
+    }
+    for (const e of state.exams ?? []) {
+      if (e.sid === sid && e.lessons.includes(from)) {
+        e.lessons = [...new Set(e.lessons.map((l) => (l === from ? to : l)))];
+        changed = true;
+      }
     }
     if (Object.hasOwn(state.opened ?? {}, tFrom)) {
       state.opened[tTo] = Math.min(state.opened[tTo] ?? Infinity, state.opened[tFrom]);
@@ -196,6 +202,34 @@ export function addPoints(n) {
 // Serie mit Tagesziel und Rettungstag – siehe streak.js.
 export function streak() {
   return streakInfo(state.days, new Date(), state.jokers ?? {});
+}
+
+// --- Reitturniere (siehe exams.js) ---------------------------------------------------
+export const allExams = () => (state.exams ?? []).filter((e) => !e.deleted);
+export const examById = (id) => allExams().find((e) => e.id === id) ?? null;
+
+// Anlegen (ohne id) oder ändern. Gibt die id zurück.
+export function saveExam({ id, sid, date, lessons, by = 'kind' }, at = Date.now()) {
+  const list = state.exams ?? [];
+  const old = id ? list.find((e) => e.id === id) : null;
+  const e = { ...(old ?? {}), id: old?.id ?? `${deviceId()}-${at.toString(36)}`, sid, date, lessons: [...new Set(lessons)], by: old?.by ?? by, at };
+  delete e.deleted;
+  state.exams = sanitizeState({ exams: [...list.filter((x) => x.id !== e.id), e] }).state.exams;
+  pruneExams(at);
+  save();
+  return e.id;
+}
+
+// Löschen als Grabstein, damit es nicht aus der Sicherung zurückkommt.
+export function deleteExam(id, at = Date.now()) {
+  state.exams = (state.exams ?? []).map((e) => (e.id === id ? { ...e, deleted: true, at } : e));
+  save();
+}
+
+// Aufräumen: mehr als 60 Tage vorbei und ohne Schleife.
+function pruneExams(now) {
+  const cut = dayKey(new Date(now - 60 * 864e5));
+  state.exams = (state.exams ?? []).filter((e) => e.ribbon || e.date >= cut);
 }
 
 // Sternchen zum Ausgeben: alle gesammelten minus die ausgegebenen (der Glitzer zählt weiter alle).

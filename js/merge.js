@@ -10,7 +10,7 @@
 // bleibt nur, was nach diesem Zeitpunkt geübt wurde.
 
 import { dayKey } from './util.js';
-import { sanitizeState, sumDay, sumPoints, LEGACY_DEVICE, FEEDBACK_MAX, BLITZ_MAX, SPENT_MAX } from './validate.js';
+import { sanitizeState, sumDay, sumPoints, LEGACY_DEVICE, FEEDBACK_MAX, BLITZ_MAX, SPENT_MAX, limitExams } from './validate.js';
 
 const total = (d) => (d ? d.right + d.wrong : 0);
 
@@ -78,6 +78,7 @@ function mergeSame(a, b) {
     blitz: mergeBlitz(a.blitz, b.blitz),
     jokers: mergeStamps(a.jokers, b.jokers),
     spent: mergeSpent(a.spent, b.spent),
+    exams: mergeExams(a.exams, b.exams),
   };
 }
 
@@ -120,6 +121,25 @@ function mergeBlitz(a = [], b = [], since = -Infinity) {
   return [...byId.values()].sort((x, y) => x.at - y.at).slice(-BLITZ_MAX);
 }
 
+// Reitturniere: pro id gewinnt die neuere Änderung (at); bei Gleichstand der Grabstein, dann der Inhalt –
+// damit beide Richtungen gleich ausgehen. Die Schleife hat ihren eigenen Zeitpunkt (ribbonAt).
+export function mergeExams(a = [], b = []) {
+  const key = (e) => JSON.stringify([e.deleted ? 1 : 0, e.date, e.lessons, e.by, e.sid]);
+  const newer = (x, y) => x.at - y.at || (x.deleted ? 1 : 0) - (y.deleted ? 1 : 0) || key(x).localeCompare(key(y));
+  const byId = new Map();
+  for (const e of [...a, ...b]) {
+    const cur = byId.get(e.id);
+    if (!cur) { byId.set(e.id, e); continue; }
+    const win = newer(e, cur) > 0 ? e : cur;
+    const ribbonFrom = [e, cur].filter((x) => x.ribbon).sort((x, y) => y.ribbonAt - x.ribbonAt || x.ribbon.localeCompare(y.ribbon))[0];
+    const merged = { ...win };
+    delete merged.ribbon; delete merged.ribbonAt;
+    if (ribbonFrom) { merged.ribbon = ribbonFrom.ribbon; merged.ribbonAt = ribbonFrom.ribbonAt; }
+    byId.set(e.id, merged);
+  }
+  return limitExams([...byId.values()]);
+}
+
 // Ausgaben: alle sammeln (gleiche id = derselbe Kauf).
 function mergeSpent(a = [], b = []) {
   const byId = new Map();
@@ -160,6 +180,7 @@ function mergeAfterReset(newer, older) {
     blitz: mergeBlitz(newer.blitz, older.blitz.filter((x) => x.at > since)),
     jokers: mergeStamps(newer.jokers, older.jokers, since),
     spent: mergeSpent(newer.spent, (older.spent ?? []).filter((x) => x.at > since)),
+    exams: mergeExams(newer.exams, older.exams),   // Planung, kein Lernstand – bleibt wie die Rückmeldungen
   };
 }
 

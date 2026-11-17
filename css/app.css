@@ -668,3 +668,34 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
 .joker-card { flex: none; font-size: 2rem; transform: rotate(-8deg); }
 @media (prefers-color-scheme: dark) { .joker-note { background: #4a3a1c; color: #fff3d6; border-color: #f0c45a; } }
 .joker-offer .actions { margin-top: 8px; align-items: center; }
+
+/* 🏆 Reitturnier: Plakat auf der Startseite, Hindernisse, Schild an der Stallbox */
+.exam-card { margin-bottom: 12px; border: 3px solid #e0a100; background: linear-gradient(160deg, #fff6d8, var(--card) 60%); }
+.exam-card.tight { border-color: #4f6cf7; }
+.exam-head { display: flex; align-items: center; gap: 10px; }
+.exam-cup { font-size: 2rem; }
+.exam-edit { color: var(--muted); }
+.hurdles { list-style: none; margin: 10px 0 6px; padding: 0; display: grid; gap: 6px; }
+.hurdle-row { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 12px; text-decoration: none; color: var(--text); background: var(--bg); }
+.hurdle-bar { width: 8px; align-self: stretch; border-radius: 4px; background: repeating-linear-gradient(180deg, #e5484d 0 6px, #ffffff 6px 12px); }
+.hurdle-icon { font-size: 1.3rem; }
+.hurdle-row .grow { min-width: 0; }
+.hurdle-text { color: var(--muted); text-align: right; max-width: 45%; }
+.hurdle.ready .hurdle-bar { background: #1f9d55; }
+.hurdle.ready .hurdle-text { color: var(--good); font-weight: 700; }
+.hurdle.shaky .hurdle-bar { background: #f5b400; }
+.hurdle.way .hurdle-bar { background: #dfe3ee; }
+.hurdle.locked .hurdle-row { opacity: 0.75; }
+.hurdle.locked .hurdle-bar { background: #9aa3b5; }
+.exam-note { margin: 4px 0 8px; }
+.exam-more > summary { cursor: pointer; padding: 6px 2px; color: var(--muted); font-weight: 600; }
+.exam-locked { margin: 10px 0; padding: 10px 12px; border-radius: 12px; background: #fff0cc; color: #4a2f14; }
+.exam-form .check { display: block; margin: 6px 0; }
+.exam-date { max-width: 240px; }
+.exam-list .exam-row { display: block; }
+.stall-top { position: relative; }
+.stall-exam { position: absolute; top: 4px; right: 4px; font-size: 0.7rem; font-weight: 800; background: #f5d24a; color: #4a2f14; border-radius: 6px; padding: 2px 5px; line-height: 1.2; }
+@media (prefers-color-scheme: dark) {
+  .exam-card { background: linear-gradient(160deg, #3b3220, var(--card) 60%); }
+  .exam-locked { background: #4a3a1c; color: #fff3d6; }
+}

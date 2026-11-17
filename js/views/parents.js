@@ -3,6 +3,9 @@
 
 import { resetProgress, getState, openLesson, streak, spendable } from '../store.js';
 import { jokerOffer, JOKER_GOAL, JOKER_PRICE } from '../streak.js';
+import { allExams, deleteExam } from '../store.js';
+import { EXAM_NAME, upcomingExams, dateLabel, countdownText, daysUntil } from '../exams.js';
+import { examNewHref, examHref } from './exam-edit.js';
 import { getSubjects, getLesson } from '../content.js';
 import { lessonAccess } from '../path.js';
 import { lessonKey } from '../lessons.js';
@@ -18,6 +21,8 @@ export function parentsSection(open = false) {
       <summary><h2>Für Eltern</h2></summary>
 
       ${fold('eltern:rueckmeldungen', '<h3>Rückmeldungen</h3>', feedbackBlock(), { cls: 'sub-fold' })}
+
+      ${fold('eltern:turniere', `<h3>🏆 ${EXAM_NAME}e (Tests)</h3>`, examBlock(), { cls: 'sub-fold', open: examBlockUrgent() })}
 
       ${fold('eltern:lektionen', '<h3>Lektionen öffnen</h3>', unlockBlock(), { cls: 'sub-fold' })}
 
@@ -60,6 +65,34 @@ function jokerBlock() {
 }
 
 // Gesperrte Lektionen (noch nicht an der Reihe) öffnen – z. B. wenn in der Schule etwas anderes dran ist.
+// Reitturniere: was ansteht, wer es eingetragen hat, gesperrte Lektionen direkt öffnen, löschen.
+const examLocked = (e) => {
+  const lessons = (getSubjects().find((s) => s.id === e.sid)?.lessons ?? []).map((l) => getLesson(e.sid, l.id)).filter(Boolean);
+  const access = lessonAccess(e.sid, lessons);
+  return e.lessons.map((lid) => lessons.find((l) => l.id === lid)).filter(Boolean).filter((l) => access.get(l.id) !== 'open');
+};
+// Aufklappen, wenn ein Turnier gesperrte Lektionen hat.
+const examBlockUrgent = () => upcomingExams(allExams()).some((e) => examLocked(e).length);
+function examBlock() {
+  const list = upcomingExams(allExams());
+  const subjects = getSubjects();
+  const rows = list.map((e) => {
+    const s = subjects.find((x) => x.id === e.sid);
+    const lessons = e.lessons.map((lid) => getLesson(e.sid, lid)).filter(Boolean);
+    const locked = examLocked(e);
+    return `<li class="exam-row">
+      <div><strong>${esc(s?.name ?? e.sid)} · ${esc(dateLabel(e.date))}</strong> <span class="muted small">(${esc(countdownText(daysUntil(e.date)))} · eingetragen von ${e.by === 'eltern' ? 'Eltern' : 'Kind'})</span></div>
+      <div class="small">${lessons.map((l) => esc(l.title)).join(', ')}</div>
+      ${locked.map((l) => `<div class="small">🔒 ${esc(l.title)} ist noch zu <button class="btn small" type="button" data-open="${esc(lessonKey(e.sid, l))}">Öffnen</button></div>`).join('')}
+      <div class="actions"><a class="btn small" href="${examHref(e.id)}">ändern</a>
+        <button class="btn ghost small" type="button" data-exam-del="${esc(e.id)}">löschen</button></div>
+    </li>`;
+  });
+  return `<p class="muted small">Tests in der Schule: Die App zeigt bis zum Termin ein Turnierplakat und nimmt diese Lektionen auf der Weiter-Karte zuerst. Eintragen kann auch Ihr Kind – gesperrte Lektionen öffnet das nicht, das geht nur hier.</p>
+    ${rows.length ? `<ul class="word-list exam-list">${rows.join('')}</ul>` : '<p class="muted small">Gerade ist kein Test eingetragen.</p>'}
+    <div class="actions">${subjects.map((s) => `<a class="btn small" href="${examNewHref(s.id, true)}">＋ ${esc(EXAM_NAME)} ${esc(s.name)}</a>`).join('')}</div>`;
+}
+
 function unlockBlock() {
   const opened = getState().opened ?? {};
   const rows = [];
@@ -112,6 +145,12 @@ export function bindParents(el, rerender) {
   box.querySelectorAll('[data-open]').forEach((b) => b.addEventListener('click', () => {
     openLesson(b.dataset.open);
     toast('Lektion geöffnet.');
+    rerender(true);
+  }));
+  box.querySelectorAll('[data-exam-del]').forEach((b) => b.addEventListener('click', () => {
+    if (!b.dataset.sure) { b.dataset.sure = '1'; b.textContent = 'Wirklich löschen?'; return; }
+    deleteExam(b.dataset.examDel);
+    toast('Turnier gelöscht.');
     rerender(true);
   }));
   const startBtn = box.querySelector('[data-act=reset-start]');
