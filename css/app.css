@@ -665,7 +665,7 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
 .joker-card { flex: none; font-size: 2rem; transform: rotate(-8deg); }
 @media (prefers-color-scheme: dark) { .joker-note { background: #4a3a1c; color: #fff3d6; border-color: #f0c45a; } }
 .joker-offer .actions { margin-top: 8px; align-items: center; }
-.joker-x { flex: none; align-self: flex-start; min-width: 44px; min-height: 44px; margin: -6px -8px -6px 0; border: 0; background: none;
+.joker-x { flex: none; align-self: center; min-width: 44px; min-height: 44px; margin: -6px -8px -6px 0; border: 0; background: none;
   color: inherit; opacity: 0.7; font-size: 1.3rem; cursor: pointer; transform: rotate(0.6deg); }
 .joker-x:hover { opacity: 1; }
 
