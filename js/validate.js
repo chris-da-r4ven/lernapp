@@ -229,6 +229,21 @@ function cleanJokers(raw) {
   return out;
 }
 
+// Wort-Stand (words.js): { "<fach>/<lektion>/<wort>": { lv 0–5, day "JJJJ-MM-TT" | "", test, last, at } }
+export const WORDS_MAX = 20000;
+function cleanWords(raw) {
+  const out = {};
+  if (!isObj(raw)) return out;
+  for (const [k, v] of Object.entries(raw).slice(0, WORDS_MAX)) {
+    if (!safeKey(k) || k.length > 300 || !isObj(v)) continue;
+    const lv = int(v.lv);
+    const at = num(v.at);
+    if (lv === null || lv < 0 || lv > 5 || at === null) continue;
+    out[k] = { lv, day: typeof v.day === 'string' && DAY.test(v.day) ? v.day : '', test: v.test === true, last: num(v.last) ?? 0, at };
+  }
+  return out;
+}
+
 function cleanOpened(raw) {
   const out = {};
   if (!isObj(raw)) return out;
@@ -301,6 +316,7 @@ export function sanitizeState(raw) {
       jokers: cleanJokers(raw.jokers),
       spent: cleanSpent(raw.spent),
       exams: cleanExams(raw.exams),
+      words: cleanWords(raw.words),
     },
   };
 }

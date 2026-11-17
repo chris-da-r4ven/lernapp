@@ -15,6 +15,7 @@ import { lessonMedal, saveTest } from '../medal.js';
 import { lessonKey, unitOf } from '../lessons.js';
 import { recordBroken, dayPoints, fmtPoints } from '../records.js';
 import { celebrate } from '../celebrate.js';
+import { recordWord } from '../words.js';
 import { wreath } from '../wreath.js';
 import { dayKey } from '../util.js';
 import { newMedalsHtml, medalProgressHtml, readyNoticeHtml, MASTERED_HTML } from './round-notes.js';
@@ -81,6 +82,7 @@ export function runRound(el, { tasks, test = false, once = false, onProgress = n
       const task = queue[0];
       if (!task || lastRight) return;   // schon gezählt, „Weiter“ steht noch aus
       const isFirst = task.attempts === 0 && !hold;
+      recordWord(task, { correct: true, firstTry: isFirst, hold });   // vor record() – das speichert
       const gained = record(task.key, { correct: true, firstTry: isFirst, hold, weight: weight(task), effort: weightFor(task.dir, task.item) });
       points += gained;
       if (isFirst) firstTry++;
@@ -97,6 +99,7 @@ export function runRound(el, { tasks, test = false, once = false, onProgress = n
     // Fehler eintragen – die Frage zeigt danach selbst die Lösung (und ggf. Abschreiben).
     wrong(typed) {
       const task = queue[0];
+      recordWord(task, { correct: false });
       record(task.key, { correct: false, typed: typed?.trim(), effort: weightFor(task.dir, task.item) });
       task.attempts++;
       mistakes.set(task.key, { task, typed });

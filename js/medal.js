@@ -6,7 +6,8 @@
 import { testResults, addTestResult, itemState, save } from './store.js';
 import { itemKey } from './srs.js';
 import { dayKey } from './util.js';
-import { kindInfo, masteryOf, masteryMode, lessonKey, coreItems } from './lessons.js';
+import { kindInfo, masteryMode, lessonKey, coreItems } from './lessons.js';
+import { masteryOf } from './words.js';
 
 export const MEDAL_PCT = 90;
 export const MEDAL_DAYS = 2;

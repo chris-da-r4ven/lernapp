@@ -15,8 +15,6 @@
 // Sprachen: Jede Lektion hat zwei Seiten (a, b). Die Lernsprache ("target") ist die Seite,
 // die nicht Deutsch ist. Ihre Sprache bestimmt die Stimme beim Vorlesen.
 
-import { itemState } from './store.js';
-import { itemKey, SAFE_BOX } from './srs.js';
 import { levelOf } from './levels.js';
 
 export const KINDS = {
@@ -80,10 +78,4 @@ export const masteryMode = (lesson) => kindInfo(lesson)?.mastery ?? towardTarget
 // Einträge, die für Test, Medaille und „sicher“ zählen (ohne Experten-Aufgaben).
 export const coreItems = (lesson) => (lesson?.items ?? []).filter((it) => levelOf(it) !== 3);
 
-// Anteil sicherer Einträge einer Lektion (0..1).
-export function masteryOf(sid, lesson, mode = masteryMode(lesson)) {
-  const items = coreItems(lesson);
-  if (!items.length) return 0;
-  const safe = items.filter((it) => itemState(itemKey(sid, lesson.id, it, mode)).box >= SAFE_BOX).length;
-  return safe / items.length;
-}
+// Anteil sicherer Einträge einer Lektion: masteryOf in words.js („sitzt“ pro Wort).

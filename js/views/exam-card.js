@@ -3,15 +3,15 @@
 // grau 🔒 = noch zu (Eltern fragen). Positiv formuliert; „eng“ nur bei echtem Rückstand.
 
 import { getSubject, getLesson } from '../content.js';
-import { coreItems, masteryMode, lessonKey } from '../lessons.js';
-import { itemState } from '../store.js';
-import { itemKey, SAFE_BOX } from '../srs.js';
+import { coreItems, lessonKey } from '../lessons.js';
+import { SAFE_BOX } from '../srs.js';
 import { etappenFor, progress, nextEtappe, lessonAccess, etappeNo } from '../path.js';
 import { RIBBONS, EXAM_NAME, upcomingExams, daysUntil, dateLabel, countdownText, hurdleState, recentShare, weekStart, isTight } from '../exams.js';
 import { etappeHref } from './etappe.js';
 import { examHref } from './exam-edit.js';
 import { GENERALPROBE_DAYS } from '../exam-rounds.js';
 import { lessonIcon } from './subject.js';
+import { wordState } from '../words.js';
 import { esc } from '../util.js';
 import { isOpen } from '../fold.js';
 
@@ -28,8 +28,7 @@ export function hurdlesOf(exam, now = new Date()) {
     const open = access.get(lesson.id) === 'open';
     const stages = open ? etappenFor(exam.sid, lesson) : [];
     const way = progress(stages);
-    const mode = masteryMode(lesson);
-    const states = coreItems(lesson).map((it) => itemState(itemKey(exam.sid, lesson.id, it, mode)));
+    const states = coreItems(lesson).map((it) => wordState(exam.sid, lesson, it));   // „sitzt“ pro Wort
     const state = hurdleState({ open, way, recent: recentShare(states, since, SAFE_BOX) });
     return { lesson, state, way, stages, next: open ? nextEtappe(stages) : null, key: lessonKey(exam.sid, lesson), started: states.some((s) => s.box > 0) };
   });

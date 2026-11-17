@@ -5,7 +5,8 @@
 
 import { getSubject, getLesson } from '../content.js';
 import { starsFor } from '../srs.js';
-import { masteryOf, kindInfo, kindOf } from '../lessons.js';
+import { kindInfo, kindOf } from '../lessons.js';
+import { masteryOf } from '../words.js';
 import { lessonMedal, MEDAL_RULE, testReady } from '../medal.js';
 import { esc, stars } from '../util.js';
 import { etappenFor, progress, lessonAccess } from '../path.js';

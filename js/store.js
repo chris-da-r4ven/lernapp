@@ -28,7 +28,7 @@ if (!TESTING && PROFILE === 'standard' && readKey(KEY) === null && readKey(OLD_K
 
 // resetAt: Zeitpunkt des letzten Zurücksetzens (für das Zusammenführen mit der Sicherung).
 const empty = () => ({ v: SCHEMA, items: {}, days: {}, points: 0, pointsBy: {}, pet: null, tests: {}, feedback: [], resetAt: 0,
-  path: {}, pathSince: 0, opened: {}, blitz: [], jokers: {}, spent: [], exams: [] });
+  path: {}, pathSince: 0, opened: {}, blitz: [], jokers: {}, spent: [], exams: [], words: {} });
 
 // Konnte der gespeicherte Stand nicht (vollständig) gelesen werden? Dann hebt load() den
 // Rohtext auf, und die Sicherung führt beim nächsten Abgleich zusammen statt zu überschreiben.
@@ -129,6 +129,15 @@ export function migrateLessons(sid, moved = {}) {
       delete state.items[key];
       changed = true;
     }
+    for (const key of Object.keys(state.words ?? {})) {
+      if (!key.startsWith(prefix)) continue;
+      const target = `${sid}/${to}/` + key.slice(prefix.length);
+      const old = state.words[key];
+      const cur = state.words[target];
+      if (!cur || old.at > cur.at) state.words[target] = old;
+      delete state.words[key];
+      changed = true;
+    }
     const tFrom = `${sid}/${from}`;
     const tTo = `${sid}/${to}`;
     if (state.tests?.[tFrom]) {
@@ -174,6 +183,12 @@ export function itemState(key) {
 
 export function setItemState(key, s) {
   state.items[key] = s;
+}
+
+// Wort-Stand (words.js): wie viele Tage ein Wort schon sicher abgerufen wurde. null = noch kein Eintrag.
+export const wordEntry = (key) => (Object.hasOwn(state.words ?? {}, key) ? state.words[key] : null);
+export function setWordEntry(key, w) {
+  state.words = { ...(state.words ?? {}), [key]: w };
 }
 
 // effort: wie viel die Aufgabe fürs Tagesziel zählt (Gewicht der Übungsart, Schreiben = 1).

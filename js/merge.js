@@ -78,11 +78,22 @@ function mergeSame(a, b) {
     blitz: mergeBlitz(a.blitz, b.blitz),
     jokers: mergeStamps(a.jokers, b.jokers),
     spent: mergeSpent(a.spent, b.spent),
+    words: mergeWords(a.words, b.words),
     exams: mergeExams(a.exams, b.exams),
   };
 }
 
 // --- Lernweg (SCHEMA 3) ------------------------------------------------------------
+// Wort-Stand: pro Wort gilt der zuletzt geänderte Eintrag (nach einem Zurücksetzen nur, was danach kam).
+function mergeWords(a = {}, b = {}, since = -Infinity) {
+  const out = { ...a };
+  for (const [k, w] of Object.entries(b)) {
+    if (w.at <= since) continue;
+    if (!Object.hasOwn(out, k) || w.at > out[k].at) out[k] = w;
+  }
+  return out;
+}
+
 // Zeitstempel-Sammlungen: Vereinigung, der frühere Zeitpunkt gewinnt (geschafft bleibt geschafft).
 // since: nur Einträge nach diesem Zeitpunkt übernehmen (nach einem Zurücksetzen).
 function mergeStamps(a = {}, b = {}, since = -Infinity) {
@@ -180,6 +191,7 @@ function mergeAfterReset(newer, older) {
     blitz: mergeBlitz(newer.blitz, older.blitz.filter((x) => x.at > since)),
     jokers: mergeStamps(newer.jokers, older.jokers, since),
     spent: mergeSpent(newer.spent, (older.spent ?? []).filter((x) => x.at > since)),
+    words: mergeWords(newer.words, older.words, since),
     exams: mergeExams(newer.exams, older.exams),   // Planung, kein Lernstand – bleibt wie die Rückmeldungen
   };
 }

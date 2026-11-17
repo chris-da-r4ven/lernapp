@@ -6,13 +6,14 @@ import { getState, itemState, streak, storageProblem, storageNewer, profileId } 
 import { deviceId } from '../device.js';
 import { parentsSection, bindParents } from './parents.js';
 import { modesFor, tasksFor } from '../exercises/registry.js';
-import { status, itemKey } from '../srs.js';
-import { masteryMode, coreItems, unitOf, countWord } from '../lessons.js';
+import { status } from '../srs.js';
+import { coreItems, unitOf, countWord } from '../lessons.js';
 import { esc, dayKey, addDays } from '../util.js';
 import { DAY_GOAL } from '../streak.js';
 import { fold, bindFolds } from '../fold.js';
 import { dayPoints, fmtPoints, oldCount, bestDay, RECORD_DAYS } from '../records.js';
 import { wreath } from '../wreath.js';
+import { wordStatus } from '../words.js';
 import { dayValue } from '../streak.js';
 import { allExams } from '../store.js';
 import { ribbonWall, RIBBONS, dateLabel, EXAM_NAME } from '../exams.js';
@@ -104,14 +105,13 @@ function ribbonWallHtml() {
     </div>`, { open: true });
 }
 
-// Pro Fach: wie viele Einträge sicher sitzen, wackeln, neu sind – jeder Eintrag einmal, gemessen an
-// der Übungsart, die auch Test und Sterne zählen (masteryMode), ohne Experten-Aufgaben.
+// Pro Fach: wie viele Einträge sicher sitzen, wackeln, neu sind – jeder Eintrag einmal, als Wort über
+// alle Übungsarten (words.js), ohne Experten-Aufgaben.
 function subjectCounts() {
   const bySubject = new Map();
   for (const { sid, subject, lesson } of allLessons()) {
     const s = bySubject.get(sid) ?? { name: subject.name, icon: subject.icon, neu: 0, wackelt: 0, sicher: 0, total: 0, lessons: [] };
-    const mode = masteryMode(lesson);
-    for (const it of coreItems(lesson)) { s[status(itemState(itemKey(sid, lesson.id, it, mode)))]++; s.total++; }
+    for (const it of coreItems(lesson)) { s[wordStatus(sid, lesson, it)]++; s.total++; }
     s.lessons.push(lesson);
     bySubject.set(sid, s);
   }
@@ -152,9 +152,8 @@ function lessonTable() {
           <span class="small muted">${c.sicher} sicher · ${c.wackelt} wackeln · ${c.neu} neu</span>
         </div>`;
     });
-    const mode = masteryMode(lesson);
     const core = coreItems(lesson);
-    const safe = core.filter((it) => status(itemState(itemKey(sid, lesson.id, it, mode))) === 'sicher').length;
+    const safe = core.filter((it) => wordStatus(sid, lesson, it) === 'sicher').length;
     blocks.push(fold(`test:${sid}/${lesson.id}`,
       `<strong>${esc(lesson.title)}</strong> <span class="muted small">${esc(s.name)} · ${pct(safe, core.length)} sicher</span>`,
       lines.join(''), { cls: 'lesson-line sub-fold' }));

@@ -1,6 +1,6 @@
 // Wiederholsystem nach dem Karteikasten-Prinzip (Leitner).
 // Fach 0 = neu, Fach 1–5 = immer längere Abstände.
-// Falsch → zurück in Fach 1. Ab Fach 3 gilt eine Karte als "sicher".
+// Falsch → zurück in Fach 1. Das plant die Wiederholungen pro Übungsart – „sitzt“ zählt pro Wort (words.js).
 
 import { itemState, setItemState, addDayStat, addPoints, save } from './store.js';
 import { shuffle } from './util.js';

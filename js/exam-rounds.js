@@ -10,8 +10,9 @@ import { coreItems, masteryMode, lessonKey } from './lessons.js';
 import { itemState, pathEntry } from './store.js';
 import { modesFor, tasksFor } from './exercises/registry.js';
 import { lessonAccess, spreadModes, wordId } from './path.js';
-import { itemKey, SAFE_BOX } from './srs.js';
+import { SAFE_BOX } from './srs.js';
 import { shuffle } from './util.js';
+import { wordState } from './words.js';
 
 export const TRAINING_SIZE = 12;
 export const SHAKY_SHARE = 2 / 3;
@@ -59,7 +60,7 @@ export function trainingTasks(exam) {
       // meist die Richtung wie im Test, sonst eine andere Abruf-Übungsart
       const own = list.find((t) => t.dir === test);
       const task = own && (Math.random() < 0.6 || list.length === 1) ? own : shuffle(list)[0];
-      const box = itemState(itemKey(sid, lesson.id, item, test)).box;
+      const box = wordState(sid, lesson, item).box;   // „sitzt“ pro Wort (words.js)
       (box < SAFE_BOX ? shaky : sure).push(task);
     }
   }

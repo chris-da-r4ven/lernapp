@@ -13,6 +13,7 @@ import { daysUntil, upcomingExams, examFocus, hurdleState, recentShare, isTight,
 import { mixTraining } from '../js/exam-rounds.js';
 import { recordBroken, bestDay, oldCount } from '../js/records.js';
 import { horseLook, horseSvg } from '../js/horse.js';
+import { nextWord, recordWord, wordInfo, wordStatus, wordBox, strongMode } from '../js/words.js';
 import { mergeExams } from '../js/merge.js';
 import { practicing } from '../js/nav.js';
 import { medalStatus } from '../js/medal.js';
@@ -664,6 +665,58 @@ try {
     eq(recordBroken(long, '2026-11-17', 55, 61), { best: 60, now: 61, allTime: true }, 'Allzeit-Rekord');
     eq(recordBroken({ '2026-09-01': { right: 30, wrong: 0, e: 300 } }, '2026-11-17', 25, 31), { best: 30, now: 31, allTime: true }, 'Allzeit auch nach langer Pause');
     eq(recordBroken(d, '2026-11-17', 20, 30).allTime, true);
+  });
+
+  section('Sitzt pro Wort (words.js)');
+  await test('Höchstens eine Stufe pro Tag, Fehler beim Eintippen → wackelt, Antippen nur bis wackelt', () => {
+    const w0 = { lv: 0, day: '', test: false, last: 0, at: 0 };
+    const typ = (w, today, o = {}) => nextWord(w, { correct: true, firstTry: true, strong: true, isTest: false, today, now: 1, ...o });
+    let w = typ(w0, '2026-11-10');
+    eq([w.lv, w.day], [1, '2026-11-10']);
+    w = typ(w, '2026-11-10');
+    eq(w.lv, 1, 'gleicher Tag: keine weitere Stufe');
+    w = typ(w, '2026-11-11', { isTest: true });
+    w = typ(w, '2026-11-13');
+    eq([w.lv, w.test, wordBox(w)], [3, true, 3], 'drei Tage, einmal in Test-Richtung → sitzt');
+    eq(wordBox({ ...w, test: false }), 2, 'ohne Test-Richtung höchstens wackelt');
+    eq(nextWord(w, { correct: false, strong: false, today: '2026-11-14', now: 2 }), null, 'Antipp-Fehler ändert nichts');
+    const bad = nextWord(w, { correct: false, strong: true, today: '2026-11-14', now: 2 });
+    eq([bad.lv, bad.test], [1, false], 'Fehler beim Eintippen → wackelt');
+    const tap = nextWord(w0, { correct: true, firstTry: true, strong: false, today: '2026-11-14', now: 2 });
+    eq([tap.lv, tap.day], [1, ''], 'Antippen: wackelt, aber kein Tag gezählt');
+    const late = nextWord({ ...w, lv: 2 }, { correct: true, firstTry: false, strong: true, today: '2026-11-20', now: 3 });
+    eq(late.lv, 2, 'erst nach einem Fehler richtig: keine Stufe');
+  });
+  await test('Starke Übungsarten: Eintippen und die Übungsart des Tests (Grammatik: Form antippen)', () => {
+    const V = vocab(2);
+    const it = V.items[0];
+    eq(['ab', 'ba', 'hoeren', 'satz', 'hoeren-wahl'].map((m) => strongMode(m, it, V)), [true, true, true, true, false]);
+    const G = { id: 'g', kind: 'grammatik', sides: { a: 'Deutsch', b: 'Englisch' }, items: [{ id: 'x', a: 'Ich bin', b: 'I am', ex: 'I {am} here.', choices: ['am', 'is', 'are'] }] };
+    eq([strongMode('form', G.items[0], G), strongMode('form-tippen', G.items[0], G)], [true, true]);
+  });
+  await test('Alter Lernstand wird abgeleitet, neue Antworten werden pro Wort gespeichert', () => {
+    replaceState(empty());
+    const V = vocab(2);
+    const [a, b] = V.items;
+    const st = (box) => ({ box, due: 0, right: box, wrong: 0, wrongs: [], last: Date.now() - 3 * 864e5 });
+    getState().items[`s/v/w1|hoeren`] = st(4);
+    getState().items[`s/v/w1|ab`] = st(1);
+    getState().items[`s/v/w2|hoeren-wahl`] = st(3);
+    eq(wordStatus('s', V, a), 'sicher', 'Diktat Fach 4 + Test-Richtung schon richtig → sitzt');
+    eq(wordStatus('s', V, b), 'wackelt', 'nur angetippt → wackelt');
+    recordWord({ sid: 's', lesson: V, item: b, dir: 'ab' }, { correct: true, firstTry: true });
+    const w = wordInfo('s', V, b);
+    eq([w.lv, w.test, w.day], [2, true, dayKey()], 'aus „wackelt“ (1) einen Tag weiter');
+    recordWord({ sid: 's', lesson: V, item: b, dir: 'ba' }, { correct: true, firstTry: true });
+    eq(wordInfo('s', V, b).lv, 2, 'am selben Tag nicht weiter');
+    replaceState(empty());
+  });
+  await test('Wort-Stand: Prüfen und Zusammenführen (neuerer Eintrag gilt)', () => {
+    const clean = sanitizeState({ words: { 'e/l/w': { lv: 3, day: '2026-11-10', test: true, last: 5, at: 9 }, 'e/l/x': { lv: 9, at: 1 }, '__proto__': { lv: 1, at: 1 } } }).state.words;
+    eq(Object.keys(clean), ['e/l/w']);
+    const m = mergeStates({ v: 3, resetAt: 0, words: { 'e/l/w': { lv: 3, day: '', test: true, last: 1, at: 5 } } },
+      { v: 3, resetAt: 0, words: { 'e/l/w': { lv: 1, day: '', test: false, last: 1, at: 8 }, 'e/l/y': { lv: 2, day: '', test: false, last: 1, at: 3 } } });
+    eq([m.words['e/l/w'].lv, m.words['e/l/y'].lv], [1, 2]);
   });
 
   section('Stallpferde');
