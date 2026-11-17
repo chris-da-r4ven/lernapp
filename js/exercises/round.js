@@ -66,15 +66,27 @@ export function runRound(el, { tasks, test = false, once = false, onProgress = n
     queue.splice(at, 0, task);
   }
 
+  // Gespeichert wird beim Antworten, nicht erst beim Tippen auf „Weiter“: Wer nach der letzten Aufgabe
+  // die Seite verlässt, hat die Runde trotzdem geschafft (finish() speichert Etappe, Test, Medaille).
+  let lastRight = null;   // für „Hab gespickt“: die eben gezählte richtige Antwort zurücknehmen
   const api = {
-    // hold: „Fast richtig“ selbst korrigiert – zählt als richtig, aber nicht als „auf Anhieb“, Fach bleibt.
+    // Richtig beantwortet (sofort aufrufen). hold: „Fast richtig“ selbst korrigiert – zählt als richtig,
+    // aber nicht als „auf Anhieb“, Fach bleibt.
     right({ hold = false } = {}) {
       const task = queue[0];
+      if (!task || lastRight) return;   // schon gezählt, „Weiter“ steht noch aus
       const isFirst = task.attempts === 0 && !hold;
-      points += record(task.key, { correct: true, firstTry: isFirst, hold, weight: weight(task), effort: weightFor(task.dir, task.item) });
+      const gained = record(task.key, { correct: true, firstTry: isFirst, hold, weight: weight(task), effort: weightFor(task.dir, task.item) });
+      points += gained;
       if (isFirst) firstTry++;
       queue.shift();
       done++;
+      lastRight = { task, isFirst, gained };
+      if (!queue.length) finish();
+    },
+    // „Weiter“ nach der Rückmeldung.
+    next() {
+      lastRight = null;
       next();
     },
     // Fehler eintragen – die Frage zeigt danach selbst die Lösung (und ggf. Abschreiben).
@@ -83,6 +95,7 @@ export function runRound(el, { tasks, test = false, once = false, onProgress = n
       record(task.key, { correct: false, typed: typed?.trim(), effort: weightFor(task.dir, task.item) });
       task.attempts++;
       mistakes.set(task.key, { task, typed });
+      if ((test || once) && queue.length === 1) finish();   // letzte Aufgabe – kommt nicht wieder
     },
     // Nach einem Fehler weiter: normal später nochmal, im Test einfach das nächste Wort.
     retry() {
@@ -90,7 +103,15 @@ export function runRound(el, { tasks, test = false, once = false, onProgress = n
       if (test || once) { queue.shift(); done++; } else requeue(task);
       next();
     },
+    // „Hab gespickt / war unsicher“ nach einer richtigen Antwort: zählt doch als Fehler, kommt wieder.
     peek() {
+      if (lastRight) {
+        points -= lastRight.gained;
+        if (lastRight.isFirst) firstTry--;
+        queue.unshift(lastRight.task);
+        done--;
+        lastRight = null;
+      }
       api.wrong();
       api.retry();
     },
@@ -126,17 +147,27 @@ export function runRound(el, { tasks, test = false, once = false, onProgress = n
     moveTrail(pct);
   }
 
-  function summary() {
-    const list = [...mistakes.values()];
+  // Runde geschafft: Etappe/Test/Medaille speichern – genau einmal, sobald die letzte Antwort steht.
+  let result = null;
+  function finish() {
+    if (result) return result;
     const completeNotice = onComplete?.({ mistakes: [...mistakes.keys()], firstTry, total }) ?? '';
-    const words = new Set(tasks.map(wordOf)).size;   // in Etappen kommt ein Wort mehrmals vor
-    const pct = Math.round((firstTry / total) * 100);
     // Im Test: Ergebnis pro Lektion speichern (für die Medaille 🏅).
     const progress = test && saveResult ? saveTest(tasks.map((t) => ({ sid: t.sid, lesson: t.lesson, right: !mistakes.has(t.key) }))) : [];
     // Neue Medaillen (Test oder Grammatik-Runde): Bonus-Sternchen.
+    const newMedals = [...lessons.values()].filter((x) => !x.hadMedal && lessonMedal(x.sid, x.lesson).medal);
+    if (newMedals.length) addPoints(MEDAL_BONUS * newMedals.length);
+    save();
+    result = { completeNotice, progress, newMedals };
+    return result;
+  }
+
+  function summary() {
+    const list = [...mistakes.values()];
+    const { completeNotice, progress, newMedals } = finish();
+    const words = new Set(tasks.map(wordOf)).size;   // in Etappen kommt ein Wort mehrmals vor
+    const pct = Math.round((firstTry / total) * 100);
     const all = [...lessons.values()];
-    const newMedals = all.filter((x) => !x.hadMedal && lessonMedal(x.sid, x.lesson).medal);
-    if (newMedals.length) { addPoints(MEDAL_BONUS * newMedals.length); save(); }
     const mastered = tasks.some(penalized);
     roundSummary(el, {
       unit,

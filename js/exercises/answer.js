@@ -88,6 +88,7 @@ export function askTyped(area, { placeholder, answer, alts, norm = null, numeric
   }
 
   function showRight(found = false) {
+    api.right({ hold: found });   // sofort zählen – „Weiter“ blättert nur noch
     fb.innerHTML = `
       <p class="result good">${found ? 'Gefunden! 🔍' : again ? 'Jetzt sitzt es! 👍' : 'Richtig! 🎉'}</p>
       ${solution()}
@@ -97,7 +98,7 @@ export function askTyped(area, { placeholder, answer, alts, norm = null, numeric
       </div>`;
     const nextBtn = fb.querySelector('[data-act=next]');
     nextBtn.focus();
-    nextBtn.addEventListener('click', () => api.right({ hold: found }));
+    nextBtn.addEventListener('click', () => api.next());
     fb.querySelector('[data-act=peek]')?.addEventListener('click', () => api.peek());
   }
 
@@ -225,7 +226,7 @@ export function askChoice(area, { choices, isRight, api, task, test, compact = f
       x.disabled = true;
       if (isRight(choices[Number(x.dataset.i)])) x.classList.add('right');
     });
-    if (!right) { b.classList.add('wrong'); api.wrong(picked); }
+    if (!right) { b.classList.add('wrong'); api.wrong(picked); } else api.right();   // sofort zählen
     onAnswered(right, picked);
     const fb = area.querySelector('.feedback');
     fb.innerHTML = `
@@ -234,6 +235,6 @@ export function askChoice(area, { choices, isRight, api, task, test, compact = f
       <div class="actions"><button class="btn primary" data-act="next">Weiter</button></div>`;
     const nextBtn = fb.querySelector('[data-act=next]');
     nextBtn.focus();
-    nextBtn.addEventListener('click', () => (right ? api.right() : api.retry()));
+    nextBtn.addEventListener('click', () => (right ? api.next() : api.retry()));
   });
 }
