@@ -1,0 +1,241 @@
+{
+  "id": "schulrundgang",
+  "title": "Schulrundgang",
+  "icon": "🎬",
+  "group": "Schule & ich",
+  "order": 64,
+  "kind": "vokabeln",
+  "sides": {
+    "a": "Deutsch",
+    "b": "Englisch"
+  },
+  "hof": "schule",
+  "items": [
+    {
+      "id": "to have",
+      "a": "essen (z. B. Mittagessen)",
+      "b": "to have",
+      "ex": "We {have} lunch at one o'clock.",
+      "exDe": "Wir essen um ein Uhr zu Mittag.",
+      "bAlt": [
+        "have"
+      ]
+    },
+    {
+      "id": "to make",
+      "a": "machen / tun / bilden; hier: drehen (einen Film)",
+      "b": "to make",
+      "ex": "We {make} a film about our school.",
+      "exDe": "Wir drehen einen Film über unsere Schule.",
+      "bAlt": [
+        "make"
+      ]
+    },
+    {
+      "id": "film",
+      "a": "der Film",
+      "b": "film",
+      "ex": "We watch a {film} in English.",
+      "exDe": "Wir schauen einen Film auf Englisch.",
+      "aAlt": [
+        "Film"
+      ]
+    },
+    {
+      "id": "recording studio",
+      "a": "das Tonstudio",
+      "b": "recording studio",
+      "ex": "The band plays in the {recording studio}.",
+      "exDe": "Die Band spielt im Tonstudio.",
+      "hard": true,
+      "aAlt": [
+        "Tonstudio"
+      ]
+    },
+    {
+      "id": "to find",
+      "a": "finden / herausfinden",
+      "b": "to find",
+      "ex": "I can't {find} my pen.",
+      "exDe": "Ich kann meinen Stift nicht finden.",
+      "bAlt": [
+        "find"
+      ]
+    },
+    {
+      "id": "badminton",
+      "a": "das Badminton",
+      "b": "badminton",
+      "ex": "We play {badminton} in the gym.",
+      "exDe": "Wir spielen in der Turnhalle Badminton.",
+      "aAlt": [
+        "Badminton"
+      ]
+    },
+    {
+      "id": "football",
+      "a": "der Fußball",
+      "b": "football",
+      "ex": "{Football} is fun.",
+      "exDe": "Fußball macht Spaß.",
+      "aAlt": [
+        "Fußball"
+      ]
+    },
+    {
+      "id": "sign language",
+      "a": "die Gebärdensprache",
+      "b": "sign language",
+      "ex": "Can you speak {sign language}?",
+      "exDe": "Kannst du Gebärdensprache?",
+      "aAlt": [
+        "Gebärdensprache"
+      ]
+    },
+    {
+      "id": "T-shirt",
+      "a": "das T-Shirt",
+      "b": "T-shirt",
+      "ex": "My {T-shirt} is red.",
+      "exDe": "Mein T-Shirt ist rot.",
+      "aAlt": [
+        "T-Shirt"
+      ]
+    },
+    {
+      "id": "game",
+      "a": "das Spiel",
+      "b": "game",
+      "ex": "Let's play a {game}.",
+      "exDe": "Lass uns ein Spiel spielen.",
+      "aAlt": [
+        "Spiel"
+      ]
+    },
+    {
+      "id": "all",
+      "a": "alle / ganz / alles",
+      "b": "all",
+      "ex": "We {all} like pizza.",
+      "exDe": "Wir mögen alle Pizza."
+    },
+    {
+      "id": "problem",
+      "a": "das Problem",
+      "b": "problem",
+      "ex": "No {problem}!",
+      "exDe": "Kein Problem!",
+      "aAlt": [
+        "Problem"
+      ]
+    },
+    {
+      "id": "let's",
+      "a": "lass uns / lasst uns",
+      "b": "let's",
+      "ex": "{Let's} go to the library.",
+      "exDe": "Lass uns in die Bibliothek gehen.",
+      "bAlt": [
+        "let us"
+      ]
+    },
+    {
+      "id": "not",
+      "a": "nicht",
+      "b": "not",
+      "ex": "My dog is {not} big.",
+      "exDe": "Mein Hund ist nicht groß."
+    },
+    {
+      "id": "there",
+      "a": "da / dort",
+      "b": "there",
+      "ex": "Look, my bag is over {there}.",
+      "exDe": "Schau, meine Tasche ist dort drüben."
+    },
+    {
+      "id": "to ask",
+      "a": "fragen",
+      "b": "to ask",
+      "ex": "Let's {ask} the teacher.",
+      "exDe": "Lass uns die Lehrerin fragen.",
+      "bAlt": [
+        "ask"
+      ]
+    },
+    {
+      "id": "someone",
+      "a": "jemand",
+      "b": "someone",
+      "ex": "{Someone} is in the classroom.",
+      "exDe": "Jemand ist im Klassenzimmer."
+    },
+    {
+      "id": "quick",
+      "a": "schnell",
+      "b": "quick",
+      "ex": "Be {quick}!",
+      "exDe": "Sei schnell!"
+    },
+    {
+      "id": "bike",
+      "a": "das Fahrrad",
+      "b": "bike",
+      "ex": "I go to school by {bike}.",
+      "exDe": "Ich fahre mit dem Fahrrad zur Schule.",
+      "aAlt": [
+        "Fahrrad"
+      ]
+    },
+    {
+      "id": "to stop",
+      "a": "anhalten / stoppen / stehen bleiben / aufhören / abstellen",
+      "b": "to stop",
+      "ex": "{Stop}! There's a car!",
+      "exDe": "Halt! Da ist ein Auto!",
+      "bAlt": [
+        "stop"
+      ]
+    },
+    {
+      "id": "our",
+      "a": "unser / unsere",
+      "b": "our",
+      "ex": "This is {our} classroom.",
+      "exDe": "Das ist unser Klassenzimmer."
+    },
+    {
+      "id": "has",
+      "a": "hat",
+      "b": "has",
+      "ex": "Mia {has} a new phone.",
+      "exDe": "Mia hat ein neues Handy."
+    },
+    {
+      "id": "I'm sorry.",
+      "a": "Es tut mir leid. / Entschuldigung.",
+      "b": "I'm sorry.",
+      "ex": "{I'm sorry}, I'm late.",
+      "exDe": "Es tut mir leid, ich bin zu spät.",
+      "bAlt": [
+        "I'm sorry",
+        "I am sorry"
+      ]
+    },
+    {
+      "id": "who",
+      "a": "wer",
+      "b": "who",
+      "ex": "{Who} is your teacher?",
+      "exDe": "Wer ist dein Lehrer?"
+    },
+    {
+      "id": "I spy with my little eye …",
+      "a": "Ich sehe was, was du nicht siehst …",
+      "b": "I spy with my little eye …",
+      "bAlt": [
+        "I spy with my little eye"
+      ]
+    }
+  ]
+}

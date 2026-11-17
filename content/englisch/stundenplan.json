@@ -98,7 +98,7 @@
     },
     {
       "id": "drama",
-      "a": "Theater",
+      "a": "Theater / Drama",
       "b": "drama",
       "ex": "In {drama} we play a story.",
       "exDe": "In Theater spielen wir eine Geschichte."
@@ -122,7 +122,7 @@
     },
     {
       "id": "IT",
-      "a": "Informatik / Medienbildung",
+      "a": "Informatik / Medienbildung / Computerunterricht",
       "b": "IT",
       "ex": "We use tablets in {IT}.",
       "exDe": "In Informatik benutzen wir Tablets."
@@ -136,14 +136,14 @@
     },
     {
       "id": "PE",
-      "a": "Sport",
+      "a": "Sport / Sportunterricht",
       "b": "PE",
       "ex": "We have {PE} in the gym.",
       "exDe": "Wir haben Sport in der Turnhalle."
     },
     {
       "id": "RE",
-      "a": "Religion",
+      "a": "Religion / Religionsunterricht / Reli",
       "b": "RE",
       "ex": "We have {RE} on Friday.",
       "exDe": "Wir haben am Freitag Religion."

@@ -1,7 +1,7 @@
 {
-  "version": 25,
-  "updated": "2026-11-13",
-  "hash": "b780cef5ca616557",
+  "version": 26,
+  "updated": "2026-11-17",
+  "hash": "6307991ce271e5ab",
   "minApp": 6,
   "app": {
     "modes": [
@@ -69,6 +69,18 @@
           "id": "stundenplan",
           "title": "Stundenplan",
           "file": "englisch/stundenplan.json",
+          "group": "Schule & ich"
+        },
+        {
+          "id": "ueber-faecher-reden",
+          "title": "Über Schulfächer reden",
+          "file": "englisch/ueber-faecher-reden.json",
+          "group": "Schule & ich"
+        },
+        {
+          "id": "schulrundgang",
+          "title": "Schulrundgang",
+          "file": "englisch/schulrundgang.json",
           "group": "Schule & ich"
         },
         {

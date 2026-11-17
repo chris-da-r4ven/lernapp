@@ -1,0 +1,216 @@
+{
+  "id": "ueber-faecher-reden",
+  "title": "Über Schulfächer reden",
+  "icon": "💬",
+  "group": "Schule & ich",
+  "order": 62,
+  "kind": "vokabeln",
+  "sides": {
+    "a": "Deutsch",
+    "b": "Englisch"
+  },
+  "hof": "schule",
+  "items": [
+    {
+      "id": "day",
+      "a": "der Tag",
+      "b": "day",
+      "ex": "Monday is a long {day}.",
+      "exDe": "Montag ist ein langer Tag.",
+      "aAlt": [
+        "Tag"
+      ]
+    },
+    {
+      "id": "to like",
+      "a": "mögen",
+      "b": "to like",
+      "ex": "I {like} music.",
+      "exDe": "Ich mag Musik.",
+      "bAlt": [
+        "like"
+      ]
+    },
+    {
+      "id": "to be fun",
+      "a": "Spaß machen / witzig sein",
+      "b": "to be fun",
+      "ex": "Art {is fun}.",
+      "exDe": "Kunst macht Spaß.",
+      "bAlt": [
+        "be fun"
+      ]
+    },
+    {
+      "id": "because",
+      "a": "weil / da",
+      "b": "because",
+      "ex": "I like PE {because} I can play football.",
+      "exDe": "Ich mag Sport, weil ich Fußball spielen kann."
+    },
+    {
+      "id": "interesting",
+      "a": "interessant",
+      "b": "interesting",
+      "ex": "History is {interesting}.",
+      "exDe": "Geschichte ist interessant."
+    },
+    {
+      "id": "but",
+      "a": "aber",
+      "b": "but",
+      "ex": "I like maths, {but} it is difficult.",
+      "exDe": "Ich mag Mathe, aber es ist schwierig."
+    },
+    {
+      "id": "they're",
+      "a": "sie sind",
+      "b": "they're",
+      "ex": "Tom and Mia are my friends. {They're} nice.",
+      "exDe": "Tom und Mia sind meine Freunde. Sie sind nett.",
+      "bAlt": [
+        "they are"
+      ]
+    },
+    {
+      "id": "to be good at",
+      "a": "gut sein in",
+      "b": "to be good at",
+      "ex": "I'm {good at} drawing.",
+      "exDe": "Ich bin gut im Zeichnen.",
+      "bAlt": [
+        "be good at",
+        "good at"
+      ]
+    },
+    {
+      "id": "I don't like …",
+      "a": "Ich mag … nicht. / … gefällt mir nicht.",
+      "b": "I don't like …",
+      "ex": "{I don't like} Mondays.",
+      "exDe": "Ich mag Montage nicht.",
+      "bAlt": [
+        "I don't like",
+        "I do not like"
+      ]
+    },
+    {
+      "id": "boring",
+      "a": "langweilig",
+      "b": "boring",
+      "ex": "This film is {boring}.",
+      "exDe": "Dieser Film ist langweilig."
+    },
+    {
+      "id": "easy",
+      "a": "einfach / leicht",
+      "b": "easy",
+      "ex": "The homework is {easy}.",
+      "exDe": "Die Hausaufgabe ist leicht."
+    },
+    {
+      "id": "with",
+      "a": "mit",
+      "b": "with",
+      "ex": "I go to school {with} my sister.",
+      "exDe": "Ich gehe mit meiner Schwester zur Schule."
+    },
+    {
+      "id": "homework",
+      "a": "die Hausaufgabe / die Hausaufgaben",
+      "b": "homework",
+      "ex": "We have English {homework} today.",
+      "exDe": "Wir haben heute Englisch-Hausaufgaben.",
+      "aAlt": [
+        "Hausaufgabe",
+        "Hausaufgaben"
+      ]
+    },
+    {
+      "id": "sure",
+      "a": "sicher",
+      "b": "sure",
+      "ex": "Are you {sure}?",
+      "exDe": "Bist du sicher?"
+    },
+    {
+      "id": "number",
+      "a": "die Zahl / die Nummer / die Anzahl",
+      "b": "number",
+      "ex": "Seven is my lucky {number}.",
+      "exDe": "Sieben ist meine Glückszahl.",
+      "aAlt": [
+        "Anzahl",
+        "Nummer",
+        "Zahl"
+      ]
+    },
+    {
+      "id": "experiment",
+      "a": "der Versuch / das Experiment",
+      "b": "experiment",
+      "ex": "We do an {experiment} in science.",
+      "exDe": "Wir machen in Naturwissenschaften ein Experiment.",
+      "aAlt": [
+        "Experiment",
+        "Versuch"
+      ]
+    },
+    {
+      "id": "sport",
+      "a": "der Sport / die Sportart",
+      "b": "sport",
+      "ex": "Football is my favourite {sport}.",
+      "exDe": "Fußball ist meine Lieblingssportart.",
+      "aAlt": [
+        "Sport",
+        "Sportart"
+      ]
+    },
+    {
+      "id": "isn't",
+      "a": "ist nicht",
+      "b": "isn't",
+      "ex": "My bag {isn't} here.",
+      "exDe": "Meine Tasche ist nicht hier.",
+      "bAlt": [
+        "is not"
+      ]
+    },
+    {
+      "id": "we",
+      "a": "wir",
+      "b": "we",
+      "ex": "{We} have maths on Monday.",
+      "exDe": "Wir haben am Montag Mathe."
+    },
+    {
+      "id": "cat",
+      "a": "die Katze",
+      "b": "cat",
+      "ex": "My {cat} is black and white.",
+      "exDe": "Meine Katze ist schwarz-weiß.",
+      "aAlt": [
+        "Katze"
+      ]
+    },
+    {
+      "id": "big",
+      "a": "groß",
+      "b": "big",
+      "ex": "Our school is very {big}.",
+      "exDe": "Unsere Schule ist sehr groß."
+    },
+    {
+      "id": "tour",
+      "a": "der Rundgang / die Tour",
+      "b": "tour",
+      "ex": "The new students go on a {tour} of the school.",
+      "exDe": "Die neuen Schüler machen einen Rundgang durch die Schule.",
+      "aAlt": [
+        "Rundgang",
+        "Tour"
+      ]
+    }
+  ]
+}
