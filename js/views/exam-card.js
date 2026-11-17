@@ -13,8 +13,8 @@ import { examHref } from './exam-edit.js';
 import { GENERALPROBE_DAYS } from '../exam-rounds.js';
 import { lessonIcon } from './subject.js';
 import { esc } from '../util.js';
+import { isOpen } from '../fold.js';
 
-const VISIBLE = 2;
 const LABEL = { ready: 'sitzt ✓', shaky: 'üben', way: '', locked: 'noch zu – sag Papa Bescheid' };
 
 // Hindernisse eines Turniers (Lektionen, die es nicht mehr gibt, fallen weg).
@@ -35,7 +35,8 @@ export function hurdlesOf(exam, now = new Date()) {
   });
 }
 
-function poster(exam, now) {
+// compact: Hindernisse eingeklappt (ab zwei Turnieren) – Kopf und Knöpfe bleiben sichtbar.
+function poster(exam, now, compact = false) {
   const subject = getSubject(exam.sid);
   const days = daysUntil(exam.date, now);
   const hurdles = hurdlesOf(exam, now);
@@ -56,6 +57,8 @@ function poster(exam, now) {
           <span class="small">${esc(dateLabel(exam.date))} · ${esc(countdownText(days))}</span></span>
         <a class="small exam-edit" href="${examHref(exam.id)}">ändern</a>
       </div>
+      ${compact ? `<details class="exam-fold" data-fold="exam-${esc(exam.id)}"${isOpen(`exam-${exam.id}`) ? ' open' : ''}>
+        <summary>${hurdles.length} ${hurdles.length === 1 ? 'Lektion' : 'Lektionen'} · ${ready} ${ready === 1 ? 'sitzt' : 'sitzen'}</summary>` : ''}
       <ul class="hurdles">
         ${hurdles.map((h) => {
           const text = h.state === 'way' ? `Lernweg ${h.way.done} von ${h.way.total}` : LABEL[h.state];
@@ -66,6 +69,7 @@ function poster(exam, now) {
         }).join('')}
       </ul>
       <p class="small exam-note">${esc(note)}</p>
+      ${compact ? '</details>' : ''}
       <div class="actions exam-actions">
         ${tight && behind ? `<a class="btn primary" href="${etappeHref(exam.sid, behind.lesson.id, behind.next.n)}">${esc(behind.lesson.title)} · Etappe ${etappeNo(behind.stages, behind.next)}</a>` : ''}
         ${canTrain ? `<a class="btn${tight && behind ? '' : ' primary'}" href="#/reitturnier/${encodeURIComponent(exam.id)}/training">🏇 Turniertraining</a>` : ''}
@@ -84,11 +88,8 @@ export function ribbonCards(list) {
     </section>`).join('');
 }
 
-// Alle anstehenden Turniere; die ersten VISIBLE offen, weitere zusammengeklappt.
+// Alle anstehenden Turniere; ein einzelnes ganz offen, ab zwei mit eingeklappten Hindernissen.
 export function examCards(exams, now = new Date()) {
   const list = upcomingExams(exams, now);
-  if (!list.length) return '';
-  const shown = list.slice(0, VISIBLE).map((e) => poster(e, now)).join('');
-  const more = list.slice(VISIBLE);
-  return shown + (more.length ? `<details class="exam-more"><summary>🏆 ${more.length} weitere${more.length === 1 ? 's' : ''} Turnier${more.length === 1 ? '' : 'e'}</summary>${more.map((e) => poster(e, now)).join('')}</details>` : '');
+  return list.map((e) => poster(e, now, list.length > 1)).join('');
 }

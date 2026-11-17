@@ -3,7 +3,8 @@ import { unitOf, countWord } from '../lessons.js';
 import { getState, streak, spendable, buyJoker } from '../store.js';
 import { mood, DAY_GOAL, JOKER_GOAL, JOKER_PRICE, jokerOffer } from '../streak.js';
 import { petStatus, PET } from '../pet.js';
-import { esc, fmt1 } from '../util.js';
+import { esc, fmt1, dayKey } from '../util.js';
+import { bindFolds } from '../fold.js';
 import { updateContent } from '../updates.js';
 import { portrait, bigPortrait } from './portrait.js';
 import { dueSummary } from '../ausritt.js';
@@ -14,9 +15,11 @@ import { pathEntry } from '../store.js';
 import { bannerFor, lessonIcon } from './subject.js';
 import { examCards, ribbonCards } from './exam-card.js';
 import { allExams, setExamRibbon } from '../store.js';
-import { examFocus, examPick, ribbonDue } from '../exams.js';
+import { examFocus, examPick, ribbonDue, upcomingExams } from '../exams.js';
 
 const PET_NAME = PET.name;
+const JOKER_HIDE = 'lernapp.jokerHide';   // Joker-Hinweis weggeklickt: an diesem Tag (nur dieses Gerät)
+const jokerHidden = () => { try { return localStorage.getItem(JOKER_HIDE) === dayKey(); } catch { return false; } };
 
 export function homeView(el) {
   const st = getState();
@@ -43,7 +46,8 @@ export function homeView(el) {
 
     ${jokerNote(serie)}
     ${hasContent() ? ribbonCards(ribbonDue(allExams())) + examCards(allExams()) : ''}
-    ${hasContent() ? `<div class="home-actions">${continueCard()}${blitzCard()}${ausrittCard()}</div>` : ''}
+    ${hasContent() && !upcomingExams(allExams()).length   // Turnier eingetragen: nur das üben (Fächer bleiben)
+      ? `<div class="home-actions">${continueCard()}${blitzCard()}${ausrittCard()}</div>` : ''}
 
     <h2 class="section-title home-sign">Fächer</h2>
     <section class="subject-tiles">
@@ -65,6 +69,14 @@ export function homeView(el) {
     setExamRibbon(b.closest('[data-exam]').dataset.exam, b.dataset.ribbon);
     homeView(el);
   }));
+
+  bindFolds(el);
+
+  // Joker-Hinweis für heute wegklicken
+  el.querySelector('[data-act=joker-hide]')?.addEventListener('click', () => {
+    try { localStorage.setItem(JOKER_HIDE, dayKey()); } catch { /* egal */ }
+    el.querySelector('.joker-note')?.remove();
+  });
 
   // Joker kaufen: erst nachfragen
   el.querySelector('[data-act=joker-ask]')?.addEventListener('click', () => {
@@ -126,10 +138,12 @@ function jokerNote(s) {
         : `<p class="small">Ein Joker kostet ${JOKER_PRICE} ✦ – dir fehlen noch ${JOKER_PRICE - have} ✦.</p>`}
     </div></div>`;
   }
+  if (jokerHidden()) return '';
   const serie = `${s.count} ${s.count === 1 ? 'Tag' : 'Tagen'}`;
   const text = s.joker === 'gerettet' ? `<strong>Serie mit Joker gerettet!</strong> Sie steht bei ${serie}. 🎉`
     : `<strong>Joker eingesetzt!</strong> Die verpassten Tage zählen nicht gegen deine Serie. Schaff <strong>${s.joker} ${JOKER_GOAL} 🎯</strong> – dann ist deine Serie von ${serie} gerettet.${s.joker === 'heute' ? ` <span class="small">(bisher ${fmt1(s.todayWords)})</span>` : ''}`;
-  return `<div class="joker-note" role="status"><span class="joker-card" aria-hidden="true">🃏</span><p>${text}</p></div>`;
+  return `<div class="joker-note" role="status"><span class="joker-card" aria-hidden="true">🃏</span><p class="grow">${text}</p>
+    <button class="joker-x" type="button" data-act="joker-hide" aria-label="Hinweis für heute ausblenden">✕</button></div>`;
 }
 
 function streakMessage(s) {
