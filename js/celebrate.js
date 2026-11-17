@@ -5,7 +5,8 @@ import { esc } from './util.js';
 
 const COLORS = ['#f5b400', '#e5484d', '#4f6cf7', '#1f9d55', '#f28bb8', '#ffffff'];
 
-export function celebrate({ icon = '🏆', title, text = '', button = 'Juhu! 🎉' }) {
+// iconHtml: fertiges HTML statt des Emoji-Icons (z. B. der Siegerkranz).
+export function celebrate({ icon = '🏆', iconHtml = '', title, text = '', button = 'Juhu! 🎉' }) {
   document.querySelector('.celebrate')?.remove();
   const bits = Array.from({ length: 36 }, (_, i) => {
     const left = Math.round(Math.random() * 100);
@@ -21,7 +22,7 @@ export function celebrate({ icon = '🏆', title, text = '', button = 'Juhu! �
   box.innerHTML = `
     <div class="confetti" aria-hidden="true">${bits}</div>
     <div class="celebrate-card">
-      <div class="celebrate-icon" aria-hidden="true">${esc(icon)}</div>
+      <div class="celebrate-icon" aria-hidden="true">${iconHtml || esc(icon)}</div>
       <h2>${esc(title)}</h2>
       ${text ? `<p>${esc(text)}</p>` : ''}
       <button class="btn primary" type="button">${esc(button)}</button>

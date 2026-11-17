@@ -15,6 +15,7 @@ import { lessonMedal, saveTest } from '../medal.js';
 import { lessonKey, unitOf } from '../lessons.js';
 import { recordBroken, dayPoints, fmtPoints } from '../records.js';
 import { celebrate } from '../celebrate.js';
+import { wreath } from '../wreath.js';
 import { dayKey } from '../util.js';
 import { newMedalsHtml, medalProgressHtml, readyNoticeHtml, MASTERED_HTML } from './round-notes.js';
 
@@ -202,7 +203,11 @@ export function runRound(el, { tasks, test = false, once = false, onProgress = n
       onAgain, onBack, backLabel,
     });
     if (record) {
-      celebrate({ icon: '🏆', title: 'Neuer Rekord!', text: `Heute schon ${fmtPoints(record.now)} 🎯 Punkte – so viele wie noch nie! Dein alter Rekord waren ${fmtPoints(record.best)} 🎯.` });
+      celebrate(record.allTime
+        ? { iconHtml: wreath(fmtPoints(record.now), { size: 140 }), title: 'Allzeit-Rekord! Der Siegerkranz ist deiner!',
+          text: `Heute schon ${fmtPoints(record.now)} 🎯 Punkte – so viele wie noch nie! Dein alter Rekord waren ${fmtPoints(record.best)} 🎯.` }
+        : { icon: '🏆', title: 'Neuer Rekord!',
+          text: `Heute schon ${fmtPoints(record.now)} 🎯 Punkte – so viele wie seit 4 Wochen nicht! Dein Rekord waren ${fmtPoints(record.best)} 🎯.` });
     }
   }
 

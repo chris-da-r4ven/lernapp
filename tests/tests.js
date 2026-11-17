@@ -646,7 +646,7 @@ try {
   await test('Rekord in 🎯 Punkten: nur beim Überholen, erst ab einem vollen Tagesziel', () => {
     const d = { '2026-11-10': { right: 20, wrong: 5, e: 250 }, '2026-11-11': { right: 8, wrong: 0, e: 80 }, '2026-11-17': { right: 30, wrong: 0, e: 300 } };
     eq(bestDay(d, '2026-11-17'), { key: '2026-11-10', n: 25 });
-    eq(recordBroken(d, '2026-11-17', 20, 30), { best: 25, now: 30 });
+    eq(recordBroken(d, '2026-11-17', 20, 30), { best: 25, now: 30, allTime: true });
     eq(recordBroken(d, '2026-11-17', 26, 30), null, 'schon vorher drüber – nicht nochmal feiern');
     eq(recordBroken(d, '2026-11-17', 20, 25), null, 'gleich viel ist kein Rekord');
     eq(recordBroken({ '2026-11-10': { right: 6, wrong: 0, e: 60 } }, '2026-11-17', 0, 12), null, 'alter Rekord zu klein');
@@ -655,6 +655,14 @@ try {
     eq(oldCount(mixed), true, 'Teil-Tag vor der Gewichtung');
     eq(oldCount({ right: 3, wrong: 0, e: 30, by: { a1: { right: 3, wrong: 0, e: 30 } } }), false);
     eq(bestDay({ ...d, '2026-11-08': mixed }, '2026-11-17'), { key: '2026-11-10', n: 25 }, 'alter Rekordtag übersprungen');
+    // 4-Wochen-Fenster und Allzeit-Rekord
+    const long = { '2026-09-01': { right: 60, wrong: 0, e: 600 }, '2026-11-10': { right: 20, wrong: 0, e: 200 } };
+    eq(bestDay(long, '2026-11-17'), { key: '2026-11-10', n: 20 }, 'Septembertag liegt außerhalb der 4 Wochen');
+    eq(bestDay(long, '2026-11-17', { window: null }), { key: '2026-09-01', n: 60 });
+    eq(recordBroken(long, '2026-11-17', 15, 25), { best: 20, now: 25, allTime: false }, '4-Wochen-Rekord');
+    eq(recordBroken(long, '2026-11-17', 55, 61), { best: 60, now: 61, allTime: true }, 'Allzeit-Rekord');
+    eq(recordBroken({ '2026-09-01': { right: 30, wrong: 0, e: 300 } }, '2026-11-17', 25, 31), { best: 30, now: 31, allTime: true }, 'Allzeit auch nach langer Pause');
+    eq(recordBroken(d, '2026-11-17', 20, 30).allTime, true);
   });
 
   section('Reitturnier');

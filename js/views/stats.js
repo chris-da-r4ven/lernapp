@@ -11,7 +11,8 @@ import { masteryMode, coreItems, unitOf, countWord } from '../lessons.js';
 import { esc, dayKey, addDays } from '../util.js';
 import { DAY_GOAL } from '../streak.js';
 import { fold, bindFolds } from '../fold.js';
-import { dayPoints, fmtPoints, oldCount } from '../records.js';
+import { dayPoints, fmtPoints, oldCount, bestDay, RECORD_DAYS } from '../records.js';
+import { wreath } from '../wreath.js';
 import { dayValue } from '../streak.js';
 import { allExams } from '../store.js';
 import { ribbonWall, RIBBONS, dateLabel, EXAM_NAME } from '../exams.js';
@@ -171,16 +172,27 @@ function historyChart(days, rescued, jokered = new Set()) {
     list.push({ d, key: dayKey(d), rescued: rescued.has(dayKey(d)), joker: jokered.has(dayKey(d)), right: Number(day.right) || 0, wrong: Number(day.wrong) || 0, goal: dayValue(days[dayKey(d)]), old: oldCount(days[dayKey(d)]) });
   }
   const max = Math.max(1, ...list.map((x) => x.right + x.wrong));
-  const record = Math.max(0, ...Object.values(days).filter((d) => !oldCount(d)).map(dayPoints));   // Rekord in 🎯 Punkten
+  // Rekorde in 🎯 Punkten (heute zählt mit): letzte 4 Wochen und Allzeit
+  const today = dayKey();
+  const best = bestDay(days, today, { withToday: true });
+  const all = bestDay(days, today, { window: null, withToday: true });
   // Antippen zeigt die Zahlen des Tages (data-info, siehe bindDayBars)
   const info = (x) => {
     const n = x.right + x.wrong;
     const day = x.d.toLocaleDateString('de-DE', { weekday: 'short', day: 'numeric', month: 'numeric' });
     if (!n) return `${day}: ${x.joker ? 'per Joker überbrückt 🃏' : 'nicht geübt'}`;
     const pts = Math.round(x.goal * 10) / 10;
-    return `${day}: ${fmtPoints(pts)} 🎯 Punkte · ${n} Aufgaben (${x.right} richtig, ${x.wrong} falsch)${x.old ? ' · alte Zählung: jede Aufgabe zählte 1, auch Antippen' : pts > 0 && pts === record ? ' · 🏆 Rekord!' : ''}${x.rescued ? ' · 🛟 gerettet' : ''}`;
+    return `${day}: ${fmtPoints(pts)} 🎯 Punkte · ${n} Aufgaben (${x.right} richtig, ${x.wrong} falsch)${x.old ? ' · alte Zählung: jede Aufgabe zählte 1, auch Antippen' : x.key === all.key ? ' · 🏆 Allzeit-Rekord!' : x.key === best.key ? ' · 🏆 Rekord der letzten 4 Wochen!' : ''}${x.rescued ? ' · 🛟 gerettet' : ''}`;
   };
+  const dayName = (k) => dateLabel(k);
   return `
+    ${all.n > 0 ? `<div class="records">
+      ${wreath(fmtPoints(all.n), { size: 112, title: `Allzeit-Rekord: ${fmtPoints(all.n)} Punkte` })}
+      <div class="records-text">
+        <p><strong>Siegerkranz</strong><br><span class="small">Dein bester Tag überhaupt: ${esc(dayName(all.key))}</span></p>
+        ${best.n > 0 ? `<p><strong>${fmtPoints(best.n)} 🎯</strong> <span class="small">Rekord der letzten ${RECORD_DAYS / 7} Wochen${best.key === all.key ? '' : ` (${esc(dayName(best.key))})`}</span></p>` : ''}
+      </div>
+    </div>` : ''}
     <div class="bars" role="group" aria-label="Geübte Aufgaben pro Tag – antippen für die Zahlen">
       ${list.map((x) => `
         <button type="button" class="bar${x.rescued ? ' rescued' : ''}${x.old ? ' old' : ''}" data-info="${esc(info(x))}" aria-label="${esc(info(x))}">
