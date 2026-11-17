@@ -11,7 +11,7 @@ import { record, roundBonus, buildRound } from '../js/srs.js';
 import { getState, replaceState, migrateLessons, addTestResult, itemState, addPoints, addDayStat, profileId, resetProgress, spendable, buyJoker, saveExam, deleteExam, allExams, setExamRibbon } from '../js/store.js';
 import { daysUntil, upcomingExams, examFocus, hurdleState, recentShare, isTight, examPick, ribbonDue, ribbonWall } from '../js/exams.js';
 import { mixTraining } from '../js/exam-rounds.js';
-import { recordBroken, bestDay } from '../js/records.js';
+import { recordBroken, bestDay, oldCount } from '../js/records.js';
 import { mergeExams } from '../js/merge.js';
 import { practicing } from '../js/nav.js';
 import { medalStatus } from '../js/medal.js';
@@ -650,6 +650,11 @@ try {
     eq(recordBroken(d, '2026-11-17', 26, 30), null, 'schon vorher drüber – nicht nochmal feiern');
     eq(recordBroken(d, '2026-11-17', 20, 25), null, 'gleich viel ist kein Rekord');
     eq(recordBroken({ '2026-11-10': { right: 6, wrong: 0, e: 60 } }, '2026-11-17', 0, 12), null, 'alter Rekord zu klein');
+    // Tag mit alter Zählung (ein Gerät ohne e) zählt nicht als Rekord
+    const mixed = { right: 80, wrong: 6, e: 860, by: { alt: { right: 70, wrong: 5 }, a1: { right: 10, wrong: 1, e: 110 } } };
+    eq(oldCount(mixed), true, 'Teil-Tag vor der Gewichtung');
+    eq(oldCount({ right: 3, wrong: 0, e: 30, by: { a1: { right: 3, wrong: 0, e: 30 } } }), false);
+    eq(bestDay({ ...d, '2026-11-08': mixed }, '2026-11-17'), { key: '2026-11-10', n: 25 }, 'alter Rekordtag übersprungen');
   });
 
   section('Reitturnier');

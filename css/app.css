@@ -718,5 +718,6 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
 @media (prefers-reduced-motion: reduce) { .confetti { display: none; } .celebrate-card { animation: none; } }
 /* Tagesbalken antippbar */
 button.bar { border: 0; background: none; padding: 0; font: inherit; color: inherit; cursor: pointer; border-radius: 6px; }
+button.bar.old .bar-stack { opacity: 0.45; }
 button.bar.picked .bar-stack { outline: 3px solid var(--primary); outline-offset: 2px; }
 .day-info { min-height: 1.5em; margin: 8px 0 0; font-weight: 600; }

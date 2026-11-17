@@ -8,11 +8,17 @@ export const RECORD_MIN = DAY_GOAL;
 export const dayPoints = (d) => Math.round(dayValue(d) * 10) / 10;
 export const fmtPoints = (n) => String(Math.round(n * 10) / 10).replace('.', ',');
 
+// Tag (ganz oder teilweise) aus der Zeit vor der Gewichtung (8.11.2026): Damals zählte jede Aufgabe 1,
+// auch Antippen – mit heutigen Tagen nicht vergleichbar, deshalb kein Rekord.
+export const oldCount = (d) => !!d && (d.by && Object.keys(d.by).length
+  ? Object.values(d.by).some((c) => c?.e == null)
+  : d.e == null && (Number(d.right) || 0) + (Number(d.wrong) || 0) > 0);
+
 // Bester Tag vor heute: { key, n } (n = 0, wenn es noch keinen gibt).
 export function bestDay(days, today) {
   let best = { key: null, n: 0 };
   for (const [k, d] of Object.entries(days)) {
-    if (k === today) continue;
+    if (k === today || oldCount(d)) continue;
     const n = dayPoints(d);
     if (n > best.n) best = { key: k, n };
   }
