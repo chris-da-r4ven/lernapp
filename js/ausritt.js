@@ -7,7 +7,8 @@
 // - Höchstens zwei gleiche Übungsarten hintereinander (wenn möglich), Fächer gemischt.
 
 import { allLessons, contentVersion } from './content.js';
-import { itemState, revision } from './store.js';
+import { itemState, revision, allExams } from './store.js';
+import { examFocus, daysUntil } from './exams.js';
 import { modesFor, tasksFor } from './exercises/registry.js';
 import { isBasic, withWarmup, WARMUP } from './levels.js';
 import { spreadModes } from './path.js';
@@ -54,11 +55,33 @@ export function pickTask(list, now = Date.now()) {
   return [...list].sort((a, b) => score(a) - score(b))[0];
 }
 
-// Wie viel wartet gerade? (für die Startseite) – Anzahl fälliger Wörter.
+// Reitturnier: Wörter der Turnierlektionen haben Vorrang (höchstens EXAM_MAX pro Runde). In den letzten
+// EXAM_NEAR Tagen vor dem Turnier kommt jedes Turnierwort einmal dran, auch wenn es laut Karteikasten
+// erst danach fällig wäre – außer es war in diesen Tagen schon dran.
+export const EXAM_MAX = 8;
+export const EXAM_NEAR = 3;
+const lessonOf = (list) => list[0].word.split('/').slice(0, 2).join('/');
+function examSplit(words, now) {
+  const focus = examFocus(allExams(), new Date(now));
+  const isExam = (list) => focus.has(lessonOf(list));
+  const extra = (list) => {
+    const date = focus.get(lessonOf(list));
+    const days = daysUntil(date, new Date(now));
+    if (days > EXAM_NEAR) return false;
+    const [y, m, d] = date.split('-').map(Number);
+    const since = new Date(y, m - 1, d - EXAM_NEAR).getTime();
+    return !list.some((t) => (t.st.last ?? 0) >= since);
+  };
+  return { isExam, extra };
+}
+
+// Wie viel wartet gerade? (für die Startseite) – Anzahl fälliger Wörter (mit den Turnierwörtern).
 export function dueSummary() {
   const now = Date.now();
+  const words = [...byWord(allTasks()).values()];
+  const { isExam, extra } = examSplit(words, now);
   let due = 0;
-  for (const list of byWord(allTasks()).values()) if (list.some((t) => isDue(t, now))) due++;
+  for (const list of words) if (list.some((t) => isDue(t, now)) || (isExam(list) && extra(list))) due++;
   return { due };
 }
 
@@ -68,9 +91,14 @@ export function buildAusritt({ anyway = false } = {}) {
   const words = [...byWord(allTasks()).values()];
   const minBox = (list) => Math.min(...list.map((t) => t.st.box));
   const nextDue = (list) => Math.min(...list.map((t) => t.st.due));
-  let pick = words.filter((list) => list.some((t) => isDue(t, now)));
+  const { isExam, extra } = examSplit(words, now);
+  let pick = words.filter((list) => list.some((t) => isDue(t, now)) || (isExam(list) && extra(list)));
   if (!pick.length && anyway) pick = [...words].sort((a, b) => nextDue(a) - nextDue(b)).slice(0, ROUND_SIZE);
-  const candidates = shuffle(pick).sort((a, b) => minBox(a) - minBox(b)).map((list) => pickTask(list, now));
+  const byBox = (list) => shuffle(list).sort((a, b) => minBox(a) - minBox(b));
+  const exam = byBox(pick.filter(isExam));
+  const others = byBox(pick.filter((l) => !isExam(l)));
+  // bis zu EXAM_MAX Turnierwörter vorne, dann die übrigen; reicht das nicht, weitere Turnierwörter
+  const candidates = [...exam.slice(0, EXAM_MAX), ...others, ...exam.slice(EXAM_MAX)].map((list) => pickTask(list, now));
   // Höchstens WARMUP Basis-Aufgaben vorneweg, der Rest gemischt.
   const round = withWarmup(candidates, ROUND_SIZE);
   const warm = round.filter((t) => isBasic(t.item)).slice(0, WARMUP);

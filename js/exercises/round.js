@@ -27,7 +27,9 @@ const RETRY_GAP = 3;
 // once: jede Aufgabe nur einmal, falsche kommen nicht wieder (Probe „Ich kann das schon“) – mit Hilfe, ohne Testergebnis.
 // onProgress(done, total): nach jeder Aufgabe (z. B. Fanny auf der Rennbahn weiterlaufen lassen).
 // trail: Fortschritt als Sandweg mit Pixel-Fanny (aus, wenn die Seite schon eine eigene Kulisse hat).
-export function runRound(el, { tasks, test = false, once = false, onProgress = null, chosen = true, art = test ? 'test' : 'frei', trail = true, onComplete = null, title, againLabel, onAgain, onBack, backLabel }) {
+// saveResult: im Test das Ergebnis speichern (Medaille, Probe-Etappe). false bei der Generalprobe fürs Reitturnier –
+//   der Karteikasten zählt trotzdem mit; die Bilanz zeigt dann „x von y sitzen schon“ statt Prozent.
+export function runRound(el, { tasks, test = false, once = false, onProgress = null, chosen = true, art = test ? 'test' : 'frei', trail = true, saveResult = true, onComplete = null, title, againLabel, onAgain, onBack, backLabel }) {
   const queue = tasks.map((t) => ({ ...t, attempts: 0 }));
   const total = queue.length;
   let done = 0;
@@ -130,7 +132,7 @@ export function runRound(el, { tasks, test = false, once = false, onProgress = n
     const words = new Set(tasks.map(wordOf)).size;   // in Etappen kommt ein Wort mehrmals vor
     const pct = Math.round((firstTry / total) * 100);
     // Im Test: Ergebnis pro Lektion speichern (für die Medaille 🏅).
-    const progress = test ? saveTest(tasks.map((t) => ({ sid: t.sid, lesson: t.lesson, right: !mistakes.has(t.key) }))) : [];
+    const progress = test && saveResult ? saveTest(tasks.map((t) => ({ sid: t.sid, lesson: t.lesson, right: !mistakes.has(t.key) }))) : [];
     // Neue Medaillen (Test oder Grammatik-Runde): Bonus-Sternchen.
     const all = [...lessons.values()];
     const newMedals = all.filter((x) => !x.hadMedal && lessonMedal(x.sid, x.lesson).medal);
@@ -141,7 +143,8 @@ export function runRound(el, { tasks, test = false, once = false, onProgress = n
       total, firstTry, points, startLevel, goalBefore,
       bonus: roundBonus(tasks.map(weight)),
       extraPoints: MEDAL_BONUS * newMedals.length,
-      intro: test ? `<p class="big">${firstTry} von ${total} richtig (${pct} %)</p>`
+      intro: test && !saveResult ? `<p class="big">${firstTry} von ${total} sitzen schon${firstTry < total ? ` – die übrigen ${total - firstTry} üben wir noch` : ' – alles!'}</p>`
+        : test ? `<p class="big">${firstTry} von ${total} richtig (${pct} %)</p>`
         : words < total ? `<p class="big">${words} ${esc(unit[words === 1 ? 0 : 1])} in ${total} Aufgaben – ${firstTry === total ? 'alle' : `${firstTry} davon`} sofort richtig</p>` : null,
       title, againLabel,
       notice: completeNotice + newMedalsHtml(newMedals.map((x) => x.lesson)) + medalProgressHtml(progress)

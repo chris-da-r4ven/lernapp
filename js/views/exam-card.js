@@ -7,9 +7,10 @@ import { coreItems, masteryMode, lessonKey } from '../lessons.js';
 import { itemState } from '../store.js';
 import { itemKey, SAFE_BOX } from '../srs.js';
 import { etappenFor, progress, nextEtappe, lessonAccess, etappeNo } from '../path.js';
-import { EXAM_NAME, upcomingExams, daysUntil, dateLabel, countdownText, hurdleState, recentShare, weekStart, isTight } from '../exams.js';
+import { RIBBONS, EXAM_NAME, upcomingExams, daysUntil, dateLabel, countdownText, hurdleState, recentShare, weekStart, isTight } from '../exams.js';
 import { etappeHref } from './etappe.js';
 import { examHref } from './exam-edit.js';
+import { GENERALPROBE_DAYS } from '../exam-rounds.js';
 import { lessonIcon } from './subject.js';
 import { esc } from '../util.js';
 
@@ -30,7 +31,7 @@ export function hurdlesOf(exam, now = new Date()) {
     const mode = masteryMode(lesson);
     const states = coreItems(lesson).map((it) => itemState(itemKey(exam.sid, lesson.id, it, mode)));
     const state = hurdleState({ open, way, recent: recentShare(states, since, SAFE_BOX) });
-    return { lesson, state, way, stages, next: open ? nextEtappe(stages) : null, key: lessonKey(exam.sid, lesson) };
+    return { lesson, state, way, stages, next: open ? nextEtappe(stages) : null, key: lessonKey(exam.sid, lesson), started: states.some((s) => s.box > 0) };
   });
 }
 
@@ -41,6 +42,8 @@ function poster(exam, now) {
   const tight = isTight(days, hurdles.map((h) => h.state));
   const behind = hurdles.find((h) => h.state === 'way' && h.next);
   const ready = hurdles.filter((h) => h.state === 'ready').length;
+  // Trainieren geht, sobald in einer offenen Turnierlektion schon etwas gelernt ist.
+  const canTrain = hurdles.some((h) => h.state !== 'locked' && (h.state !== 'way' || h.way.done > 0 || h.started));
   const note = days === 0 ? 'Heute ist Reitturnier – viel Glück! 🍀'
     : tight && behind ? 'Jetzt zählt jeder Tag – als Nächstes:'
     : ready === hurdles.length ? 'Alle Hindernisse sitzen – stark! Bleib dran.'
@@ -63,8 +66,22 @@ function poster(exam, now) {
         }).join('')}
       </ul>
       <p class="small exam-note">${esc(note)}</p>
-      ${tight && behind ? `<a class="btn primary" href="${etappeHref(exam.sid, behind.lesson.id, behind.next.n)}">${esc(behind.lesson.title)} · Etappe ${etappeNo(behind.stages, behind.next)}</a>` : ''}
+      <div class="actions exam-actions">
+        ${tight && behind ? `<a class="btn primary" href="${etappeHref(exam.sid, behind.lesson.id, behind.next.n)}">${esc(behind.lesson.title)} · Etappe ${etappeNo(behind.stages, behind.next)}</a>` : ''}
+        ${canTrain ? `<a class="btn${tight && behind ? '' : ' primary'}" href="#/reitturnier/${encodeURIComponent(exam.id)}/training">🏇 Turniertraining</a>` : ''}
+        ${canTrain && days <= GENERALPROBE_DAYS ? `<a class="btn" href="#/reitturnier/${encodeURIComponent(exam.id)}/generalprobe">🎯 Generalprobe</a>` : ''}
+      </div>
     </section>`;
+}
+
+// Nach dem Turnier: „Wie lief dein Reitturnier?“ – Schleife wählen (keine Note).
+export function ribbonCards(list) {
+  return list.map((e) => `
+    <section class="card exam-card ribbon-ask" data-exam="${esc(e.id)}">
+      <p><strong>🏆 Wie lief dein ${esc(EXAM_NAME)} ${esc(getSubject(e.sid)?.name ?? '')} am ${esc(dateLabel(e.date))}?</strong></p>
+      <p class="small">Such dir eine Schleife aus – alle drei gehören an deine Schleifenwand.</p>
+      <div class="actions">${Object.entries(RIBBONS).map(([k, r]) => `<button class="btn" type="button" data-ribbon="${k}">${r.icon} ${esc(r.name)}</button>`).join('')}</div>
+    </section>`).join('');
 }
 
 // Alle anstehenden Turniere; die ersten VISIBLE offen, weitere zusammengeklappt.

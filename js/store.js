@@ -220,6 +220,12 @@ export function saveExam({ id, sid, date, lessons, by = 'kind' }, at = Date.now(
   return e.id;
 }
 
+// Schleife nach dem Turnier (eigener Zeitpunkt, damit sie beim Zusammenführen nicht gegen Änderungen verliert).
+export function setExamRibbon(id, ribbon, at = Date.now()) {
+  state.exams = (state.exams ?? []).map((e) => (e.id === id ? { ...e, ribbon, ribbonAt: at } : e));
+  save();
+}
+
 // Löschen als Grabstein, damit es nicht aus der Sicherung zurückkommt.
 export function deleteExam(id, at = Date.now()) {
   state.exams = (state.exams ?? []).map((e) => (e.id === id ? { ...e, deleted: true, at } : e));

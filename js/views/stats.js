@@ -11,6 +11,9 @@ import { masteryMode, coreItems, unitOf, countWord } from '../lessons.js';
 import { esc, dayKey, addDays } from '../util.js';
 import { DAY_GOAL } from '../streak.js';
 import { fold, bindFolds } from '../fold.js';
+import { allExams } from '../store.js';
+import { ribbonWall, RIBBONS, dateLabel, EXAM_NAME } from '../exams.js';
+import { getSubjects } from '../content.js';
 
 const HISTORY_DAYS = 14;
 const HARD_WORDS = 10;
@@ -55,6 +58,8 @@ export function statsView(el, openParents = false) {
 
     ${fold('tage', `<h2>Letzte ${HISTORY_DAYS} Tage</h2>`, historyChart(st.days, serie.rescued, serie.jokered), { open: true })}
 
+    ${ribbonWallHtml()}
+
     ${fold('test', '<h2>Bereit für den Test?</h2>', lessonTable())}
 
     ${fold('schwer', `<h2>Schwere ${esc(unit[1])}</h2>`, hard.length ? `
@@ -81,6 +86,18 @@ export function statsView(el, openParents = false) {
     statsView(el, open);
     el.querySelector('.parents')?.scrollIntoView({ block: 'start' });
   });
+}
+
+// Schleifenwand: eine Schleife pro Reitturnier – ohne Zählen, alle gleich viel wert.
+function ribbonWallHtml() {
+  const wall = ribbonWall(allExams());
+  if (!wall.length) return '';
+  const name = (sid) => getSubjects().find((s) => s.id === sid)?.name ?? '';
+  return fold('schleifen', '<h2>🎀 Schleifenwand</h2>', `
+    <div class="ribbon-wall">${wall.map((e) => `
+      <div class="ribbon-tile"><span class="ribbon-icon" aria-hidden="true">${RIBBONS[e.ribbon].icon}</span>
+        <strong>${esc(EXAM_NAME)} ${esc(name(e.sid))}</strong><span class="small muted">${esc(dateLabel(e.date))} · ${esc(RIBBONS[e.ribbon].name)}</span></div>`).join('')}
+    </div>`, { open: true });
 }
 
 // Pro Fach: wie viele Einträge sicher sitzen, wackeln, neu sind – jeder Eintrag einmal, gemessen an

@@ -12,9 +12,9 @@ import { etappeHref, lessonOpen } from './etappe.js';
 import { lessonKey } from '../lessons.js';
 import { pathEntry } from '../store.js';
 import { bannerFor, lessonIcon } from './subject.js';
-import { examCards } from './exam-card.js';
-import { allExams } from '../store.js';
-import { examFocus, examPick } from '../exams.js';
+import { examCards, ribbonCards } from './exam-card.js';
+import { allExams, setExamRibbon } from '../store.js';
+import { examFocus, examPick, ribbonDue } from '../exams.js';
 
 const PET_NAME = PET.name;
 
@@ -42,7 +42,7 @@ export function homeView(el) {
     </section>
 
     ${jokerNote(serie)}
-    ${hasContent() ? examCards(allExams()) : ''}
+    ${hasContent() ? ribbonCards(ribbonDue(allExams())) + examCards(allExams()) : ''}
     ${hasContent() ? `<div class="home-actions">${continueCard()}${blitzCard()}${ausrittCard()}</div>` : ''}
 
     <h2 class="section-title home-sign">Fächer</h2>
@@ -59,6 +59,12 @@ export function homeView(el) {
       ${bigPortrait(pet)}
       <button class="btn" data-act="pet-close">Schließen</button>
     </dialog>`;
+
+  // Schleife nach dem Reitturnier
+  el.querySelectorAll('[data-ribbon]').forEach((b) => b.addEventListener('click', () => {
+    setExamRibbon(b.closest('[data-exam]').dataset.exam, b.dataset.ribbon);
+    homeView(el);
+  }));
 
   // Joker kaufen: erst nachfragen
   el.querySelector('[data-act=joker-ask]')?.addEventListener('click', () => {

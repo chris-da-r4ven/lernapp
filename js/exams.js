@@ -80,3 +80,19 @@ export function examPick(candidates, focus) {
 }
 
 export const todayKey = (now = new Date()) => dayKey(now);
+
+// Schleifen nach dem Turnier – alle drei gleich viel wert.
+export const RIBBONS = {
+  super: { icon: '🥇', name: 'super' },
+  gut: { icon: '🎀', name: 'gut' },
+  mut: { icon: '💪', name: 'Mutschleife' },
+};
+export const RIBBON_ASK_DAYS = 14;
+
+// Turniere, nach denen die Schleife noch gefragt werden soll (vorbei, höchstens 14 Tage, noch keine).
+export const ribbonDue = (exams, now = new Date()) => exams
+  .filter((e) => !e.deleted && !e.ribbon && daysUntil(e.date, now) < 0 && daysUntil(e.date, now) >= -RIBBON_ASK_DAYS)
+  .sort((a, b) => a.date.localeCompare(b.date));
+
+// Schleifenwand: alle mit Schleife, das neueste zuerst.
+export const ribbonWall = (exams) => exams.filter((e) => !e.deleted && e.ribbon).sort((a, b) => b.date.localeCompare(a.date));

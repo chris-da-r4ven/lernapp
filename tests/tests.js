@@ -8,8 +8,9 @@ import { check, parseGap } from '../js/exercises/questions.js';
 import { mathNorm } from '../js/exercises/math.js';
 import { levelFor, glitterFor } from '../js/pet.js';
 import { record, roundBonus, buildRound } from '../js/srs.js';
-import { getState, replaceState, migrateLessons, addTestResult, itemState, addPoints, addDayStat, profileId, resetProgress, spendable, buyJoker, saveExam, deleteExam, allExams } from '../js/store.js';
-import { daysUntil, upcomingExams, examFocus, hurdleState, recentShare, isTight, examPick } from '../js/exams.js';
+import { getState, replaceState, migrateLessons, addTestResult, itemState, addPoints, addDayStat, profileId, resetProgress, spendable, buyJoker, saveExam, deleteExam, allExams, setExamRibbon } from '../js/store.js';
+import { daysUntil, upcomingExams, examFocus, hurdleState, recentShare, isTight, examPick, ribbonDue, ribbonWall } from '../js/exams.js';
+import { mixTraining } from '../js/exam-rounds.js';
 import { mergeExams } from '../js/merge.js';
 import { practicing } from '../js/nav.js';
 import { medalStatus } from '../js/medal.js';
@@ -694,6 +695,25 @@ try {
     const f = new Map([['e/b', '2026-11-25'], ['e/c', '2026-11-20']]);
     eq(examPick([{ key: 'e/a' }, { key: 'e/b' }, { key: 'e/c' }], f).key, 'e/c');
     eq(examPick([{ key: 'e/a' }], f), null);
+  });
+  await test('Turniertraining mischt ⅔ wackelig, ⅓ sicher, sicheres Wort vorneweg', () => {
+    const n = (k, p) => Array.from({ length: k }, (_, i) => `${p}${i}`);
+    const m = mixTraining(n(10, 'w'), n(10, 's'));
+    eq([m.first, m.rest.filter((x) => x[0] === 'w').length, m.rest.length + 1], ['s0', 8, 12]);
+    const few = mixTraining(n(3, 'w'), n(20, 's'));
+    eq([few.rest.filter((x) => x[0] === 'w').length, few.rest.length + 1], [3, 12], 'wenig Wackelige: auffüllen mit sicheren');
+    const noSure = mixTraining(n(20, 'w'), []);
+    eq([noSure.first, noSure.rest.length], [null, 12]);
+  });
+  await test('Schleife: wird nach dem Turnier gefragt (14 Tage), hängt dann an der Wand', () => {
+    const now = new Date(2026, 10, 25, 9);
+    const list = [ex({ id: 'p', date: '2026-11-20' }), ex({ id: 'q', date: '2026-11-01' }), ex({ id: 'r', date: '2026-11-26' }),
+      ex({ id: 's', date: '2026-11-21', ribbon: 'mut', ribbonAt: 1 })];
+    eq(ribbonDue(list, now).map((e) => e.id), ['p']);
+    eq(ribbonWall(list).map((e) => e.id), ['s']);
+    replaceState({ ...empty(), v: 3, exams: [ex({ date: '2026-11-20' })] });
+    setExamRibbon('a-1', 'gut', 99);
+    eq([getState().exams[0].ribbon, getState().exams[0].ribbonAt], ['gut', 99]);
   });
   await test('Mitten im Turnier-Formular wird nicht neu gezeichnet', () => {
     const before = location.hash;

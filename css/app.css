@@ -699,3 +699,8 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
   .exam-card { background: linear-gradient(160deg, #3b3220, var(--card) 60%); }
   .exam-locked { background: #4a3a1c; color: #fff3d6; }
 }
+.exam-actions { margin-top: 4px; }
+.ribbon-ask .actions { flex-wrap: wrap; }
+.ribbon-wall { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.ribbon-tile { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 2px; padding: 10px; border-radius: 14px; background: var(--bg); }
+.ribbon-icon { font-size: 2.4rem; }
