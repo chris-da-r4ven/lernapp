@@ -1,6 +1,7 @@
 // Fachseite: Lektionen nach Gruppen (z. B. „Schule & ich“, „Feiertage“, „Grammatik“).
 // Lektionen mit Medaille 🏅 rutschen in ihrer Gruppe nach unten in „Kannst du schon gut“.
-// Jede Lektion ist eine Stallbox: oben offen = offen, ganz zu = die nächste (Geheimnis-Feld).
+// Jede Lektion ist eine Stallbox mit eigenem Pferd (horse.js): Die obere Tür geht mit dem Lernweg auf,
+// geschafft = ganz offen, das Pferd streckt den Kopf heraus. Ganz zu mit „?“ = die nächste (Geheimnis-Feld).
 
 import { getSubject, getLesson } from '../content.js';
 import { starsFor } from '../srs.js';
@@ -8,9 +9,11 @@ import { masteryOf, kindInfo, kindOf } from '../lessons.js';
 import { lessonMedal, MEDAL_RULE, testReady } from '../medal.js';
 import { esc, stars } from '../util.js';
 import { etappenFor, progress, lessonAccess } from '../path.js';
-import { allExams } from '../store.js';
+import { allExams, pathEntry } from '../store.js';
+import { lessonKey } from '../lessons.js';
 import { examFocus, dateLabel, EXAM_NAME } from '../exams.js';
 import { examNewHref } from './exam-edit.js';
+import { horseSvg } from '../horse.js';
 
 export function subjectView(el, sid) {
   const subject = getSubject(sid);
@@ -43,7 +46,7 @@ export function subjectView(el, sid) {
   // Aktuelle Lektion: die erste offene, deren Lernweg noch nicht geschafft ist
   const nowId = subject.lessons.find((l) => {
     const lesson = getLesson(sid, l.id);
-    if (!lesson || access.get(l.id) !== 'open') return false;
+    if (!lesson || access.get(l.id) !== 'open' || pathEntry(lessonKey(sid, lesson)).complete) return false;
     const way = progress(etappenFor(sid, lesson));
     return way.total > 0 && !way.complete;
   })?.id;
@@ -64,12 +67,17 @@ export function subjectView(el, sid) {
     const m = masteryOf(sid, lesson);
     const way = progress(etappenFor(sid, lesson));
     const share = way.total ? way.done / way.total : m;
-    const foot = way.complete ? '🎀 Lernweg geschafft' : way.total ? `Etappe ${way.done + 1} von ${way.total}` : `${Math.round(m * 100)} % sicher`;
+    const done = way.complete || !!pathEntry(lessonKey(sid, lesson)).complete;
+    // Obere Boxentür geht mit dem Lernweg auf (zur Seite geklappt) und gibt das Pferd dahinter Stück für Stück frei;
+    // geschafft: ganz offen.
+    const open = done ? 1 : Math.min(share, 0.8);
+    const hi = subject.lessons.findIndex((y) => y.id === l.id);   // jede Lektion ihr Pferd
+    const foot = done ? '🎀 Lernweg geschafft' : way.total ? `Etappe ${way.done + 1} von ${way.total}` : `${Math.round(m * 100)} % sicher`;
     return `
       <a class="stall${l.id === nowId ? ' now' : ''}${medal.medal ? ' has-medal' : ''}" href="#/lektion/${encodeURIComponent(sid)}/${encodeURIComponent(l.id)}">
         <div class="stall-beam"><span class="stall-plate${/\S{15,}/u.test(l.title) ? ' long' : ''}">${esc(l.title)}</span></div>
-        <div class="stall-top" aria-hidden="true">${esc(lessonIcon(lesson))}${focus.has(`${sid}/${l.id}`) ? `<span class="stall-exam">🏆 ${esc(dateLabel(focus.get(`${sid}/${l.id}`)))}</span>` : ''}</div>
-        <div class="stall-bottom" aria-hidden="true">${way.complete ? '<span class="stall-badge">🎀</span>' : ''}${medal.medal ? '<span class="stall-badge medal">🏅</span>' : ''}</div>
+        <div class="stall-top door${done ? ' out' : ''}" aria-hidden="true"><span class="stall-win"><span class="stall-horse">${horseSvg(hi, { part: 'back' })}</span>${done ? '' : `<span class="stall-horse">${horseSvg(hi, { part: 'front' })}</span>`}</span>${done ? `<span class="stall-horse front">${horseSvg(hi, { part: 'front' })}</span>` : ''}<span class="door-leaf" style="--open:${open.toFixed(2)}"></span>${focus.has(`${sid}/${l.id}`) ? `<span class="stall-exam">🏆 ${esc(dateLabel(focus.get(`${sid}/${l.id}`)))}</span>` : ''}</div>
+        <div class="stall-bottom" aria-hidden="true"><span class="stall-icon">${esc(lessonIcon(lesson))}</span>${done ? '<span class="stall-badge">🎀</span>' : ''}${medal.medal ? '<span class="stall-badge medal">🏅</span>' : ''}</div>
         <div class="stall-hay" aria-hidden="true"><div style="width:${Math.round(share * 100)}%"></div></div>
         <div class="stall-foot"><span>${foot}</span>${stars(starsFor(m))}</div>
         ${testReady(sid, lesson) ? '<div class="stall-foot ready-hint">📝 Bereit für den Test!</div>' : ''}

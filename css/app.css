@@ -725,3 +725,26 @@ button.bar.old .bar-stack { opacity: 0.45; }
 .celebrate-icon .wreath { display: block; margin: 0 auto; color: var(--text); }
 button.bar.picked .bar-stack { outline: 3px solid var(--primary); outline-offset: 2px; }
 .day-info { min-height: 1.5em; margin: 8px 0 0; font-weight: 600; }
+
+/* Boxentür: obere Hälfte schwingt mit dem Lernweg auf (Scharnier links), geschafft = Pferd schaut heraus */
+.stall-top.door { position: relative; overflow: hidden; place-items: end center; height: 100px; padding-bottom: 0; }
+.door-leaf { position: absolute; top: 0; bottom: 0; left: 0; width: max(10px, calc((1 - var(--open)) * 100%));
+  background: repeating-linear-gradient(90deg, #a06a36 0 16px, #8b5a2b 16px 18px); border-right: 4px solid #5b3a1f;
+  box-shadow: 3px 0 6px rgba(0, 0, 0, 0.45); transition: width 0.6s ease-out; z-index: 1; }
+.stall-icon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 8px; background: #f3dfb6; border: 2px solid #5b3a1f; font-size: 1.5rem; }
+.stall-top.door .stall-exam { z-index: 2; }
+@media (prefers-reduced-motion: reduce) { .door-leaf { transition: none; } }
+.stall-top.door::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 100%, #4a3220, #2a1a0e 70%); }
+/* Geschafft: Tür ganz offen, das Pferd streckt den Kopf heraus – die Schnauze ragt über die untere Tür */
+.stall-top.door.out { overflow: visible; }
+
+.stall-bottom .stall-badge { margin-left: auto; margin-right: 26px; }
+.stall-bottom .stall-badge + .stall-badge { margin-left: 0; }
+
+/* Pferd in zwei Ebenen: Hals und Mähne im Fenster (hinter der unteren Tür), der Kopf bei geschaffter Lektion
+   davor – die Schnauze ragt über die untere Tür. */
+.stall-win { position: absolute; inset: 0; overflow: hidden; }
+.stall-horse { position: absolute; left: 50%; bottom: -6px; width: 100px; height: 100px; transform: translateX(-50%); line-height: 0; }
+.stall-horse .horse-head { width: 100%; height: 100%; }
+.stall-top.door.out .stall-horse { bottom: -24px; }
+.stall-horse.front { z-index: 2; }

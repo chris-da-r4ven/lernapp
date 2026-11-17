@@ -12,6 +12,7 @@ import { getState, replaceState, migrateLessons, addTestResult, itemState, addPo
 import { daysUntil, upcomingExams, examFocus, hurdleState, recentShare, isTight, examPick, ribbonDue, ribbonWall } from '../js/exams.js';
 import { mixTraining } from '../js/exam-rounds.js';
 import { recordBroken, bestDay, oldCount } from '../js/records.js';
+import { horseLook, horseSvg } from '../js/horse.js';
 import { mergeExams } from '../js/merge.js';
 import { practicing } from '../js/nav.js';
 import { medalStatus } from '../js/medal.js';
@@ -663,6 +664,17 @@ try {
     eq(recordBroken(long, '2026-11-17', 55, 61), { best: 60, now: 61, allTime: true }, 'Allzeit-Rekord');
     eq(recordBroken({ '2026-09-01': { right: 30, wrong: 0, e: 300 } }, '2026-11-17', 25, 31), { best: 30, now: 31, allTime: true }, 'Allzeit auch nach langer Pause');
     eq(recordBroken(d, '2026-11-17', 20, 30).allTime, true);
+  });
+
+  section('Stallpferde');
+  await test('Jede Lektion ihr Pferd: Nachbarn unterscheiden sich in allen Merkmalen', () => {
+    for (let i = 0; i < 30; i++) {
+      const a = horseLook(i), b = horseLook(i + 1);
+      for (const k of ['coat', 'style', 'mark', 'halter']) ok(a[k] !== b[k], `Lektion ${i}/${i + 1}: ${k}`);
+    }
+    eq(horseLook(3), horseLook(3), 'gleiche Lektion, gleiches Pferd');
+    ok(horseSvg(0, { part: 'back' }).includes('<path') && !horseSvg(0, { part: 'back' }).includes('<ellipse'), 'hinten nur Hals und Mähne');
+    ok(horseSvg(0, { part: 'front' }).includes('<ellipse'), 'vorne das Gesicht');
   });
 
   section('Reitturnier');
