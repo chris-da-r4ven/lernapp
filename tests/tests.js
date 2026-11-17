@@ -221,17 +221,17 @@ try {
   section('Sternchen, Stufen, Tagesziel-Gewicht');
   await test('Glitzer-Stufen 100 / 300 / 1000 / 4500', () => eq([0, 99, 100, 300, 1000, 4500].map(levelFor), [1, 1, 2, 3, 5, 10]));
   await test('Stufe 1 ohne Glitzer, ab Stufe 2 Sternchen', () => eq([glitterFor(1).sparkles > 0, glitterFor(2).sparkles > 0], [false, true]));
-  await test('Rundenbonus nach Gewicht', () => eq([roundBonus([1, 1]), roundBonus([0.2, 0.2]), roundBonus([1.2])], [50, 10, 60]));
-  await test('Sternchen pro Wort: Schreiben 5/3, Antippen mindestens 1', () => {
+  await test('Rundenbonus wächst mit der Runde, nach Gewicht', () => eq([roundBonus(Array(12).fill(1)), roundBonus([0.2, 0.2]), roundBonus([2]), roundBonus([])], [36, 1, 5, 0]));
+  await test('Sternchen pro Wort: Schreiben 4/2, Antippen mindestens 1', () => {
     replaceState(empty());
-    eq(record('t/a/x|ab', { correct: true, firstTry: true, weight: 1 }), 5);
-    eq(record('t/a/y|ab', { correct: true, firstTry: false, weight: 1 }), 3);
+    eq(record('t/a/x|ab', { correct: true, firstTry: true, weight: 1 }), 4);
+    eq(record('t/a/y|ab', { correct: true, firstTry: false, weight: 1 }), 2);
     eq(record('t/a/z|hoeren-wahl', { correct: true, firstTry: true, weight: 0.225 }), 1);
   });
   await test('Fast richtig korrigiert: Fach bleibt, neues Wort Fach 1, Punkte wie 2. Versuch', () => {
     record('t/h/a|ab', { correct: true, firstTry: true }); record('t/h/a|ab', { correct: true, firstTry: true });
     eq(itemState('t/h/a|ab').box, 2, 'vorher');
-    eq(record('t/h/a|ab', { correct: true, firstTry: false, hold: true, weight: 1 }), 3);
+    eq(record('t/h/a|ab', { correct: true, firstTry: false, hold: true, weight: 1 }), 2);
     eq(itemState('t/h/a|ab').box, 2, 'Fach bleibt');
     record('t/h/b|ab', { correct: true, firstTry: false, hold: true });
     eq(itemState('t/h/b|ab').box, 1, 'neues Wort');

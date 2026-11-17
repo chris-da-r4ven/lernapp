@@ -9,17 +9,18 @@ import { levelOf, isBasic, withWarmup, WARMUP } from './levels.js';
 const DAY = 24 * 60 * 60 * 1000;
 const INTERVAL_DAYS = { 1: 1, 2: 2, 3: 4, 4: 7, 5: 14 };
 export const SAFE_BOX = 3;
-// Sternchen ✦: Durchhalten zählt am meisten, Sorgfalt merkbar, aber nicht stark.
+// Sternchen ✦: Belohnung (für Fannys Glitzer und den Joker) – kein neutrales Maß, das sind die 🎯 Punkte.
 // Werte gelten fürs Schreiben; andere Aufgaben nach ihrer Schwere (weights.js: Antwortform × Denkaufwand).
-// Eine Schreib-Runde mit 12 Wörtern bringt 96–110 ✦, eine Antipp-Runde etwa 22 ✦.
-export const ROUND_BONUS = 50;       // für jede zu Ende gespielte Runde
-export const POINTS_FIRST_TRY = 5;   // Wort beim ersten Versuch richtig
-export const POINTS_RETRY = 3;       // Wort nach einem Fehler richtig
+// Seit 18.11. etwa ein Drittel weniger, und der Rundenbonus wächst mit der Länge der Runde (kurze Runden
+// lohnen sich nicht mehr überproportional): eine Schreib-Runde mit 12 Wörtern bringt etwa 60–80 ✦.
+export const BONUS_PER_TASK = 3;     // „fürs Durchhalten“, pro Aufgabe einer zu Ende gespielten Runde
+export const POINTS_FIRST_TRY = 4;   // Wort beim ersten Versuch richtig
+export const POINTS_RETRY = 2;       // Wort nach einem Fehler richtig
 const pointsFor = (firstTry, weight) =>
   Math.max(1, Math.round((firstTry ? POINTS_FIRST_TRY : POINTS_RETRY) * weight));
-// Rundenbonus nach dem durchschnittlichen Gewicht der Aufgaben in der Runde.
+// Rundenbonus: pro Aufgabe nach ihrem Gewicht (höchstens 1,5 je Aufgabe).
 export const roundBonus = (weights) =>
-  Math.round(ROUND_BONUS * (weights.length ? weights.reduce((n, w) => n + w, 0) / weights.length : 1));
+  Math.round(BONUS_PER_TASK * weights.reduce((n, w) => n + Math.min(w, 1.5), 0));
 
 // Lektionen mit Medaille, selbst ausgewählt: weniger Sternchen (kein Grinden leichter Lektionen).
 export const MASTERED_FACTOR = 0.3;
