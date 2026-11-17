@@ -45,7 +45,7 @@ export const STATIONS = {
   pflege: { name: 'Pflege', icon: '🪮' },
   dressur: { name: 'Dressur', icon: '🎠' },
   springen: { name: 'Springen', icon: '🐎' },
-  turnier: { name: 'Turnier', icon: '🏆' },
+  turnier: { name: 'Probe', icon: '🎯' },   // Anzeige-Name (Arbeitstitel, die Tochter darf umbenennen); intern weiter „turnier“
   nachtraining: { name: 'Nachtraining', icon: '🔁' },
 };
 export const RETRY_BELOW = 90;   // Turnier unter diesem Prozentwert → Nachtraining

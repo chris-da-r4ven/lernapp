@@ -42,7 +42,7 @@ export function etappeView(el, sid, lid, nr, probe) {
 
   el.innerHTML = `
     <a class="back" href="${back}">← ${esc(lesson.title)}</a>
-    <p class="muted small etappe-head">${st.icon} ${esc(st.name)}${probe ? ' · Probe „Ich kann das schon“' : ''} · ${esc(lesson.title)}</p>
+    <p class="muted small etappe-head">${st.icon} ${esc(st.name)}${probe ? ' · „Ich kann das schon“' : ''} · ${esc(lesson.title)}</p>
     <div class="exercise"></div>`;
   const box = el.querySelector('.exercise');
 
@@ -80,7 +80,7 @@ export function etappeView(el, sid, lid, nr, probe) {
       tasks: tasksForEtappe(sid, lesson, stage, stages),
       test: true,
       art: 'turnier',
-      title: 'Turnier geschafft! 🏆',
+      title: `${STATIONS.turnier.name} geschafft! ${STATIONS.turnier.icon}`,
       onComplete: ({ mistakes, firstTry, total }) => {
         const pct = total ? Math.round((firstTry / total) * 100) : 0;   // so wird es gespeichert und geprüft
         const prefix = `${sid}/${lesson.id}/`;
@@ -103,7 +103,7 @@ export function etappeView(el, sid, lid, nr, probe) {
       tasks,
       once: true,
       art: 'probe',
-      title: 'Probe vorbei',
+      title: 'Fertig!',
       onComplete: ({ mistakes }) => {
         const missed = new Set(mistakes.map((k) => k.split('|')[0]));
         const known = stage.items.filter((it) => !missed.has(`${sid}/${lesson.id}/${wordId(it)}`));

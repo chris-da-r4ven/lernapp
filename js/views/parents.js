@@ -195,7 +195,7 @@ const FEEDBACK_ROWS = 15;
 const avg = (list) => (list.length ? (list.reduce((n, x) => n + x, 0) / list.length).toLocaleString('de-DE', { maximumFractionDigits: 1 }) : '–');
 const modeNames = (mode) => [...new Set(String(mode).split(',').map((id) => modeById(id)?.name ?? id))].join(', ');
 // Rundenart (ab dem Lernweg): Etappe, Ausritt … – ältere Rückmeldungen nach Übungsart.
-const ART_NAMES = { etappe: 'Lernweg-Etappe', koppel: 'Aufwärmen (Koppel)', ausritt: 'Ausritt (Auffrischen)', blitz: 'Blitzrunde', test: 'Test' };
+const ART_NAMES = { etappe: 'Lernweg-Etappe', koppel: 'Aufwärmen (Koppel)', ausritt: 'Ausritt (Auffrischen)', blitz: 'Blitzrunde', test: 'Test', turnier: 'Probe (letzte Etappe)', probe: '„Ich kann das schon“' };
 const kindOfRound = (f) => ART_NAMES[f.art] ?? (f.art === 'frei' ? `Frei üben: ${modeNames(f.mode)}` : modeNames(f.mode) + (f.test ? ' (Test)' : ''));
 
 function feedbackBlock() {

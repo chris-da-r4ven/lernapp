@@ -19,7 +19,7 @@ function stageText(lesson, stage) {
   const pm = pathModes(lesson);
   if (stage.type === 'koppel') return { what: 'Aufwärmen mit Basis-Aufgaben', how: 'eintippen' };
   if (stage.type === 'turnier') return { what: kind === 'mathe' ? 'Alle Aufgaben einmal, ohne Hilfe – wie in der Klassenarbeit' : 'Alle Wörter einmal, ohne Hilfe – wie im Vokabeltest', how: 'eintippen' };
-  if (stage.type === 'nachtraining') return { what: 'Nur die Wörter aus dem Turnier, die noch nicht saßen', how: 'eintippen' };
+  if (stage.type === 'nachtraining') return { what: `Nur die Wörter aus der ${STATIONS.turnier.name}, die noch nicht saßen`, how: 'eintippen' };
   if (kind === 'mathe') return stage.type === 'springen'
     ? { what: 'Gemischte Aufgaben aus allen Etappen', how: 'eintippen' }
     : { what: 'Aufgaben lösen', how: 'eintippen' };
