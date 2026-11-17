@@ -704,3 +704,18 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; }
 .ribbon-wall { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
 .ribbon-tile { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 2px; padding: 10px; border-radius: 14px; background: var(--bg); }
 .ribbon-icon { font-size: 2.4rem; }
+
+/* Jubel mit Konfetti (z. B. Tagesrekord) */
+.celebrate { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; background: rgba(20, 22, 31, 0.55); padding: 16px; }
+.celebrate-card { position: relative; z-index: 1; max-width: 360px; text-align: center; background: var(--card); color: var(--text); border-radius: 24px; padding: 24px 20px; border: 3px solid #f5b400; animation: celebrate-pop 0.4s ease-out; }
+.celebrate-icon { font-size: 3.4rem; line-height: 1; }
+.celebrate-card h2 { margin: 8px 0 6px; font-size: 1.6rem; }
+.confetti { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.confetti i { position: absolute; top: -20px; width: 10px; height: 14px; border-radius: 2px; animation: confetti-fall linear forwards; }
+@keyframes confetti-fall { to { top: 110%; transform: rotate(720deg) translateX(40px); } }
+@keyframes celebrate-pop { from { transform: scale(0.7); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .confetti { display: none; } .celebrate-card { animation: none; } }
+/* Tagesbalken antippbar */
+button.bar { border: 0; background: none; padding: 0; font: inherit; color: inherit; cursor: pointer; border-radius: 6px; }
+button.bar.picked .bar-stack { outline: 3px solid var(--primary); outline-offset: 2px; }
+.day-info { min-height: 1.5em; margin: 8px 0 0; font-weight: 600; }

@@ -2,7 +2,7 @@
 // Den Grundbetrag gibt es nur für eine zu Ende gespielte Runde.
 
 import { esc, fmt1 } from '../util.js';
-import { getState, addPoints, save, streak, addFeedback, feedbackId } from '../store.js';
+import { getState, streak, addFeedback, feedbackId } from '../store.js';
 import { petStatus, MAX_GLITTER_LEVEL } from '../pet.js';
 import { mood } from '../streak.js';
 import { portrait } from '../views/portrait.js';
@@ -15,8 +15,7 @@ import { portrait } from '../views/portrait.js';
 // feedback: { what, mode, art, test } – dann fragt die Bilanz „Spaß?“ und „weitergebracht?“ (je 1–5)
 // title: Überschrift (z. B. „Etappe geschafft!“), againLabel: Text des Hauptknopfs (ohne onAgain: kein Knopf)
 export function roundSummary(el, { unit = ['Wort', 'Wörter'], goalBefore = null, feedback = null, total, firstTry, points, bonus, extraPoints = 0, startLevel, mistakes, intro, mistakesTitle, notice = '', title = 'Geschafft! 🏁', againLabel = 'Noch eine Runde', onAgain, onBack, backLabel = 'Zur Lektion' }) {
-  addPoints(bonus);
-  save();
+  // Der Rundenbonus ist schon gutgeschrieben (round.js finish – zählt auch ohne „Weiter“).
   const pet = petStatus(getState().points, mood(streak()));
   const levelUp = pet.level > startLevel;
   const w = (n) => `${n} ${unit[n === 1 ? 0 : 1]}`;

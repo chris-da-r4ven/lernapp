@@ -11,6 +11,8 @@ import { masteryMode, coreItems, unitOf, countWord } from '../lessons.js';
 import { esc, dayKey, addDays } from '../util.js';
 import { DAY_GOAL } from '../streak.js';
 import { fold, bindFolds } from '../fold.js';
+import { bestDay } from '../records.js';
+import { dayValue } from '../streak.js';
 import { allExams } from '../store.js';
 import { ribbonWall, RIBBONS, dateLabel, EXAM_NAME } from '../exams.js';
 import { getSubjects } from '../content.js';
@@ -81,6 +83,7 @@ export function statsView(el, openParents = false) {
     <p class="muted small status-line">${statusLine()}</p>`;
   fillAppVersion(el);
   bindFolds(el);
+  bindDayBars(el);
 
   bindParents(el, (open) => {
     statsView(el, open);
@@ -165,22 +168,40 @@ function historyChart(days, rescued, jokered = new Set()) {
   for (let i = HISTORY_DAYS - 1; i >= 0; i--) {
     const d = addDays(new Date(), -i);
     const day = days[dayKey(d)] ?? {};
-    list.push({ d, rescued: rescued.has(dayKey(d)), joker: jokered.has(dayKey(d)), right: Number(day.right) || 0, wrong: Number(day.wrong) || 0 });
+    list.push({ d, key: dayKey(d), rescued: rescued.has(dayKey(d)), joker: jokered.has(dayKey(d)), right: Number(day.right) || 0, wrong: Number(day.wrong) || 0, goal: dayValue(days[dayKey(d)]) });
   }
   const max = Math.max(1, ...list.map((x) => x.right + x.wrong));
+  const record = Math.max(0, ...Object.values(days).map((d) => (Number(d.right) || 0) + (Number(d.wrong) || 0)));
+  // Antippen zeigt die Zahlen des Tages (data-info, siehe bindDayBars)
+  const info = (x) => {
+    const n = x.right + x.wrong;
+    const day = x.d.toLocaleDateString('de-DE', { weekday: 'short', day: 'numeric', month: 'numeric' });
+    if (!n) return `${day}: ${x.joker ? 'per Joker überbrückt 🃏' : 'nicht geübt'}`;
+    return `${day}: ${n} Aufgaben (${x.right} richtig, ${x.wrong} falsch) · ${String(Math.round(x.goal * 10) / 10).replace('.', ',')} 🎯${n === record ? ' · 🏆 Rekord!' : ''}${x.rescued ? ' · 🛟 gerettet' : ''}`;
+  };
   return `
-    <div class="bars" role="img" aria-label="Geübte Aufgaben pro Tag">
+    <div class="bars" role="group" aria-label="Geübte Aufgaben pro Tag – antippen für die Zahlen">
       ${list.map((x) => `
-        <div class="bar${x.rescued ? ' rescued' : ''}" title="${x.d.toLocaleDateString('de-DE')}: ${x.right} richtig, ${x.wrong} falsch${x.rescued ? ' – am Tag danach gerettet' : ''}${x.joker ? ' – per Joker überbrückt' : ''}">
+        <button type="button" class="bar${x.rescued ? ' rescued' : ''}" data-info="${esc(info(x))}" aria-label="${esc(info(x))}">
           <div class="bar-stack" style="height:${((x.right + x.wrong) / max) * 100}%">
             <div class="wrong" style="flex:${x.wrong}"></div>
             <div class="right" style="flex:${x.right}"></div>
           </div>
           <span>${x.rescued ? '🛟' : x.joker ? '🃏' : x.d.toLocaleDateString('de-DE', { weekday: 'narrow' })}</span>
-        </div>`).join('')}
+        </button>`).join('')}
     </div>
+    <p class="small day-info" aria-live="polite">Tipp auf einen Balken, dann siehst du die Zahlen.</p>
     <div class="legend small"><span class="dot right"></span>richtig <span class="dot wrong"></span>falsch</div>
     <p class="muted small">Ein Tag zählt für die Serie ab ${DAY_GOAL} 🎯. Jede Aufgabe zählt nach ihrer Schwere: Antwortform (Eintippen 1, Antippen weniger – Raten ist herausgerechnet) mal Denkaufwand (Wiedererkennen 0,3 bis Knobeln 2). Wörter schreiben zählt 1. 🛟 = verpasst, aber am Tag danach gerettet. 🃏 = per Joker überbrückt.</p>`;
+}
+
+function bindDayBars(el) {
+  const out = el.querySelector('.day-info');
+  el.querySelectorAll('button.bar').forEach((b) => b.addEventListener('click', () => {
+    el.querySelectorAll('button.bar.picked').forEach((x) => x.classList.remove('picked'));
+    b.classList.add('picked');
+    out.textContent = b.dataset.info;
+  }));
 }
 
 // Für die Eltern: Stand von App, Inhalten und Sicherung auf einen Blick.

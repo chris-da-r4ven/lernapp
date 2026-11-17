@@ -11,6 +11,7 @@ import { record, roundBonus, buildRound } from '../js/srs.js';
 import { getState, replaceState, migrateLessons, addTestResult, itemState, addPoints, addDayStat, profileId, resetProgress, spendable, buyJoker, saveExam, deleteExam, allExams, setExamRibbon } from '../js/store.js';
 import { daysUntil, upcomingExams, examFocus, hurdleState, recentShare, isTight, examPick, ribbonDue, ribbonWall } from '../js/exams.js';
 import { mixTraining } from '../js/exam-rounds.js';
+import { recordBroken, bestDay } from '../js/records.js';
 import { mergeExams } from '../js/merge.js';
 import { practicing } from '../js/nav.js';
 import { medalStatus } from '../js/medal.js';
@@ -641,6 +642,16 @@ try {
     ok(!html.includes('<b>') && !html.includes('wort') && !html.includes('<script>'), 'keine Inhaltstexte');
     eq(hofkarte(lesson, [], null, () => ''), '');
   });
+  section('Tagesrekord');
+  await test('Rekord: nur beim Überholen des alten Rekords, und erst ab 10 Aufgaben', () => {
+    const d = { '2026-11-10': { right: 20, wrong: 5 }, '2026-11-11': { right: 8, wrong: 0 }, '2026-11-17': { right: 30, wrong: 0 } };
+    eq(bestDay(d, '2026-11-17'), { key: '2026-11-10', n: 25 });
+    eq(recordBroken(d, '2026-11-17', 20, 30), { best: 25, now: 30 });
+    eq(recordBroken(d, '2026-11-17', 26, 30), null, 'schon vorher drüber – nicht nochmal feiern');
+    eq(recordBroken(d, '2026-11-17', 20, 25), null, 'gleich viel ist kein Rekord');
+    eq(recordBroken({ '2026-11-10': { right: 6, wrong: 0 } }, '2026-11-17', 0, 12), null, 'alter Rekord zu klein');
+  });
+
   section('Reitturnier');
   const ex = (o) => ({ id: 'a-1', sid: 'englisch', date: '2026-11-20', lessons: ['hallo'], by: 'kind', at: 10, ...o });
   await test('Prüfung: Datum, Lektionen, Schleife, Grabstein, doppelte id', () => {

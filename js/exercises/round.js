@@ -13,6 +13,9 @@ import { levelFor } from '../pet.js';
 import { roundSummary } from './summary.js';
 import { lessonMedal, saveTest } from '../medal.js';
 import { lessonKey, unitOf } from '../lessons.js';
+import { recordBroken, dayAnswers } from '../records.js';
+import { celebrate } from '../celebrate.js';
+import { dayKey } from '../util.js';
 import { newMedalsHtml, medalProgressHtml, readyNoticeHtml, MASTERED_HTML } from './round-notes.js';
 
 const RETRY_GAP = 3;
@@ -37,6 +40,7 @@ export function runRound(el, { tasks, test = false, once = false, onProgress = n
   let points = 0;
   const startLevel = levelFor(getState().points);
   const goalBefore = streak().todayWords;   // Tagesziel-Stand vor der Runde (für die Bilanz)
+  const answersBefore = dayAnswers(getState().days[dayKey()]);   // für den Tagesrekord
   const mistakes = new Map(); // key → { task, typed }
 
   // Medaillen vor der Runde – für Bonus bei neuen Medaillen und den Faktor bei alten.
@@ -157,14 +161,17 @@ export function runRound(el, { tasks, test = false, once = false, onProgress = n
     // Neue Medaillen (Test oder Grammatik-Runde): Bonus-Sternchen.
     const newMedals = [...lessons.values()].filter((x) => !x.hadMedal && lessonMedal(x.sid, x.lesson).medal);
     if (newMedals.length) addPoints(MEDAL_BONUS * newMedals.length);
+    addPoints(roundBonus(tasks.map(weight)));   // „fürs Durchhalten“ – auch wenn danach niemand „Weiter“ tippt
     save();
-    result = { completeNotice, progress, newMedals };
+    const today = dayKey();
+    const record = recordBroken(getState().days, today, answersBefore, dayAnswers(getState().days[today]));
+    result = { completeNotice, progress, newMedals, record };
     return result;
   }
 
   function summary() {
     const list = [...mistakes.values()];
-    const { completeNotice, progress, newMedals } = finish();
+    const { completeNotice, progress, newMedals, record } = finish();
     const words = new Set(tasks.map(wordOf)).size;   // in Etappen kommt ein Wort mehrmals vor
     const pct = Math.round((firstTry / total) * 100);
     const all = [...lessons.values()];
@@ -194,6 +201,9 @@ export function runRound(el, { tasks, test = false, once = false, onProgress = n
       },
       onAgain, onBack, backLabel,
     });
+    if (record) {
+      celebrate({ icon: '🏆', title: 'Neuer Rekord!', text: `Heute schon ${record.now} Aufgaben – so viele wie noch nie! Dein alter Rekord waren ${record.best}.` });
+    }
   }
 
   next();
